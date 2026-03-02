@@ -16,7 +16,8 @@ You can install the Python bindings directly from the source using `maturin`:
 git clone https://github.com/Rappsilber-Laboratory/mzIdentML-polars.git
 cd mzIdentML-polars
 
-# Install via pip (requires a Rust toolchain)
+# Install via pip (requires a Rust toolchain and maturin)
+pip install maturin
 pip install .
 ```
 
@@ -48,7 +49,7 @@ csms = pl.DataFrame({
     "is_crosslink": [False, True],
     
     # Required for crosslinks (is_crosslink = True)
-    "peptide2_seq": [None, "KLS..."],
+    "peptide2_seq": [None, "KLS"],
     "protein2_id": [None, "PROT1"],
     "peptide2_start": [None, 5],
     "peptide2_end": [None, 12]
