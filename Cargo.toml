@@ -10,3 +10,4 @@ pyo3 = { version = ">=0.25", features = ["extension-module"] }
 pyo3-polars = { version = ">=0.22", features = ["serde"] }
 xsd-parser = { version = "1.2.0", features = ["reqwest", "async", "update-expectations", "web-resolver", "tokio"] }
 polars = { version = ">=0.35", features = ["lazy", "ndarray", "strings", ] }
+rustyms = "0.7.0"

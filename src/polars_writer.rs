@@ -2,13 +2,316 @@ use polars::prelude::*;
 use pyo3::prelude::*;
 use pyo3::types::{PyDict};
 use pyo3_polars::PyDataFrame;
+use std::collections::HashMap;
+use crate::mzidentml::psi_pi::*;
+use xsd_parser::quick_xml::WithSerializer;
+use xsd_parser::quick_xml::Writer;
+use std::str::FromStr;
+
+/// Factory to manage the construction of the MzIdentML XML tree.
+pub struct MzIdentMLFactory {
+    pub doc: MzIdentMlType,
+    peptide_map: HashMap<String, String>, // ProForma -> Peptide ID
+    db_seq_map: HashMap<String, String>,  // Protein ID -> DBSequence ID
+    pep_evidence_map: HashMap<(String, String), String>, // (Peptide ID, Protein ID) -> Evidence ID
+    cv_map: HashMap<String, String>,      // CV ID -> URI
+}
+
+impl MzIdentMLFactory {
+    pub fn new(id: String) -> Self {
+        let mut doc = MzIdentMlType {
+            id,
+            name: None,
+            creation_date: None, // TODO: Add current date
+            version: "1.3.0".to_string(),
+            cv_list: CvListType { cv: Vec::new() },
+            cv_param: Vec::new(),
+            analysis_software_list: Some(AnalysisSoftwareListType {
+                analysis_software: Vec::new(),
+            }),
+            provider: None,
+            audit_collection: None,
+            analysis_sample_collection: None,
+            sequence_collection: Some(SequenceCollectionType {
+                db_sequence: Vec::new(),
+                peptide: Vec::new(),
+                peptide_evidence: Vec::new(),
+            }),
+            analysis_collection: AnalysisCollectionType {
+                spectrum_identification: Vec::new(),
+                protein_detection: None,
+            },
+            analysis_protocol_collection: AnalysisProtocolCollectionType {
+                spectrum_identification_protocol: Vec::new(),
+                protein_detection_protocol: None,
+            },
+            data_collection: DataCollectionType {
+                inputs: InputsType {
+                    source_file: Vec::new(),
+                    search_database: Vec::new(),
+                    spectra_data: Vec::new(),
+                },
+                analysis_data: AnalysisDataType {
+                    spectrum_identification_list: Vec::new(),
+                    protein_detection_list: None,
+                },
+            },
+            bibliographic_reference: Vec::new(),
+        };
+
+        // Add standard CVs
+        let mut factory = Self {
+            doc,
+            peptide_map: HashMap::new(),
+            db_seq_map: HashMap::new(),
+            pep_evidence_map: HashMap::new(),
+            cv_map: HashMap::new(),
+        };
+
+        factory.add_cv("PSI-MS", "PSI-MS", "https://raw.githubusercontent.com/HUPO-PSI/psi-ms-CV/master/psi-ms.obo");
+        factory.add_cv("UNIMOD", "UNIMOD", "http://www.unimod.org/obo/unimod.obo");
+        factory.add_cv("UO", "Unit Ontology", "http://purl.obolibrary.org/obo/uo.obo");
+        factory.add_cv("XLMOD", "PSI-XLMOD", "https://raw.githubusercontent.com/HUPO-PSI/mzIdentML/master/cv/XLMOD.obo");
+
+        factory
+    }
+
+    pub fn add_cv(&mut self, id: &str, name: &str, uri: &str) {
+        if self.cv_map.contains_key(id) {
+            return;
+        }
+        self.doc.cv_list.cv.push(CvType {
+            id: id.to_string(),
+            full_name: name.to_string(),
+            uri: uri.to_string(),
+            version: None,
+        });
+        self.cv_map.insert(id.to_string(), uri.to_string());
+    }
+
+    pub fn add_peptide(&mut self, proforma: &str) -> String {
+        if let Some(id) = self.peptide_map.get(proforma) {
+            return id.clone();
+        }
+
+        let id = format!("pep_{}", self.peptide_map.len());
+        
+        // For now, just store the sequence. 
+        // Parsing modifications would require a more detailed rustyms integration.
+        let peptide_struct = PeptideType {
+            id: id.clone(),
+            name: None,
+            content: vec![PeptideTypeContent::PeptideSequence(proforma.to_string())],
+        };
+
+        if let Some(sc) = &mut self.doc.sequence_collection {
+            sc.peptide.push(peptide_struct);
+        }
+        self.peptide_map.insert(proforma.to_string(), id.clone());
+        id
+    }
+
+    pub fn add_db_sequence(&mut self, protein_id: &str, accession: &str, sequence: &str, db_ref: &str) -> String {
+        if let Some(id) = self.db_seq_map.get(protein_id) {
+            return id.clone();
+        }
+
+        let id = format!("dbseq_{}", protein_id);
+        let db_seq = DbSequenceType {
+            id: id.clone(),
+            name: None,
+            length: Some(sequence.len() as i32),
+            search_database_ref: db_ref.to_string(),
+            accession: accession.to_string(),
+            content: vec![DbSequenceTypeContent::Seq(sequence.to_string())],
+        };
+
+        if let Some(sc) = &mut self.doc.sequence_collection {
+            sc.db_sequence.push(db_seq);
+        }
+        self.db_seq_map.insert(protein_id.to_string(), id.clone());
+        id
+    }
+
+    pub fn add_peptide_evidence(&mut self, pep_ref: &str, db_ref: &str, start: Option<u32>, end: Option<u32>, is_decoy: bool) -> String {
+        let key = (pep_ref.to_string(), db_ref.to_string());
+        if let Some(id) = self.pep_evidence_map.get(&key) {
+            return id.clone();
+        }
+
+        let id = format!("ev_{}_{}", pep_ref, db_ref);
+        let evidence = PeptideEvidenceType {
+            id: id.clone(),
+            name: None,
+            db_sequence_ref: db_ref.to_string(),
+            peptide_ref: pep_ref.to_string(),
+            start: start.map(|s| s as i32),
+            end: end.map(|e| e as i32),
+            pre: None,
+            post: None,
+            translation_table_ref: None,
+            frame: None,
+            is_decoy,
+            content: Vec::new(),
+        };
+
+        if let Some(sc) = &mut self.doc.sequence_collection {
+            sc.peptide_evidence.push(evidence);
+        }
+        self.pep_evidence_map.insert(key, id.clone());
+        id
+    }
+
+    pub fn add_sii(&mut self, result_id: &str, sii: SpectrumIdentificationItemType) {
+        // Ensure the SpectrumIdentificationList exists
+        let sil_id = "SIL_1";
+        let sil = if let Some(sil) = self.doc.data_collection.analysis_data.spectrum_identification_list.iter_mut().find(|l| l.id == sil_id) {
+            sil
+        } else {
+            self.doc.data_collection.analysis_data.spectrum_identification_list.push(SpectrumIdentificationListType {
+                id: sil_id.to_string(),
+                name: None,
+                num_sequences_searched: None,
+                content: Vec::new(),
+            });
+            self.doc.data_collection.analysis_data.spectrum_identification_list.last_mut().unwrap()
+        };
+
+        // Find or create the SpectrumIdentificationResult for result_id
+        let sir = if let Some(sir) = sil.content.iter_mut().find(|c| match c { SpectrumIdentificationListTypeContent::SpectrumIdentificationResult(r) => r.id == result_id, _ => false }) {
+            match sir { SpectrumIdentificationListTypeContent::SpectrumIdentificationResult(r) => r, _ => unreachable!() }
+        } else {
+            let new_sir = SpectrumIdentificationResultType {
+                id: result_id.to_string(),
+                name: None,
+                spectrum_id: result_id.to_string(),
+                spectra_data_ref: "SD_1".to_string(),
+                content: Vec::new(),
+            };
+            sil.content.push(SpectrumIdentificationListTypeContent::SpectrumIdentificationResult(new_sir));
+            match sil.content.last_mut().unwrap() { SpectrumIdentificationListTypeContent::SpectrumIdentificationResult(r) => r, _ => unreachable!() }
+        };
+
+        sir.content.push(SpectrumIdentificationResultTypeContent::SpectrumIdentificationItem(sii));
+    }
+
+    pub fn serialize(self) -> Result<String, String> {
+        let mut writer = Writer::new_with_indent(std::io::Cursor::new(Vec::new()), b' ', 2);
+        let mut serializer = self.doc.serializer(None, true)
+            .map_err(|e| format!("Serialization error: {:?}", e))?;
+        
+        for event in &mut serializer {
+            let event = event.map_err(|e| format!("XML event error: {:?}", e))?;
+            writer.write_event(event).map_err(|e| format!("XML write error: {:?}", e))?;
+        }
+        
+        let xml = String::from_utf8(writer.into_inner().into_inner())
+            .map_err(|e| format!("UTF8 error: {:?}", e))?;
+        Ok(xml)
+    }
+}
 
 #[pyfunction]
 pub fn write_mzidentml(
-    csms: &PyDataFrame,
-    prot_seqs: &PyDataFrame,
-    spectra: &PyDataFrame,
-    cvs: &PyDict,
-) -> Result<String, PolarsError> {
-    Ok("TODO".parse()?)
+    csms: PyDataFrame,
+    prot_seqs: PyDataFrame,
+    spectra: PyDataFrame,
+    _cvs: Bound<'_, PyDict>,
+) -> PyResult<String> {
+    let mut factory = MzIdentMLFactory::new("mzidentml_export".to_string());
+    
+    let csms_df = csms.as_ref();
+    let prot_df = prot_seqs.as_ref();
+    let _spectra_df = spectra.as_ref();
+
+    // 1. Process Protein Sequences
+    let prot_ids = prot_df.column("protein_id").map_err(|e| PyErr::new::<pyo3::exceptions::PyValueError, _>(format!("{}", e)))?.str().map_err(|e| PyErr::new::<pyo3::exceptions::PyValueError, _>(format!("{}", e)))?;
+    let prot_accs = prot_df.column("accession").map_err(|e| PyErr::new::<pyo3::exceptions::PyValueError, _>(format!("{}", e)))?.str().map_err(|e| PyErr::new::<pyo3::exceptions::PyValueError, _>(format!("{}", e)))?;
+    let prot_seqs_col = prot_df.column("sequence").map_err(|e| PyErr::new::<pyo3::exceptions::PyValueError, _>(format!("{}", e)))?.str().map_err(|e| PyErr::new::<pyo3::exceptions::PyValueError, _>(format!("{}", e)))?;
+    
+    for i in 0..prot_df.height() {
+        if let (Some(id), Some(acc), Some(seq)) = (prot_ids.get(i), prot_accs.get(i), prot_seqs_col.get(i)) {
+            factory.add_db_sequence(id, acc, seq, "SearchDB_1");
+        }
+    }
+
+    // 2. Process CSMs
+    let c_spec_id = csms_df.column("spectrum_id").map_err(|e| PyErr::new::<pyo3::exceptions::PyValueError, _>(format!("{}", e)))?.str().map_err(|e| PyErr::new::<pyo3::exceptions::PyValueError, _>(format!("{}", e)))?;
+    let c_pep1 = csms_df.column("peptide1_seq").map_err(|e| PyErr::new::<pyo3::exceptions::PyValueError, _>(format!("{}", e)))?.str().map_err(|e| PyErr::new::<pyo3::exceptions::PyValueError, _>(format!("{}", e)))?;
+    let c_prot1 = csms_df.column("protein1_id").map_err(|e| PyErr::new::<pyo3::exceptions::PyValueError, _>(format!("{}", e)))?.str().map_err(|e| PyErr::new::<pyo3::exceptions::PyValueError, _>(format!("{}", e)))?;
+    let c_start1 = csms_df.column("peptide1_start").map_err(|e| PyErr::new::<pyo3::exceptions::PyValueError, _>(format!("{}", e)))?.u32().map_err(|e| PyErr::new::<pyo3::exceptions::PyValueError, _>(format!("{}", e)))?;
+    let c_end1 = csms_df.column("peptide1_end").map_err(|e| PyErr::new::<pyo3::exceptions::PyValueError, _>(format!("{}", e)))?.u32().map_err(|e| PyErr::new::<pyo3::exceptions::PyValueError, _>(format!("{}", e)))?;
+    let c_charge = csms_df.column("charge").map_err(|e| PyErr::new::<pyo3::exceptions::PyValueError, _>(format!("{}", e)))?.i32().map_err(|e| PyErr::new::<pyo3::exceptions::PyValueError, _>(format!("{}", e)))?;
+    let c_rank = csms_df.column("rank").map_err(|e| PyErr::new::<pyo3::exceptions::PyValueError, _>(format!("{}", e)))?.u32().map_err(|e| PyErr::new::<pyo3::exceptions::PyValueError, _>(format!("{}", e)))?;
+    
+    let is_xl = csms_df.column("is_crosslink").map_err(|e| PyErr::new::<pyo3::exceptions::PyValueError, _>(format!("{}", e)))?.bool().map_err(|e| PyErr::new::<pyo3::exceptions::PyValueError, _>(format!("{}", e)))?;
+    let c_pep2 = csms_df.column("peptide2_seq").map_err(|e| PyErr::new::<pyo3::exceptions::PyValueError, _>(format!("{}", e)))?.str().map_err(|e| PyErr::new::<pyo3::exceptions::PyValueError, _>(format!("{}", e)))?;
+    let c_prot2 = csms_df.column("protein2_id").map_err(|e| PyErr::new::<pyo3::exceptions::PyValueError, _>(format!("{}", e)))?.str().map_err(|e| PyErr::new::<pyo3::exceptions::PyValueError, _>(format!("{}", e)))?;
+    let c_start2 = csms_df.column("peptide2_start").map_err(|e| PyErr::new::<pyo3::exceptions::PyValueError, _>(format!("{}", e)))?.u32().map_err(|e| PyErr::new::<pyo3::exceptions::PyValueError, _>(format!("{}", e)))?;
+    let c_end2 = csms_df.column("peptide2_end").map_err(|e| PyErr::new::<pyo3::exceptions::PyValueError, _>(format!("{}", e)))?.u32().map_err(|e| PyErr::new::<pyo3::exceptions::PyValueError, _>(format!("{}", e)))?;
+
+    for i in 0..csms_df.height() {
+        let spec_id = c_spec_id.get(i).unwrap();
+        let pep1_ref = factory.add_peptide(c_pep1.get(i).unwrap());
+        let prot1_id = c_prot1.get(i).unwrap();
+        let dbseq1_ref = format!("dbseq_{}", prot1_id);
+        
+        let ev1_id = factory.add_peptide_evidence(
+            &pep1_ref, 
+            &dbseq1_ref, 
+            c_start1.get(i), 
+            c_end1.get(i), 
+            false
+        );
+
+        let mut sii = SpectrumIdentificationItemType {
+            id: format!("SII_{}_{}", spec_id, i),
+            name: None,
+            charge_state: c_charge.get(i).unwrap_or(2),
+            experimental_mass_to_charge: 0.0, 
+            calculated_mass_to_charge: None,
+            calculated_pi: None,
+            peptide_ref: pep1_ref,
+            rank: c_rank.get(i).unwrap_or(1) as i32,
+            pass_threshold: true,
+            mass_table_ref: None,
+            sample_ref: None,
+            content: vec![SpectrumIdentificationItemTypeContent::PeptideEvidenceRef(PeptideEvidenceRefType {
+                peptide_evidence_ref: ev1_id,
+            })],
+        };
+
+        if is_xl.get(i).unwrap_or(false) {
+            let pep2_ref = factory.add_peptide(c_pep2.get(i).unwrap());
+            let prot2_id = c_prot2.get(i).unwrap();
+            let dbseq2_ref = format!("dbseq_{}", prot2_id);
+            
+            let ev2_id = factory.add_peptide_evidence(
+                &pep2_ref, 
+                &dbseq2_ref, 
+                c_start2.get(i), 
+                c_end2.get(i), 
+                false
+            );
+            
+            sii.content.push(SpectrumIdentificationItemTypeContent::PeptideEvidenceRef(PeptideEvidenceRefType {
+                peptide_evidence_ref: ev2_id,
+            }));
+
+            // Crosslink CV term
+            sii.content.push(SpectrumIdentificationItemTypeContent::CvParam(CvParamType {
+                cv_ref: "PSI-MS".to_string(),
+                accession: "MS:1002511".to_string(),
+                name: "crosslink spectrum identification item".to_string(),
+                value: Some(i.to_string()),
+                unit_accession: None,
+                unit_name: None,
+                unit_cv_ref: None,
+            }));
+        }
+
+        factory.add_sii(spec_id, sii);
+    }
+
+    factory.serialize().map_err(|e| PyErr::new::<pyo3::exceptions::PyRuntimeError, _>(e))
 }
