@@ -3,6 +3,10 @@ name = "mzidentml"
 version = "0.1.0"
 edition = "2021"
 
+[lib]
+name = "mzidentml_polars"
+crate-type = ["cdylib", "rlib"]
+
 [dependencies]
 num-bigint = "0.4"
 num-traits = "0.2"
