@@ -38,6 +38,7 @@ prot_seqs = pl.DataFrame({
 
 # 2. Define Identifications (CSMs)
 # Supports both Linear and Crosslinked peptides
+# NOTE: Columns must be cast to expected types (UInt32, Int32, Boolean)
 csms = pl.DataFrame({
     "spectrum_id": ["scan=123", "scan=456"],
     "peptide1_seq": ["PEPTIDEK", "PEPT[Unimod:35]IDEK"],
@@ -53,7 +54,15 @@ csms = pl.DataFrame({
     "protein2_id": [None, "PROT1"],
     "peptide2_start": [None, 5],
     "peptide2_end": [None, 12]
-})
+}).with_columns([
+    pl.col("peptide1_start").cast(pl.UInt32),
+    pl.col("peptide1_end").cast(pl.UInt32),
+    pl.col("charge").cast(pl.Int32),
+    pl.col("rank").cast(pl.UInt32),
+    pl.col("is_crosslink").cast(pl.Boolean),
+    pl.col("peptide2_start").cast(pl.UInt32),
+    pl.col("peptide2_end").cast(pl.UInt32),
+])
 
 # 3. Define Spectra (placeholder for now)
 spectra = pl.DataFrame({
@@ -66,6 +75,20 @@ xml_content = mzidentml_polars.write_mzidentml(csms, prot_seqs, spectra, {})
 
 with open("output.mzid", "w") as f:
     f.write(xml_content)
+```
+
+## Troubleshooting
+
+### `TypeError: ... compat_level has invalid type: 'int'`
+If you see this error, it indicates a version mismatch between your Python `polars` and the `pyo3-polars` used during compilation. As of now, ensure you are using a compatible version of Polars:
+```bash
+pip install polars==1.31.0
+```
+
+### `No module named 'pyarrow'`
+`pyo3-polars` may require `pyarrow` for internal data conversions:
+```bash
+pip install pyarrow
 ```
 
 ## Input Schemas
