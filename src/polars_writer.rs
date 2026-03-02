@@ -1,4 +1,3 @@
-use polars::prelude::*;
 use pyo3::prelude::*;
 use pyo3::types::{PyDict};
 use pyo3_polars::PyDataFrame;
@@ -6,7 +5,6 @@ use std::collections::HashMap;
 use crate::mzidentml::psi_pi::*;
 use xsd_parser::quick_xml::WithSerializer;
 use xsd_parser::quick_xml::Writer;
-use std::str::FromStr;
 
 /// Factory to manage the construction of the MzIdentML XML tree.
 pub struct MzIdentMLFactory {
@@ -19,7 +17,7 @@ pub struct MzIdentMLFactory {
 
 impl MzIdentMLFactory {
     pub fn new(id: String) -> Self {
-        let mut doc = MzIdentMlType {
+        let doc = MzIdentMlType {
             id,
             name: None,
             creation_date: None, // TODO: Add current date
@@ -314,4 +312,55 @@ pub fn write_mzidentml(
     }
 
     factory.serialize().map_err(|e| PyErr::new::<pyo3::exceptions::PyRuntimeError, _>(e))
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_factory_creation() {
+        let factory = MzIdentMLFactory::new("test_doc".to_string());
+        assert_eq!(factory.doc.id, "test_doc");
+        assert_eq!(factory.doc.version, "1.3.0");
+        assert!(factory.doc.cv_list.cv.len() >= 4);
+    }
+
+    #[test]
+    fn test_add_peptide_deduplication() {
+        let mut factory = MzIdentMLFactory::new("test_doc".to_string());
+        let id1 = factory.add_peptide("PEPTIDE");
+        let id2 = factory.add_peptide("PEPTIDE");
+        assert_eq!(id1, id2);
+        assert_eq!(id1, "pep_0");
+        
+        let sc = factory.doc.sequence_collection.as_ref().unwrap();
+        assert_eq!(sc.peptide.len(), 1);
+    }
+
+    #[test]
+    fn test_add_db_sequence() {
+        let mut factory = MzIdentMLFactory::new("test_doc".to_string());
+        let id = factory.add_db_sequence("P12345", "ACC123", "MAGA", "DB1");
+        assert_eq!(id, "dbseq_P12345");
+        
+        let sc = factory.doc.sequence_collection.as_ref().unwrap();
+        assert_eq!(sc.db_sequence.len(), 1);
+        assert_eq!(sc.db_sequence[0].accession, "ACC123");
+    }
+
+    #[test]
+    fn test_serialization_basic() {
+        let mut factory = MzIdentMLFactory::new("test_doc".to_string());
+        factory.add_peptide("PEPTIDE");
+        factory.add_db_sequence("P12", "ACC", "M", "DB");
+        
+        let xml = factory.serialize().unwrap();
+        // println!("XML OUTPUT:\n{}", xml);
+        assert!(xml.contains("test_doc"));
+        assert!(xml.contains("psi-pi:Peptide"));
+        assert!(xml.contains("psi-pi:id=\"pep_0\""));
+        assert!(xml.contains("psi-pi:DBSequence"));
+        assert!(xml.contains("psi-pi:id=\"dbseq_P12\""));
+    }
 }
