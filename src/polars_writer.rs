@@ -160,7 +160,7 @@ impl MzIdentMLFactory {
         id
     }
 
-    pub fn add_sii(&mut self, result_id: &str, sii: SpectrumIdentificationItemType) {
+    pub fn add_sii(&mut self, result_id: &str, sii: SpectrumIdentificationItemType, spectra_data_ref: &str) {
         // Ensure the SpectrumIdentificationList exists
         let sil_id = "SIL_1";
         let sil = if let Some(sil) = self.doc.data_collection.analysis_data.spectrum_identification_list.iter_mut().find(|l| l.id == sil_id) {
@@ -183,7 +183,7 @@ impl MzIdentMLFactory {
                 id: result_id.to_string(),
                 name: None,
                 spectrum_id: result_id.to_string(),
-                spectra_data_ref: "SD_1".to_string(),
+                spectra_data_ref: spectra_data_ref.to_string(),
                 content: Vec::new(),
             };
             sil.content.push(SpectrumIdentificationListTypeContent::SpectrumIdentificationResult(new_sir));
@@ -193,9 +193,144 @@ impl MzIdentMLFactory {
         sir.content.push(SpectrumIdentificationResultTypeContent::SpectrumIdentificationItem(sii));
     }
 
+    pub fn add_spectra_data(&mut self, id: &str, location: &str) {
+        self.doc.data_collection.inputs.spectra_data.push(SpectraDataType {
+            id: id.to_string(),
+            name: None,
+            location: location.to_string(),
+            external_format_documentation: None,
+            file_format: FileFormatType {
+                cv_param: CvParamType {
+                    name: "mzML format".to_string(),
+                    accession: "MS:1000584".to_string(),
+                    cv_ref: "PSI-MS".to_string(),
+                    value: None,
+                    unit_accession: None,
+                    unit_name: None,
+                    unit_cv_ref: None,
+                }
+            },
+            spectrum_id_format: SpectrumIdFormatType {
+                 cv_param: CvParamType {
+                    name: "mzML unique identifier".to_string(),
+                    accession: "MS:1001530".to_string(),
+                    cv_ref: "PSI-MS".to_string(),
+                    value: None,
+                    unit_accession: None,
+                    unit_name: None,
+                    unit_cv_ref: None,
+                }
+            },
+        });
+    }
+
+    pub fn add_search_database(&mut self, id: &str, name: &str) {
+        self.doc.data_collection.inputs.search_database.push(SearchDatabaseType {
+            id: id.to_string(),
+            name: Some(name.to_string()),
+            location: String::new(),
+            version: None,
+            release_date: None,
+            num_database_sequences: None,
+            num_residues: None,
+            external_format_documentation: None,
+            file_format: FileFormatType {
+                cv_param: CvParamType {
+                    name: "FASTA format".to_string(),
+                    accession: "MS:1001348".to_string(),
+                    cv_ref: "PSI-MS".to_string(),
+                    value: None,
+                    unit_accession: None,
+                    unit_name: None,
+                    unit_cv_ref: None,
+                }
+            },
+            database_name: ParamType::CvParam(CvParamType {
+                name: name.to_string(),
+                accession: "MS:1001349".to_string(),
+                cv_ref: "PSI-MS".to_string(),
+                value: None,
+                unit_accession: None,
+                unit_name: None,
+                unit_cv_ref: None,
+            }),
+            cv_param: Vec::new(),
+        });
+    }
+
+    pub fn add_software(&mut self, id: &str, name: &str, version: &str) {
+        if let Some(list) = &mut self.doc.analysis_software_list {
+            list.analysis_software.push(AnalysisSoftwareType {
+                id: id.to_string(),
+                name: Some(name.to_string()),
+                version: Some(version.to_string()),
+                uri: None,
+                contact_role: None,
+                software_name: ParamType::CvParam(CvParamType {
+                    name: name.to_string(),
+                    accession: "MS:1002511".to_string(), // Placeholder for now
+                    cv_ref: "PSI-MS".to_string(),
+                    value: None,
+                    unit_accession: None,
+                    unit_name: None,
+                    unit_cv_ref: None,
+                }),
+                customizations: None,
+            });
+        }
+    }
+
+    pub fn add_protocol(&mut self, id: &str, software_ref: &str) {
+        self.doc.analysis_protocol_collection.spectrum_identification_protocol.push(SpectrumIdentificationProtocolType {
+            id: id.to_string(),
+            name: None,
+            analysis_software_ref: software_ref.to_string(),
+            search_type: ParamType::CvParam(CvParamType {
+                name: "ms-ms search".to_string(),
+                accession: "MS:1001083".to_string(),
+                cv_ref: "PSI-MS".to_string(),
+                value: None,
+                unit_accession: None,
+                unit_name: None,
+                unit_cv_ref: None,
+            }),
+            additional_search_params: None,
+            modification_params: None,
+            enzymes: None,
+            mass_table: Vec::new(),
+            fragment_tolerance: None,
+            parent_tolerance: None,
+            threshold: ParamListType {
+                content: vec![ParamListTypeContent::CvParam(CvParamType {
+                    name: "no threshold".to_string(),
+                    accession: "MS:1001494".to_string(),
+                    cv_ref: "PSI-MS".to_string(),
+                    value: None,
+                    unit_accession: None,
+                    unit_name: None,
+                    unit_cv_ref: None,
+                })],
+            },
+            database_filters: None,
+            database_translation: None,
+        });
+    }
+
+    pub fn add_analysis(&mut self, id: &str, protocol_ref: &str, list_ref: &str, spectra_refs: Vec<String>, db_refs: Vec<String>) {
+        self.doc.analysis_collection.spectrum_identification.push(SpectrumIdentificationType {
+            id: id.to_string(),
+            name: None,
+            spectrum_identification_protocol_ref: protocol_ref.to_string(),
+            spectrum_identification_list_ref: list_ref.to_string(),
+            activity_date: None,
+            input_spectra: spectra_refs.into_iter().map(|r| InputSpectraType { spectra_data_ref: r }).collect(),
+            search_database_ref: db_refs.into_iter().map(|r| SearchDatabaseRefType { search_database_ref: r }).collect(),
+        });
+    }
+
     pub fn serialize(self) -> Result<String, String> {
         let mut writer = Writer::new_with_indent(std::io::Cursor::new(Vec::new()), b' ', 2);
-        let mut serializer = self.doc.serializer(None, true)
+        let mut serializer = self.doc.serializer(Some("psi-pi:MzIdentML"), true)
             .map_err(|e| format!("Serialization error: {:?}", e))?;
         
         for event in &mut serializer {
@@ -205,6 +340,16 @@ impl MzIdentMLFactory {
         
         let xml = String::from_utf8(writer.into_inner().into_inner())
             .map_err(|e| format!("UTF8 error: {:?}", e))?;
+        
+        // Post-process to remove prefixes which are not allowed on attributes 
+        // and to simplify the file by using a default namespace.
+        // This is necessary because the generated code in mzidentml.rs hardcodes the prefix.
+        /*let xml = xml
+            .replace("<psi-pi:", "<")
+            .replace("</psi-pi:", "</")
+            .replace(" psi-pi:", " ")
+            .replace("xmlns:psi-pi=", "xmlns=");*/
+            
         Ok(xml)
     }
 }
@@ -220,9 +365,40 @@ pub fn write_mzidentml(
     
     let csms_df = csms.as_ref();
     let prot_df = prot_seqs.as_ref();
-    let _spectra_df = spectra.as_ref();
 
-    // 1. Process Protein Sequences
+    // 1. Setup metadata
+    factory.add_software("AS_1", "mzidentml-polars", "0.1.0");
+    factory.add_search_database("SearchDB_1", "Target Database");
+    factory.add_protocol("SIP_1", "AS_1");
+    
+    // Process SpectraData
+    let spec_df = spectra.as_ref();
+    let spec_ids_col = spec_df.column("spectrum_id").map_err(|e| PyErr::new::<pyo3::exceptions::PyValueError, _>(format!("{}", e)))?.str().map_err(|e| PyErr::new::<pyo3::exceptions::PyValueError, _>(format!("{}", e)))?;
+    let spec_paths_col = spec_df.column("file_path").map_err(|e| PyErr::new::<pyo3::exceptions::PyValueError, _>(format!("{}", e)))?.str().map_err(|e| PyErr::new::<pyo3::exceptions::PyValueError, _>(format!("{}", e)))?;
+    
+    let mut spectra_data_ids = Vec::new();
+    let mut path_to_sd_id = HashMap::new();
+
+    for i in 0..spec_df.height() {
+        if let Some(path) = spec_paths_col.get(i) {
+            if !path_to_sd_id.contains_key(path) {
+                let sd_id = format!("SD_{}", path_to_sd_id.len() + 1);
+                factory.add_spectra_data(&sd_id, path);
+                path_to_sd_id.insert(path.to_string(), sd_id.clone());
+                spectra_data_ids.push(sd_id);
+            }
+        }
+    }
+    
+    if spectra_data_ids.is_empty() {
+        // Fallback SD if none provided
+        factory.add_spectra_data("SD_1", "unknown_data");
+        spectra_data_ids.push("SD_1".to_string());
+    }
+
+    factory.add_analysis("SI_1", "SIP_1", "SIL_1", spectra_data_ids, vec!["SearchDB_1".to_string()]);
+
+    // 2. Process Protein Sequences
     let prot_ids = prot_df.column("protein_id").map_err(|e| PyErr::new::<pyo3::exceptions::PyValueError, _>(format!("{}", e)))?.str().map_err(|e| PyErr::new::<pyo3::exceptions::PyValueError, _>(format!("{}", e)))?;
     let prot_accs = prot_df.column("accession").map_err(|e| PyErr::new::<pyo3::exceptions::PyValueError, _>(format!("{}", e)))?.str().map_err(|e| PyErr::new::<pyo3::exceptions::PyValueError, _>(format!("{}", e)))?;
     let prot_seqs_col = prot_df.column("sequence").map_err(|e| PyErr::new::<pyo3::exceptions::PyValueError, _>(format!("{}", e)))?.str().map_err(|e| PyErr::new::<pyo3::exceptions::PyValueError, _>(format!("{}", e)))?;
@@ -247,6 +423,16 @@ pub fn write_mzidentml(
     let c_prot2 = csms_df.column("protein2_id").map_err(|e| PyErr::new::<pyo3::exceptions::PyValueError, _>(format!("{}", e)))?.str().map_err(|e| PyErr::new::<pyo3::exceptions::PyValueError, _>(format!("{}", e)))?;
     let c_start2 = csms_df.column("peptide2_start").map_err(|e| PyErr::new::<pyo3::exceptions::PyValueError, _>(format!("{}", e)))?.u32().map_err(|e| PyErr::new::<pyo3::exceptions::PyValueError, _>(format!("{}", e)))?;
     let c_end2 = csms_df.column("peptide2_end").map_err(|e| PyErr::new::<pyo3::exceptions::PyValueError, _>(format!("{}", e)))?.u32().map_err(|e| PyErr::new::<pyo3::exceptions::PyValueError, _>(format!("{}", e)))?;
+
+    // Map spectrum IDs to their SpectraData reference
+    let mut spec_id_to_sd_id = HashMap::new();
+    for i in 0..spec_df.height() {
+        if let (Some(sid), Some(path)) = (spec_ids_col.get(i), spec_paths_col.get(i)) {
+            if let Some(sd_id) = path_to_sd_id.get(path) {
+                spec_id_to_sd_id.insert(sid, sd_id);
+            }
+        }
+    }
 
     for i in 0..csms_df.height() {
         let spec_id = c_spec_id.get(i).unwrap();
@@ -296,19 +482,20 @@ pub fn write_mzidentml(
                 peptide_evidence_ref: ev2_id,
             }));
 
-            // Crosslink CV term
+            // Add crosslink CV param
             sii.content.push(SpectrumIdentificationItemTypeContent::CvParam(CvParamType {
-                cv_ref: "PSI-MS".to_string(),
+                name: "cross-link spectrum match".to_string(),
                 accession: "MS:1002511".to_string(),
-                name: "crosslink spectrum identification item".to_string(),
-                value: Some(i.to_string()),
+                cv_ref: "PSI-MS".to_string(),
+                value: None,
                 unit_accession: None,
                 unit_name: None,
                 unit_cv_ref: None,
             }));
         }
 
-        factory.add_sii(spec_id, sii);
+        let sd_ref = spec_id_to_sd_id.get(spec_id).map(|s| s.as_str()).unwrap_or("SD_1");
+        factory.add_sii(spec_id, sii, sd_ref);
     }
 
     factory.serialize().map_err(|e| PyErr::new::<pyo3::exceptions::PyRuntimeError, _>(e))
