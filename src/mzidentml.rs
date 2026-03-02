@@ -37,7 +37,7 @@ pub mod psi_pi {
             Ok(quick_xml_serialize::AbstractContactTypeSerializer {
                 value: self,
                 state: Box::new(quick_xml_serialize::AbstractContactTypeSerializerState::Init__),
-                name: name.unwrap_or("psi-pi:AbstractContactType"),
+                name: name.unwrap_or("AbstractContactType"),
                 is_root,
             })
         }
@@ -80,7 +80,7 @@ pub mod psi_pi {
             Ok(quick_xml_serialize::AbstractParamTypeSerializer {
                 value: self,
                 state: Box::new(quick_xml_serialize::AbstractParamTypeSerializerState::Init__),
-                name: name.unwrap_or("psi-pi:AbstractParamType"),
+                name: name.unwrap_or("AbstractParamType"),
                 is_root,
             })
         }
@@ -102,7 +102,7 @@ pub mod psi_pi {
             Ok(quick_xml_serialize::AffiliationTypeSerializer {
                 value: self,
                 state: Box::new(quick_xml_serialize::AffiliationTypeSerializerState::Init__),
-                name: name.unwrap_or("psi-pi:AffiliationType"),
+                name: name.unwrap_or("AffiliationType"),
                 is_root,
             })
         }
@@ -133,7 +133,7 @@ pub mod psi_pi {
             Ok(quick_xml_serialize::AmbiguousResidueTypeSerializer {
                 value: self,
                 state: Box::new(quick_xml_serialize::AmbiguousResidueTypeSerializerState::Init__),
-                name: name.unwrap_or("psi-pi:AmbiguousResidueType"),
+                name: name.unwrap_or("AmbiguousResidueType"),
                 is_root,
             })
         }
@@ -173,7 +173,7 @@ pub mod psi_pi {
             Ok(quick_xml_serialize::AnalysisCollectionTypeSerializer {
                 value: self,
                 state: Box::new(quick_xml_serialize::AnalysisCollectionTypeSerializerState::Init__),
-                name: name.unwrap_or("psi-pi:AnalysisCollectionType"),
+                name: name.unwrap_or("AnalysisCollectionType"),
                 is_root,
             })
         }
@@ -196,7 +196,7 @@ pub mod psi_pi {
             Ok(quick_xml_serialize::AnalysisDataTypeSerializer {
                 value: self,
                 state: Box::new(quick_xml_serialize::AnalysisDataTypeSerializerState::Init__),
-                name: name.unwrap_or("psi-pi:AnalysisDataType"),
+                name: name.unwrap_or("AnalysisDataType"),
                 is_root,
             })
         }
@@ -222,7 +222,7 @@ pub mod psi_pi {
                     state: Box::new(
                         quick_xml_serialize::AnalysisProtocolCollectionTypeSerializerState::Init__,
                     ),
-                    name: name.unwrap_or("psi-pi:AnalysisProtocolCollectionType"),
+                    name: name.unwrap_or("AnalysisProtocolCollectionType"),
                     is_root,
                 },
             )
@@ -248,7 +248,7 @@ pub mod psi_pi {
                     state: Box::new(
                         quick_xml_serialize::AnalysisSampleCollectionTypeSerializerState::Init__,
                     ),
-                    name: name.unwrap_or("psi-pi:AnalysisSampleCollectionType"),
+                    name: name.unwrap_or("AnalysisSampleCollectionType"),
                     is_root,
                 },
             )
@@ -273,7 +273,7 @@ pub mod psi_pi {
                 state: Box::new(
                     quick_xml_serialize::AnalysisSoftwareListTypeSerializerState::Init__,
                 ),
-                name: name.unwrap_or("psi-pi:AnalysisSoftwareListType"),
+                name: name.unwrap_or("AnalysisSoftwareListType"),
                 is_root,
             })
         }
@@ -301,7 +301,7 @@ pub mod psi_pi {
             Ok(quick_xml_serialize::AnalysisSoftwareTypeSerializer {
                 value: self,
                 state: Box::new(quick_xml_serialize::AnalysisSoftwareTypeSerializerState::Init__),
-                name: name.unwrap_or("psi-pi:AnalysisSoftwareType"),
+                name: name.unwrap_or("AnalysisSoftwareType"),
                 is_root,
             })
         }
@@ -331,7 +331,7 @@ pub mod psi_pi {
             Ok(quick_xml_serialize::AuditCollectionTypeSerializer {
                 value: self,
                 state: Box::new(quick_xml_serialize::AuditCollectionTypeSerializerState::Init__),
-                name: name.unwrap_or("psi-pi:AuditCollectionType"),
+                name: name.unwrap_or("AuditCollectionType"),
                 is_root,
             })
         }
@@ -383,7 +383,7 @@ pub mod psi_pi {
                 state: Box::new(
                     quick_xml_serialize::BibliographicReferenceTypeSerializerState::Init__,
                 ),
-                name: name.unwrap_or("psi-pi:BibliographicReferenceType"),
+                name: name.unwrap_or("BibliographicReferenceType"),
                 is_root,
             })
         }
@@ -405,7 +405,7 @@ pub mod psi_pi {
             Ok(quick_xml_serialize::CvListTypeSerializer {
                 value: self,
                 state: Box::new(quick_xml_serialize::CvListTypeSerializerState::Init__),
-                name: name.unwrap_or("psi-pi:CVListType"),
+                name: name.unwrap_or("CVListType"),
                 is_root,
             })
         }
@@ -433,7 +433,7 @@ pub mod psi_pi {
             Ok(quick_xml_serialize::CvParamTypeSerializer {
                 value: self,
                 state: Box::new(quick_xml_serialize::CvParamTypeSerializerState::Init__),
-                name: name.unwrap_or("psi-pi:CVParamType"),
+                name: name.unwrap_or("CVParamType"),
                 is_root,
             })
         }
@@ -456,7 +456,7 @@ pub mod psi_pi {
             Ok(quick_xml_serialize::ContactRoleTypeSerializer {
                 value: self,
                 state: Box::new(quick_xml_serialize::ContactRoleTypeSerializerState::Init__),
-                name: name.unwrap_or("psi-pi:ContactRoleType"),
+                name: name.unwrap_or("ContactRoleType"),
                 is_root,
             })
         }
@@ -492,7 +492,7 @@ pub mod psi_pi {
             Ok(quick_xml_serialize::DbSequenceTypeSerializer {
                 value: self,
                 state: Box::new(quick_xml_serialize::DbSequenceTypeSerializerState::Init__),
-                name: name.unwrap_or("psi-pi:DBSequenceType"),
+                name: name.unwrap_or("DBSequenceType"),
                 is_root,
             })
         }
@@ -530,7 +530,7 @@ pub mod psi_pi {
             Ok(quick_xml_serialize::DataCollectionTypeSerializer {
                 value: self,
                 state: Box::new(quick_xml_serialize::DataCollectionTypeSerializerState::Init__),
-                name: name.unwrap_or("psi-pi:DataCollectionType"),
+                name: name.unwrap_or("DataCollectionType"),
                 is_root,
             })
         }
@@ -552,7 +552,7 @@ pub mod psi_pi {
             Ok(quick_xml_serialize::DatabaseFiltersTypeSerializer {
                 value: self,
                 state: Box::new(quick_xml_serialize::DatabaseFiltersTypeSerializerState::Init__),
-                name: name.unwrap_or("psi-pi:DatabaseFiltersType"),
+                name: name.unwrap_or("DatabaseFiltersType"),
                 is_root,
             })
         }
@@ -577,7 +577,7 @@ pub mod psi_pi {
                 state: Box::new(
                     quick_xml_serialize::DatabaseTranslationTypeSerializerState::Init__,
                 ),
-                name: name.unwrap_or("psi-pi:DatabaseTranslationType"),
+                name: name.unwrap_or("DatabaseTranslationType"),
                 is_root,
             })
         }
@@ -607,7 +607,7 @@ pub mod psi_pi {
             Ok(quick_xml_serialize::EnzymeTypeSerializer {
                 value: self,
                 state: Box::new(quick_xml_serialize::EnzymeTypeSerializerState::Init__),
-                name: name.unwrap_or("psi-pi:EnzymeType"),
+                name: name.unwrap_or("EnzymeType"),
                 is_root,
             })
         }
@@ -630,7 +630,7 @@ pub mod psi_pi {
             Ok(quick_xml_serialize::EnzymesTypeSerializer {
                 value: self,
                 state: Box::new(quick_xml_serialize::EnzymesTypeSerializerState::Init__),
-                name: name.unwrap_or("psi-pi:EnzymesType"),
+                name: name.unwrap_or("EnzymesType"),
                 is_root,
             })
         }
@@ -656,7 +656,7 @@ pub mod psi_pi {
             Ok(quick_xml_serialize::ExternalDataTypeSerializer {
                 value: self,
                 state: Box::new(quick_xml_serialize::ExternalDataTypeSerializerState::Init__),
-                name: name.unwrap_or("psi-pi:ExternalDataType"),
+                name: name.unwrap_or("ExternalDataType"),
                 is_root,
             })
         }
@@ -678,7 +678,7 @@ pub mod psi_pi {
             Ok(quick_xml_serialize::FileFormatTypeSerializer {
                 value: self,
                 state: Box::new(quick_xml_serialize::FileFormatTypeSerializerState::Init__),
-                name: name.unwrap_or("psi-pi:FileFormatType"),
+                name: name.unwrap_or("FileFormatType"),
                 is_root,
             })
         }
@@ -702,7 +702,7 @@ pub mod psi_pi {
             Ok(quick_xml_serialize::FilterTypeSerializer {
                 value: self,
                 state: Box::new(quick_xml_serialize::FilterTypeSerializerState::Init__),
-                name: name.unwrap_or("psi-pi:FilterType"),
+                name: name.unwrap_or("FilterType"),
                 is_root,
             })
         }
@@ -725,7 +725,7 @@ pub mod psi_pi {
             Ok(quick_xml_serialize::FragmentArrayTypeSerializer {
                 value: self,
                 state: Box::new(quick_xml_serialize::FragmentArrayTypeSerializerState::Init__),
-                name: name.unwrap_or("psi-pi:FragmentArrayType"),
+                name: name.unwrap_or("FragmentArrayType"),
                 is_root,
             })
         }
@@ -747,7 +747,7 @@ pub mod psi_pi {
             Ok(quick_xml_serialize::FragmentationTableTypeSerializer {
                 value: self,
                 state: Box::new(quick_xml_serialize::FragmentationTableTypeSerializerState::Init__),
-                name: name.unwrap_or("psi-pi:FragmentationTableType"),
+                name: name.unwrap_or("FragmentationTableType"),
                 is_root,
             })
         }
@@ -769,7 +769,7 @@ pub mod psi_pi {
             Ok(quick_xml_serialize::FragmentationTypeSerializer {
                 value: self,
                 state: Box::new(quick_xml_serialize::FragmentationTypeSerializerState::Init__),
-                name: name.unwrap_or("psi-pi:FragmentationType"),
+                name: name.unwrap_or("FragmentationType"),
                 is_root,
             })
         }
@@ -792,7 +792,7 @@ pub mod psi_pi {
             Ok(quick_xml_serialize::IdentifiableTypeSerializer {
                 value: self,
                 state: Box::new(quick_xml_serialize::IdentifiableTypeSerializerState::Init__),
-                name: name.unwrap_or("psi-pi:IdentifiableType"),
+                name: name.unwrap_or("IdentifiableType"),
                 is_root,
             })
         }
@@ -814,7 +814,7 @@ pub mod psi_pi {
             Ok(quick_xml_serialize::InputSpectraTypeSerializer {
                 value: self,
                 state: Box::new(quick_xml_serialize::InputSpectraTypeSerializerState::Init__),
-                name: name.unwrap_or("psi-pi:InputSpectraType"),
+                name: name.unwrap_or("InputSpectraType"),
                 is_root,
             })
         }
@@ -833,7 +833,7 @@ pub mod psi_pi {
             name: Option<&'ser str>,
             is_root: bool,
         ) -> Result<Self::Serializer<'ser>, Error> {
-            Ok(quick_xml_serialize::InputSpectrumIdentificationsTypeSerializer { value: self, state: Box::new(quick_xml_serialize::InputSpectrumIdentificationsTypeSerializerState::Init__), name: name.unwrap_or("psi-pi:InputSpectrumIdentificationsType"), is_root })
+            Ok(quick_xml_serialize::InputSpectrumIdentificationsTypeSerializer { value: self, state: Box::new(quick_xml_serialize::InputSpectrumIdentificationsTypeSerializerState::Init__), name: name.unwrap_or("InputSpectrumIdentificationsType"), is_root })
         }
     }
     #[derive(Debug)]
@@ -855,7 +855,7 @@ pub mod psi_pi {
             Ok(quick_xml_serialize::InputsTypeSerializer {
                 value: self,
                 state: Box::new(quick_xml_serialize::InputsTypeSerializerState::Init__),
-                name: name.unwrap_or("psi-pi:InputsType"),
+                name: name.unwrap_or("InputsType"),
                 is_root,
             })
         }
@@ -881,7 +881,7 @@ pub mod psi_pi {
             Ok(quick_xml_serialize::IonTypeTypeSerializer {
                 value: self,
                 state: Box::new(quick_xml_serialize::IonTypeTypeSerializerState::Init__),
-                name: name.unwrap_or("psi-pi:IonTypeType"),
+                name: name.unwrap_or("IonTypeType"),
                 is_root,
             })
         }
@@ -916,7 +916,7 @@ pub mod psi_pi {
             Ok(quick_xml_serialize::MassTableTypeSerializer {
                 value: self,
                 state: Box::new(quick_xml_serialize::MassTableTypeSerializerState::Init__),
-                name: name.unwrap_or("psi-pi:MassTableType"),
+                name: name.unwrap_or("MassTableType"),
                 is_root,
             })
         }
@@ -955,7 +955,7 @@ pub mod psi_pi {
             Ok(quick_xml_serialize::MeasureTypeSerializer {
                 value: self,
                 state: Box::new(quick_xml_serialize::MeasureTypeSerializerState::Init__),
-                name: name.unwrap_or("psi-pi:MeasureType"),
+                name: name.unwrap_or("MeasureType"),
                 is_root,
             })
         }
@@ -977,7 +977,7 @@ pub mod psi_pi {
             Ok(quick_xml_serialize::ModificationParamsTypeSerializer {
                 value: self,
                 state: Box::new(quick_xml_serialize::ModificationParamsTypeSerializerState::Init__),
-                name: name.unwrap_or("psi-pi:ModificationParamsType"),
+                name: name.unwrap_or("ModificationParamsType"),
                 is_root,
             })
         }
@@ -1003,7 +1003,7 @@ pub mod psi_pi {
             Ok(quick_xml_serialize::ModificationTypeSerializer {
                 value: self,
                 state: Box::new(quick_xml_serialize::ModificationTypeSerializerState::Init__),
-                name: name.unwrap_or("psi-pi:ModificationType"),
+                name: name.unwrap_or("ModificationType"),
                 is_root,
             })
         }
@@ -1040,7 +1040,7 @@ pub mod psi_pi {
             Ok(quick_xml_serialize::MzIdentMlTypeSerializer {
                 value: self,
                 state: Box::new(quick_xml_serialize::MzIdentMlTypeSerializerState::Init__),
-                name: name.unwrap_or("psi-pi:MzIdentMLType"),
+                name: name.unwrap_or("MzIdentMLType"),
                 is_root,
             })
         }
@@ -1073,7 +1073,7 @@ pub mod psi_pi {
             Ok(quick_xml_serialize::OrganizationTypeSerializer {
                 value: self,
                 state: Box::new(quick_xml_serialize::OrganizationTypeSerializerState::Init__),
-                name: name.unwrap_or("psi-pi:OrganizationType"),
+                name: name.unwrap_or("OrganizationType"),
                 is_root,
             })
         }
@@ -1120,7 +1120,7 @@ pub mod psi_pi {
             Ok(quick_xml_serialize::ParamListTypeSerializer {
                 value: self,
                 state: Box::new(quick_xml_serialize::ParamListTypeSerializerState::Init__),
-                name: name.unwrap_or("psi-pi:ParamListType"),
+                name: name.unwrap_or("ParamListType"),
                 is_root,
             })
         }
@@ -1158,7 +1158,7 @@ pub mod psi_pi {
             Ok(quick_xml_serialize::ParamTypeSerializer {
                 value: self,
                 state: Box::new(quick_xml_serialize::ParamTypeSerializerState::Init__),
-                name: name.unwrap_or("psi-pi:ParamType"),
+                name: name.unwrap_or("ParamType"),
                 is_root,
             })
         }
@@ -1181,7 +1181,7 @@ pub mod psi_pi {
             Ok(quick_xml_serialize::PeptideEvidenceRefTypeSerializer {
                 value: self,
                 state: Box::new(quick_xml_serialize::PeptideEvidenceRefTypeSerializerState::Init__),
-                name: name.unwrap_or("psi-pi:PeptideEvidenceRefType"),
+                name: name.unwrap_or("PeptideEvidenceRefType"),
                 is_root,
             })
         }
@@ -1228,7 +1228,7 @@ pub mod psi_pi {
             Ok(quick_xml_serialize::PeptideEvidenceTypeSerializer {
                 value: self,
                 state: Box::new(quick_xml_serialize::PeptideEvidenceTypeSerializerState::Init__),
-                name: name.unwrap_or("psi-pi:PeptideEvidenceType"),
+                name: name.unwrap_or("PeptideEvidenceType"),
                 is_root,
             })
         }
@@ -1268,7 +1268,7 @@ pub mod psi_pi {
             Ok(quick_xml_serialize::PeptideHypothesisTypeSerializer {
                 value: self,
                 state: Box::new(quick_xml_serialize::PeptideHypothesisTypeSerializerState::Init__),
-                name: name.unwrap_or("psi-pi:PeptideHypothesisType"),
+                name: name.unwrap_or("PeptideHypothesisType"),
                 is_root,
             })
         }
@@ -1303,7 +1303,7 @@ pub mod psi_pi {
             Ok(quick_xml_serialize::PeptideTypeSerializer {
                 value: self,
                 state: Box::new(quick_xml_serialize::PeptideTypeSerializerState::Init__),
-                name: name.unwrap_or("psi-pi:PeptideType"),
+                name: name.unwrap_or("PeptideType"),
                 is_root,
             })
         }
@@ -1354,7 +1354,7 @@ pub mod psi_pi {
             Ok(quick_xml_serialize::PersonTypeSerializer {
                 value: self,
                 state: Box::new(quick_xml_serialize::PersonTypeSerializerState::Init__),
-                name: name.unwrap_or("psi-pi:PersonType"),
+                name: name.unwrap_or("PersonType"),
                 is_root,
             })
         }
@@ -1404,7 +1404,7 @@ pub mod psi_pi {
                 state: Box::new(
                     quick_xml_serialize::ProteinAmbiguityGroupTypeSerializerState::Init__,
                 ),
-                name: name.unwrap_or("psi-pi:ProteinAmbiguityGroupType"),
+                name: name.unwrap_or("ProteinAmbiguityGroupType"),
                 is_root,
             })
         }
@@ -1455,7 +1455,7 @@ pub mod psi_pi {
                     state: Box::new(
                         quick_xml_serialize::ProteinDetectionHypothesisTypeSerializerState::Init__,
                     ),
-                    name: name.unwrap_or("psi-pi:ProteinDetectionHypothesisType"),
+                    name: name.unwrap_or("ProteinDetectionHypothesisType"),
                     is_root,
                 },
             )
@@ -1504,7 +1504,7 @@ pub mod psi_pi {
                 state: Box::new(
                     quick_xml_serialize::ProteinDetectionListTypeSerializerState::Init__,
                 ),
-                name: name.unwrap_or("psi-pi:ProteinDetectionListType"),
+                name: name.unwrap_or("ProteinDetectionListType"),
                 is_root,
             })
         }
@@ -1552,7 +1552,7 @@ pub mod psi_pi {
                     state: Box::new(
                         quick_xml_serialize::ProteinDetectionProtocolTypeSerializerState::Init__,
                     ),
-                    name: name.unwrap_or("psi-pi:ProteinDetectionProtocolType"),
+                    name: name.unwrap_or("ProteinDetectionProtocolType"),
                     is_root,
                 },
             )
@@ -1580,7 +1580,7 @@ pub mod psi_pi {
             Ok(quick_xml_serialize::ProteinDetectionTypeSerializer {
                 value: self,
                 state: Box::new(quick_xml_serialize::ProteinDetectionTypeSerializerState::Init__),
-                name: name.unwrap_or("psi-pi:ProteinDetectionType"),
+                name: name.unwrap_or("ProteinDetectionType"),
                 is_root,
             })
         }
@@ -1606,7 +1606,7 @@ pub mod psi_pi {
                 state: Box::new(
                     quick_xml_serialize::ProtocolApplicationTypeSerializerState::Init__,
                 ),
-                name: name.unwrap_or("psi-pi:ProtocolApplicationType"),
+                name: name.unwrap_or("ProtocolApplicationType"),
                 is_root,
             })
         }
@@ -1631,7 +1631,7 @@ pub mod psi_pi {
             Ok(quick_xml_serialize::ProviderTypeSerializer {
                 value: self,
                 state: Box::new(quick_xml_serialize::ProviderTypeSerializerState::Init__),
-                name: name.unwrap_or("psi-pi:ProviderType"),
+                name: name.unwrap_or("ProviderType"),
                 is_root,
             })
         }
@@ -1654,7 +1654,7 @@ pub mod psi_pi {
             Ok(quick_xml_serialize::ResidueTypeSerializer {
                 value: self,
                 state: Box::new(quick_xml_serialize::ResidueTypeSerializerState::Init__),
-                name: name.unwrap_or("psi-pi:ResidueType"),
+                name: name.unwrap_or("ResidueType"),
                 is_root,
             })
         }
@@ -1676,7 +1676,7 @@ pub mod psi_pi {
             Ok(quick_xml_serialize::RoleTypeSerializer {
                 value: self,
                 state: Box::new(quick_xml_serialize::RoleTypeSerializerState::Init__),
-                name: name.unwrap_or("psi-pi:RoleType"),
+                name: name.unwrap_or("RoleType"),
                 is_root,
             })
         }
@@ -1710,7 +1710,7 @@ pub mod psi_pi {
             Ok(quick_xml_serialize::SampleTypeSerializer {
                 value: self,
                 state: Box::new(quick_xml_serialize::SampleTypeSerializerState::Init__),
-                name: name.unwrap_or("psi-pi:SampleType"),
+                name: name.unwrap_or("SampleType"),
                 is_root,
             })
         }
@@ -1747,7 +1747,7 @@ pub mod psi_pi {
             Ok(quick_xml_serialize::SearchDatabaseRefTypeSerializer {
                 value: self,
                 state: Box::new(quick_xml_serialize::SearchDatabaseRefTypeSerializerState::Init__),
-                name: name.unwrap_or("psi-pi:SearchDatabaseRefType"),
+                name: name.unwrap_or("SearchDatabaseRefType"),
                 is_root,
             })
         }
@@ -1779,7 +1779,7 @@ pub mod psi_pi {
             Ok(quick_xml_serialize::SearchDatabaseTypeSerializer {
                 value: self,
                 state: Box::new(quick_xml_serialize::SearchDatabaseTypeSerializerState::Init__),
-                name: name.unwrap_or("psi-pi:SearchDatabaseType"),
+                name: name.unwrap_or("SearchDatabaseType"),
                 is_root,
             })
         }
@@ -1805,7 +1805,7 @@ pub mod psi_pi {
             Ok(quick_xml_serialize::SearchModificationTypeSerializer {
                 value: self,
                 state: Box::new(quick_xml_serialize::SearchModificationTypeSerializerState::Init__),
-                name: name.unwrap_or("psi-pi:SearchModificationType"),
+                name: name.unwrap_or("SearchModificationType"),
                 is_root,
             })
         }
@@ -1829,7 +1829,7 @@ pub mod psi_pi {
             Ok(quick_xml_serialize::SequenceCollectionTypeSerializer {
                 value: self,
                 state: Box::new(quick_xml_serialize::SequenceCollectionTypeSerializerState::Init__),
-                name: name.unwrap_or("psi-pi:SequenceCollectionType"),
+                name: name.unwrap_or("SequenceCollectionType"),
                 is_root,
             })
         }
@@ -1864,7 +1864,7 @@ pub mod psi_pi {
             Ok(quick_xml_serialize::SourceFileTypeSerializer {
                 value: self,
                 state: Box::new(quick_xml_serialize::SourceFileTypeSerializerState::Init__),
-                name: name.unwrap_or("psi-pi:SourceFileType"),
+                name: name.unwrap_or("SourceFileType"),
                 is_root,
             })
         }
@@ -1901,7 +1901,7 @@ pub mod psi_pi {
             Ok(quick_xml_serialize::SpecificityRulesTypeSerializer {
                 value: self,
                 state: Box::new(quick_xml_serialize::SpecificityRulesTypeSerializerState::Init__),
-                name: name.unwrap_or("psi-pi:SpecificityRulesType"),
+                name: name.unwrap_or("SpecificityRulesType"),
                 is_root,
             })
         }
@@ -1928,7 +1928,7 @@ pub mod psi_pi {
             Ok(quick_xml_serialize::SpectraDataTypeSerializer {
                 value: self,
                 state: Box::new(quick_xml_serialize::SpectraDataTypeSerializerState::Init__),
-                name: name.unwrap_or("psi-pi:SpectraDataType"),
+                name: name.unwrap_or("SpectraDataType"),
                 is_root,
             })
         }
@@ -1950,7 +1950,7 @@ pub mod psi_pi {
             Ok(quick_xml_serialize::SpectrumIdFormatTypeSerializer {
                 value: self,
                 state: Box::new(quick_xml_serialize::SpectrumIdFormatTypeSerializerState::Init__),
-                name: name.unwrap_or("psi-pi:SpectrumIDFormatType"),
+                name: name.unwrap_or("SpectrumIDFormatType"),
                 is_root,
             })
         }
@@ -1969,7 +1969,7 @@ pub mod psi_pi {
             name: Option<&'ser str>,
             is_root: bool,
         ) -> Result<Self::Serializer<'ser>, Error> {
-            Ok(quick_xml_serialize::SpectrumIdentificationItemRefTypeSerializer { value: self, state: Box::new(quick_xml_serialize::SpectrumIdentificationItemRefTypeSerializerState::Init__), name: name.unwrap_or("psi-pi:SpectrumIdentificationItemRefType"), is_root })
+            Ok(quick_xml_serialize::SpectrumIdentificationItemRefTypeSerializer { value: self, state: Box::new(quick_xml_serialize::SpectrumIdentificationItemRefTypeSerializerState::Init__), name: name.unwrap_or("SpectrumIdentificationItemRefType"), is_root })
         }
     }
     #[derive(Debug)]
@@ -2014,7 +2014,7 @@ pub mod psi_pi {
                     state: Box::new(
                         quick_xml_serialize::SpectrumIdentificationItemTypeSerializerState::Init__,
                     ),
-                    name: name.unwrap_or("psi-pi:SpectrumIdentificationItemType"),
+                    name: name.unwrap_or("SpectrumIdentificationItemType"),
                     is_root,
                 },
             )
@@ -2067,7 +2067,7 @@ pub mod psi_pi {
                     state: Box::new(
                         quick_xml_serialize::SpectrumIdentificationListTypeSerializerState::Init__,
                     ),
-                    name: name.unwrap_or("psi-pi:SpectrumIdentificationListType"),
+                    name: name.unwrap_or("SpectrumIdentificationListType"),
                     is_root,
                 },
             )
@@ -2112,7 +2112,7 @@ pub mod psi_pi {
             name: Option<&'ser str>,
             is_root: bool,
         ) -> Result<Self::Serializer<'ser>, Error> {
-            Ok(quick_xml_serialize::SpectrumIdentificationProtocolTypeSerializer { value: self, state: Box::new(quick_xml_serialize::SpectrumIdentificationProtocolTypeSerializerState::Init__), name: name.unwrap_or("psi-pi:SpectrumIdentificationProtocolType"), is_root })
+            Ok(quick_xml_serialize::SpectrumIdentificationProtocolTypeSerializer { value: self, state: Box::new(quick_xml_serialize::SpectrumIdentificationProtocolTypeSerializerState::Init__), name: name.unwrap_or("SpectrumIdentificationProtocolType"), is_root })
         }
     }
     #[derive(Debug)]
@@ -2143,7 +2143,7 @@ pub mod psi_pi {
             name: Option<&'ser str>,
             is_root: bool,
         ) -> Result<Self::Serializer<'ser>, Error> {
-            Ok(quick_xml_serialize::SpectrumIdentificationResultTypeSerializer { value: self, state: Box::new(quick_xml_serialize::SpectrumIdentificationResultTypeSerializerState::Init__), name: name.unwrap_or("psi-pi:SpectrumIdentificationResultType"), is_root })
+            Ok(quick_xml_serialize::SpectrumIdentificationResultTypeSerializer { value: self, state: Box::new(quick_xml_serialize::SpectrumIdentificationResultTypeSerializerState::Init__), name: name.unwrap_or("SpectrumIdentificationResultType"), is_root })
         }
     }
     impl WithSerializer for SpectrumIdentificationResultTypeContent {
@@ -2184,7 +2184,7 @@ pub mod psi_pi {
                 state: Box::new(
                     quick_xml_serialize::SpectrumIdentificationTypeSerializerState::Init__,
                 ),
-                name: name.unwrap_or("psi-pi:SpectrumIdentificationType"),
+                name: name.unwrap_or("SpectrumIdentificationType"),
                 is_root,
             })
         }
@@ -2206,7 +2206,7 @@ pub mod psi_pi {
             Ok(quick_xml_serialize::SubSampleTypeSerializer {
                 value: self,
                 state: Box::new(quick_xml_serialize::SubSampleTypeSerializerState::Init__),
-                name: name.unwrap_or("psi-pi:SubSampleType"),
+                name: name.unwrap_or("SubSampleType"),
                 is_root,
             })
         }
@@ -2235,7 +2235,7 @@ pub mod psi_pi {
                     state: Box::new(
                         quick_xml_serialize::SubstitutionModificationTypeSerializerState::Init__,
                     ),
-                    name: name.unwrap_or("psi-pi:SubstitutionModificationType"),
+                    name: name.unwrap_or("SubstitutionModificationType"),
                     is_root,
                 },
             )
@@ -2258,7 +2258,7 @@ pub mod psi_pi {
             Ok(quick_xml_serialize::ToleranceTypeSerializer {
                 value: self,
                 state: Box::new(quick_xml_serialize::ToleranceTypeSerializerState::Init__),
-                name: name.unwrap_or("psi-pi:ToleranceType"),
+                name: name.unwrap_or("ToleranceType"),
                 is_root,
             })
         }
@@ -2282,7 +2282,7 @@ pub mod psi_pi {
             Ok(quick_xml_serialize::TranslationTableTypeSerializer {
                 value: self,
                 state: Box::new(quick_xml_serialize::TranslationTableTypeSerializerState::Init__),
-                name: name.unwrap_or("psi-pi:TranslationTableType"),
+                name: name.unwrap_or("TranslationTableType"),
                 is_root,
             })
         }
@@ -2309,7 +2309,7 @@ pub mod psi_pi {
             Ok(quick_xml_serialize::UserParamTypeSerializer {
                 value: self,
                 state: Box::new(quick_xml_serialize::UserParamTypeSerializerState::Init__),
-                name: name.unwrap_or("psi-pi:UserParamType"),
+                name: name.unwrap_or("UserParamType"),
                 is_root,
             })
         }
@@ -2375,7 +2375,7 @@ pub mod psi_pi {
             Ok(quick_xml_serialize::CvTypeSerializer {
                 value: self,
                 state: Box::new(quick_xml_serialize::CvTypeSerializerState::Init__),
-                name: name.unwrap_or("psi-pi:cvType"),
+                name: name.unwrap_or("cvType"),
                 is_root,
             })
         }
@@ -31590,12 +31590,12 @@ pub mod psi_pi {
                             let mut bytes = BytesStart::new(self.name);
                             if self.is_root {
                                 bytes.push_attribute((
-                                    &b"xmlns:psi-pi"[..],
+                                    &b"xmlns"[..],
                                     &super::super::NS_PSI_PI[..],
                                 ));
                             }
-                            write_attrib(&mut bytes, "psi-pi:id", &self.value.id)?;
-                            write_attrib_opt(&mut bytes, "psi-pi:name", &self.value.name)?;
+                            write_attrib(&mut bytes, "id", &self.value.id)?;
+                            write_attrib_opt(&mut bytes, "name", &self.value.name)?;
                             return Ok(Some(Event::Start(bytes)));
                         }
                         AbstractContactTypeSerializerState::Content__(x) => {
@@ -31647,12 +31647,12 @@ pub mod psi_pi {
                         AbstractContactTypeContentSerializerState::Init__ => match self.value {
                             super::AbstractContactTypeContent::CvParam(x) => {
                                 *self.state = AbstractContactTypeContentSerializerState::CvParam(
-                                    WithSerializer::serializer(x, Some("psi-pi:cvParam"), false)?,
+                                    WithSerializer::serializer(x, Some("cvParam"), false)?,
                                 )
                             }
                             super::AbstractContactTypeContent::UserParam(x) => {
                                 *self.state = AbstractContactTypeContentSerializerState::UserParam(
-                                    WithSerializer::serializer(x, Some("psi-pi:userParam"), false)?,
+                                    WithSerializer::serializer(x, Some("userParam"), false)?,
                                 )
                             }
                         },
@@ -31713,21 +31713,21 @@ pub mod psi_pi {
                             let mut bytes = BytesStart::new(self.name);
                             if self.is_root {
                                 bytes.push_attribute((
-                                    &b"xmlns:psi-pi"[..],
+                                    &b"xmlns"[..],
                                     &super::super::NS_PSI_PI[..],
                                 ));
                             }
-                            write_attrib(&mut bytes, "psi-pi:name", &self.value.name)?;
-                            write_attrib_opt(&mut bytes, "psi-pi:value", &self.value.value)?;
+                            write_attrib(&mut bytes, "name", &self.value.name)?;
+                            write_attrib_opt(&mut bytes, "value", &self.value.value)?;
                             write_attrib_opt(
                                 &mut bytes,
-                                "psi-pi:unitAccession",
+                                "unitAccession",
                                 &self.value.unit_accession,
                             )?;
-                            write_attrib_opt(&mut bytes, "psi-pi:unitName", &self.value.unit_name)?;
+                            write_attrib_opt(&mut bytes, "unitName", &self.value.unit_name)?;
                             write_attrib_opt(
                                 &mut bytes,
-                                "psi-pi:unitCvRef",
+                                "unitCvRef",
                                 &self.value.unit_cv_ref,
                             )?;
                             return Ok(Some(Event::Empty(bytes)));
@@ -31773,13 +31773,13 @@ pub mod psi_pi {
                             let mut bytes = BytesStart::new(self.name);
                             if self.is_root {
                                 bytes.push_attribute((
-                                    &b"xmlns:psi-pi"[..],
+                                    &b"xmlns"[..],
                                     &super::super::NS_PSI_PI[..],
                                 ));
                             }
                             write_attrib(
                                 &mut bytes,
-                                "psi-pi:organization_ref",
+                                "organization_ref",
                                 &self.value.organization_ref,
                             )?;
                             return Ok(Some(Event::Empty(bytes)));
@@ -31835,11 +31835,11 @@ pub mod psi_pi {
                             let mut bytes = BytesStart::new(self.name);
                             if self.is_root {
                                 bytes.push_attribute((
-                                    &b"xmlns:psi-pi"[..],
+                                    &b"xmlns"[..],
                                     &super::super::NS_PSI_PI[..],
                                 ));
                             }
-                            write_attrib(&mut bytes, "psi-pi:code", &self.value.code)?;
+                            write_attrib(&mut bytes, "code", &self.value.code)?;
                             return Ok(Some(Event::Start(bytes)));
                         }
                         AmbiguousResidueTypeSerializerState::Content__(x) => {
@@ -31891,12 +31891,12 @@ pub mod psi_pi {
                         AmbiguousResidueTypeContentSerializerState::Init__ => match self.value {
                             super::AmbiguousResidueTypeContent::CvParam(x) => {
                                 *self.state = AmbiguousResidueTypeContentSerializerState::CvParam(
-                                    WithSerializer::serializer(x, Some("psi-pi:cvParam"), false)?,
+                                    WithSerializer::serializer(x, Some("cvParam"), false)?,
                                 )
                             }
                             super::AmbiguousResidueTypeContent::UserParam(x) => {
                                 *self.state = AmbiguousResidueTypeContentSerializerState::UserParam(
-                                    WithSerializer::serializer(x, Some("psi-pi:userParam"), false)?,
+                                    WithSerializer::serializer(x, Some("userParam"), false)?,
                                 )
                             }
                         },
@@ -31972,14 +31972,14 @@ pub mod psi_pi {
                                 AnalysisCollectionTypeSerializerState::SpectrumIdentification(
                                     IterSerializer::new(
                                         &self.value.spectrum_identification[..],
-                                        Some("psi-pi:SpectrumIdentification"),
+                                        Some("SpectrumIdentification"),
                                         false,
                                     ),
                                 );
                             let mut bytes = BytesStart::new(self.name);
                             if self.is_root {
                                 bytes.push_attribute((
-                                    &b"xmlns:psi-pi"[..],
+                                    &b"xmlns"[..],
                                     &super::super::NS_PSI_PI[..],
                                 ));
                             }
@@ -31993,7 +31993,7 @@ pub mod psi_pi {
                                         AnalysisCollectionTypeSerializerState::ProteinDetection(
                                             IterSerializer::new(
                                                 self.value.protein_detection.as_ref(),
-                                                Some("psi-pi:ProteinDetection"),
+                                                Some("ProteinDetection"),
                                                 false,
                                             ),
                                         )
@@ -32066,14 +32066,14 @@ pub mod psi_pi {
                                 AnalysisDataTypeSerializerState::SpectrumIdentificationList(
                                     IterSerializer::new(
                                         &self.value.spectrum_identification_list[..],
-                                        Some("psi-pi:SpectrumIdentificationList"),
+                                        Some("SpectrumIdentificationList"),
                                         false,
                                     ),
                                 );
                             let mut bytes = BytesStart::new(self.name);
                             if self.is_root {
                                 bytes.push_attribute((
-                                    &b"xmlns:psi-pi"[..],
+                                    &b"xmlns"[..],
                                     &super::super::NS_PSI_PI[..],
                                 ));
                             }
@@ -32087,7 +32087,7 @@ pub mod psi_pi {
                                         AnalysisDataTypeSerializerState::ProteinDetectionList(
                                             IterSerializer::new(
                                                 self.value.protein_detection_list.as_ref(),
-                                                Some("psi-pi:ProteinDetectionList"),
+                                                Some("ProteinDetectionList"),
                                                 false,
                                             ),
                                         )
@@ -32156,14 +32156,14 @@ pub mod psi_pi {
                 loop {
                     match &mut *self.state {
                     AnalysisProtocolCollectionTypeSerializerState::Init__ => {
-                        *self.state = AnalysisProtocolCollectionTypeSerializerState::SpectrumIdentificationProtocol(IterSerializer::new(&self.value.spectrum_identification_protocol[..], Some("psi-pi:SpectrumIdentificationProtocol"), false));
+                        *self.state = AnalysisProtocolCollectionTypeSerializerState::SpectrumIdentificationProtocol(IterSerializer::new(&self.value.spectrum_identification_protocol[..], Some("SpectrumIdentificationProtocol"), false));
                         let mut bytes = BytesStart::new(self.name);
-                        if self.is_root { bytes.push_attribute((&b"xmlns:psi-pi"[..], &super::super::NS_PSI_PI[..])); }
+                        if self.is_root { bytes.push_attribute((&b"xmlns"[..], &super::super::NS_PSI_PI[..])); }
                         return Ok(Some(Event::Start(bytes)));
                     }
                     AnalysisProtocolCollectionTypeSerializerState::SpectrumIdentificationProtocol(x) => match x.next().transpose()? {
                         Some(event) => return Ok(Some(event)),
-                        None => *self.state = AnalysisProtocolCollectionTypeSerializerState::ProteinDetectionProtocol(IterSerializer::new(self.value.protein_detection_protocol.as_ref(), Some("psi-pi:ProteinDetectionProtocol"), false)),
+                        None => *self.state = AnalysisProtocolCollectionTypeSerializerState::ProteinDetectionProtocol(IterSerializer::new(self.value.protein_detection_protocol.as_ref(), Some("ProteinDetectionProtocol"), false)),
                     }
                     AnalysisProtocolCollectionTypeSerializerState::ProteinDetectionProtocol(x) => match x.next().transpose()? {
                         Some(event) => return Ok(Some(event)),
@@ -32215,14 +32215,14 @@ pub mod psi_pi {
                             *self.state = AnalysisSampleCollectionTypeSerializerState::Sample(
                                 IterSerializer::new(
                                     &self.value.sample[..],
-                                    Some("psi-pi:Sample"),
+                                    Some("Sample"),
                                     false,
                                 ),
                             );
                             let mut bytes = BytesStart::new(self.name);
                             if self.is_root {
                                 bytes.push_attribute((
-                                    &b"xmlns:psi-pi"[..],
+                                    &b"xmlns"[..],
                                     &super::super::NS_PSI_PI[..],
                                 ));
                             }
@@ -32288,14 +32288,14 @@ pub mod psi_pi {
                             *self.state = AnalysisSoftwareListTypeSerializerState::AnalysisSoftware(
                                 IterSerializer::new(
                                     &self.value.analysis_software[..],
-                                    Some("psi-pi:AnalysisSoftware"),
+                                    Some("AnalysisSoftware"),
                                     false,
                                 ),
                             );
                             let mut bytes = BytesStart::new(self.name);
                             if self.is_root {
                                 bytes.push_attribute((
-                                    &b"xmlns:psi-pi"[..],
+                                    &b"xmlns"[..],
                                     &super::super::NS_PSI_PI[..],
                                 ));
                             }
@@ -32358,21 +32358,21 @@ pub mod psi_pi {
                             *self.state = AnalysisSoftwareTypeSerializerState::ContactRole(
                                 IterSerializer::new(
                                     self.value.contact_role.as_ref(),
-                                    Some("psi-pi:ContactRole"),
+                                    Some("ContactRole"),
                                     false,
                                 ),
                             );
                             let mut bytes = BytesStart::new(self.name);
                             if self.is_root {
                                 bytes.push_attribute((
-                                    &b"xmlns:psi-pi"[..],
+                                    &b"xmlns"[..],
                                     &super::super::NS_PSI_PI[..],
                                 ));
                             }
-                            write_attrib(&mut bytes, "psi-pi:id", &self.value.id)?;
-                            write_attrib_opt(&mut bytes, "psi-pi:name", &self.value.name)?;
-                            write_attrib_opt(&mut bytes, "psi-pi:version", &self.value.version)?;
-                            write_attrib_opt(&mut bytes, "psi-pi:uri", &self.value.uri)?;
+                            write_attrib(&mut bytes, "id", &self.value.id)?;
+                            write_attrib_opt(&mut bytes, "name", &self.value.name)?;
+                            write_attrib_opt(&mut bytes, "version", &self.value.version)?;
+                            write_attrib_opt(&mut bytes, "uri", &self.value.uri)?;
                             return Ok(Some(Event::Start(bytes)));
                         }
                         AnalysisSoftwareTypeSerializerState::ContactRole(x) => {
@@ -32382,7 +32382,7 @@ pub mod psi_pi {
                                     *self.state = AnalysisSoftwareTypeSerializerState::SoftwareName(
                                         WithSerializer::serializer(
                                             &self.value.software_name,
-                                            Some("psi-pi:SoftwareName"),
+                                            Some("SoftwareName"),
                                             false,
                                         )?,
                                     )
@@ -32397,7 +32397,7 @@ pub mod psi_pi {
                                         AnalysisSoftwareTypeSerializerState::Customizations(
                                             IterSerializer::new(
                                                 self.value.customizations.as_ref(),
-                                                Some("psi-pi:Customizations"),
+                                                Some("Customizations"),
                                                 false,
                                             ),
                                         )
@@ -32465,7 +32465,7 @@ pub mod psi_pi {
                             let mut bytes = BytesStart::new(self.name);
                             if self.is_root {
                                 bytes.push_attribute((
-                                    &b"xmlns:psi-pi"[..],
+                                    &b"xmlns"[..],
                                     &super::super::NS_PSI_PI[..],
                                 ));
                             }
@@ -32520,7 +32520,7 @@ pub mod psi_pi {
                         AuditCollectionTypeContentSerializerState::Init__ => match self.value {
                             super::AuditCollectionTypeContent::Person(x) => {
                                 *self.state = AuditCollectionTypeContentSerializerState::Person(
-                                    WithSerializer::serializer(x, Some("psi-pi:Person"), false)?,
+                                    WithSerializer::serializer(x, Some("Person"), false)?,
                                 )
                             }
                             super::AuditCollectionTypeContent::Organization(x) => {
@@ -32528,7 +32528,7 @@ pub mod psi_pi {
                                     AuditCollectionTypeContentSerializerState::Organization(
                                         WithSerializer::serializer(
                                             x,
-                                            Some("psi-pi:Organization"),
+                                            Some("Organization"),
                                             false,
                                         )?,
                                     )
@@ -32591,30 +32591,30 @@ pub mod psi_pi {
                             let mut bytes = BytesStart::new(self.name);
                             if self.is_root {
                                 bytes.push_attribute((
-                                    &b"xmlns:psi-pi"[..],
+                                    &b"xmlns"[..],
                                     &super::super::NS_PSI_PI[..],
                                 ));
                             }
-                            write_attrib(&mut bytes, "psi-pi:id", &self.value.id)?;
-                            write_attrib_opt(&mut bytes, "psi-pi:name", &self.value.name)?;
-                            write_attrib_opt(&mut bytes, "psi-pi:authors", &self.value.authors)?;
+                            write_attrib(&mut bytes, "id", &self.value.id)?;
+                            write_attrib_opt(&mut bytes, "name", &self.value.name)?;
+                            write_attrib_opt(&mut bytes, "authors", &self.value.authors)?;
                             write_attrib_opt(
                                 &mut bytes,
-                                "psi-pi:publication",
+                                "publication",
                                 &self.value.publication,
                             )?;
                             write_attrib_opt(
                                 &mut bytes,
-                                "psi-pi:publisher",
+                                "publisher",
                                 &self.value.publisher,
                             )?;
-                            write_attrib_opt(&mut bytes, "psi-pi:editor", &self.value.editor)?;
-                            write_attrib_opt(&mut bytes, "psi-pi:year", &self.value.year)?;
-                            write_attrib_opt(&mut bytes, "psi-pi:volume", &self.value.volume)?;
-                            write_attrib_opt(&mut bytes, "psi-pi:issue", &self.value.issue)?;
-                            write_attrib_opt(&mut bytes, "psi-pi:pages", &self.value.pages)?;
-                            write_attrib_opt(&mut bytes, "psi-pi:title", &self.value.title)?;
-                            write_attrib_opt(&mut bytes, "psi-pi:doi", &self.value.doi)?;
+                            write_attrib_opt(&mut bytes, "editor", &self.value.editor)?;
+                            write_attrib_opt(&mut bytes, "year", &self.value.year)?;
+                            write_attrib_opt(&mut bytes, "volume", &self.value.volume)?;
+                            write_attrib_opt(&mut bytes, "issue", &self.value.issue)?;
+                            write_attrib_opt(&mut bytes, "pages", &self.value.pages)?;
+                            write_attrib_opt(&mut bytes, "title", &self.value.title)?;
+                            write_attrib_opt(&mut bytes, "doi", &self.value.doi)?;
                             return Ok(Some(Event::Empty(bytes)));
                         }
                         BibliographicReferenceTypeSerializerState::Done__ => return Ok(None),
@@ -32658,13 +32658,13 @@ pub mod psi_pi {
                         CvListTypeSerializerState::Init__ => {
                             *self.state = CvListTypeSerializerState::Cv(IterSerializer::new(
                                 &self.value.cv[..],
-                                Some("psi-pi:cv"),
+                                Some("cv"),
                                 false,
                             ));
                             let mut bytes = BytesStart::new(self.name);
                             if self.is_root {
                                 bytes.push_attribute((
-                                    &b"xmlns:psi-pi"[..],
+                                    &b"xmlns"[..],
                                     &super::super::NS_PSI_PI[..],
                                 ));
                             }
@@ -32719,25 +32719,25 @@ pub mod psi_pi {
                             let mut bytes = BytesStart::new(self.name);
                             if self.is_root {
                                 bytes.push_attribute((
-                                    &b"xmlns:psi-pi"[..],
+                                    &b"xmlns"[..],
                                     &super::super::NS_PSI_PI[..],
                                 ));
                             }
-                            write_attrib(&mut bytes, "psi-pi:name", &self.value.name)?;
-                            write_attrib_opt(&mut bytes, "psi-pi:value", &self.value.value)?;
+                            write_attrib(&mut bytes, "name", &self.value.name)?;
+                            write_attrib_opt(&mut bytes, "value", &self.value.value)?;
                             write_attrib_opt(
                                 &mut bytes,
-                                "psi-pi:unitAccession",
+                                "unitAccession",
                                 &self.value.unit_accession,
                             )?;
-                            write_attrib_opt(&mut bytes, "psi-pi:unitName", &self.value.unit_name)?;
+                            write_attrib_opt(&mut bytes, "unitName", &self.value.unit_name)?;
                             write_attrib_opt(
                                 &mut bytes,
-                                "psi-pi:unitCvRef",
+                                "unitCvRef",
                                 &self.value.unit_cv_ref,
                             )?;
-                            write_attrib(&mut bytes, "psi-pi:cvRef", &self.value.cv_ref)?;
-                            write_attrib(&mut bytes, "psi-pi:accession", &self.value.accession)?;
+                            write_attrib(&mut bytes, "cvRef", &self.value.cv_ref)?;
+                            write_attrib(&mut bytes, "accession", &self.value.accession)?;
                             return Ok(Some(Event::Empty(bytes)));
                         }
                         CvParamTypeSerializerState::Done__ => return Ok(None),
@@ -32782,19 +32782,19 @@ pub mod psi_pi {
                             *self.state =
                                 ContactRoleTypeSerializerState::Role(WithSerializer::serializer(
                                     &self.value.role,
-                                    Some("psi-pi:Role"),
+                                    Some("Role"),
                                     false,
                                 )?);
                             let mut bytes = BytesStart::new(self.name);
                             if self.is_root {
                                 bytes.push_attribute((
-                                    &b"xmlns:psi-pi"[..],
+                                    &b"xmlns"[..],
                                     &super::super::NS_PSI_PI[..],
                                 ));
                             }
                             write_attrib(
                                 &mut bytes,
-                                "psi-pi:contact_ref",
+                                "contact_ref",
                                 &self.value.contact_ref,
                             )?;
                             return Ok(Some(Event::Start(bytes)));
@@ -32858,19 +32858,19 @@ pub mod psi_pi {
                             let mut bytes = BytesStart::new(self.name);
                             if self.is_root {
                                 bytes.push_attribute((
-                                    &b"xmlns:psi-pi"[..],
+                                    &b"xmlns"[..],
                                     &super::super::NS_PSI_PI[..],
                                 ));
                             }
-                            write_attrib(&mut bytes, "psi-pi:id", &self.value.id)?;
-                            write_attrib_opt(&mut bytes, "psi-pi:name", &self.value.name)?;
-                            write_attrib_opt(&mut bytes, "psi-pi:length", &self.value.length)?;
+                            write_attrib(&mut bytes, "id", &self.value.id)?;
+                            write_attrib_opt(&mut bytes, "name", &self.value.name)?;
+                            write_attrib_opt(&mut bytes, "length", &self.value.length)?;
                             write_attrib(
                                 &mut bytes,
-                                "psi-pi:searchDatabase_ref",
+                                "searchDatabase_ref",
                                 &self.value.search_database_ref,
                             )?;
-                            write_attrib(&mut bytes, "psi-pi:accession", &self.value.accession)?;
+                            write_attrib(&mut bytes, "accession", &self.value.accession)?;
                             return Ok(Some(Event::Start(bytes)));
                         }
                         DbSequenceTypeSerializerState::Content__(x) => {
@@ -32923,17 +32923,17 @@ pub mod psi_pi {
                         DbSequenceTypeContentSerializerState::Init__ => match self.value {
                             super::DbSequenceTypeContent::Seq(x) => {
                                 *self.state = DbSequenceTypeContentSerializerState::Seq(
-                                    WithSerializer::serializer(x, Some("psi-pi:Seq"), false)?,
+                                    WithSerializer::serializer(x, Some("Seq"), false)?,
                                 )
                             }
                             super::DbSequenceTypeContent::CvParam(x) => {
                                 *self.state = DbSequenceTypeContentSerializerState::CvParam(
-                                    WithSerializer::serializer(x, Some("psi-pi:cvParam"), false)?,
+                                    WithSerializer::serializer(x, Some("cvParam"), false)?,
                                 )
                             }
                             super::DbSequenceTypeContent::UserParam(x) => {
                                 *self.state = DbSequenceTypeContentSerializerState::UserParam(
-                                    WithSerializer::serializer(x, Some("psi-pi:userParam"), false)?,
+                                    WithSerializer::serializer(x, Some("userParam"), false)?,
                                 )
                             }
                         },
@@ -32998,14 +32998,14 @@ pub mod psi_pi {
                             *self.state = DataCollectionTypeSerializerState::Inputs(
                                 WithSerializer::serializer(
                                     &self.value.inputs,
-                                    Some("psi-pi:Inputs"),
+                                    Some("Inputs"),
                                     false,
                                 )?,
                             );
                             let mut bytes = BytesStart::new(self.name);
                             if self.is_root {
                                 bytes.push_attribute((
-                                    &b"xmlns:psi-pi"[..],
+                                    &b"xmlns"[..],
                                     &super::super::NS_PSI_PI[..],
                                 ));
                             }
@@ -33018,7 +33018,7 @@ pub mod psi_pi {
                                     *self.state = DataCollectionTypeSerializerState::AnalysisData(
                                         WithSerializer::serializer(
                                             &self.value.analysis_data,
-                                            Some("psi-pi:AnalysisData"),
+                                            Some("AnalysisData"),
                                             false,
                                         )?,
                                     )
@@ -33077,13 +33077,13 @@ pub mod psi_pi {
                             *self.state =
                                 DatabaseFiltersTypeSerializerState::Filter(IterSerializer::new(
                                     &self.value.filter[..],
-                                    Some("psi-pi:Filter"),
+                                    Some("Filter"),
                                     false,
                                 ));
                             let mut bytes = BytesStart::new(self.name);
                             if self.is_root {
                                 bytes.push_attribute((
-                                    &b"xmlns:psi-pi"[..],
+                                    &b"xmlns"[..],
                                     &super::super::NS_PSI_PI[..],
                                 ));
                             }
@@ -33147,18 +33147,18 @@ pub mod psi_pi {
                             *self.state = DatabaseTranslationTypeSerializerState::TranslationTable(
                                 IterSerializer::new(
                                     &self.value.translation_table[..],
-                                    Some("psi-pi:TranslationTable"),
+                                    Some("TranslationTable"),
                                     false,
                                 ),
                             );
                             let mut bytes = BytesStart::new(self.name);
                             if self.is_root {
                                 bytes.push_attribute((
-                                    &b"xmlns:psi-pi"[..],
+                                    &b"xmlns"[..],
                                     &super::super::NS_PSI_PI[..],
                                 ));
                             }
-                            write_attrib_opt(&mut bytes, "psi-pi:frames", &self.value.frames)?;
+                            write_attrib_opt(&mut bytes, "frames", &self.value.frames)?;
                             return Ok(Some(Event::Start(bytes)));
                         }
                         DatabaseTranslationTypeSerializerState::TranslationTable(x) => {
@@ -33216,41 +33216,41 @@ pub mod psi_pi {
                             *self.state =
                                 EnzymeTypeSerializerState::SiteRegexp(IterSerializer::new(
                                     self.value.site_regexp.as_ref(),
-                                    Some("psi-pi:SiteRegexp"),
+                                    Some("SiteRegexp"),
                                     false,
                                 ));
                             let mut bytes = BytesStart::new(self.name);
                             if self.is_root {
                                 bytes.push_attribute((
-                                    &b"xmlns:psi-pi"[..],
+                                    &b"xmlns"[..],
                                     &super::super::NS_PSI_PI[..],
                                 ));
                             }
-                            write_attrib(&mut bytes, "psi-pi:id", &self.value.id)?;
-                            write_attrib_opt(&mut bytes, "psi-pi:name", &self.value.name)?;
+                            write_attrib(&mut bytes, "id", &self.value.id)?;
+                            write_attrib_opt(&mut bytes, "name", &self.value.name)?;
                             write_attrib_opt(
                                 &mut bytes,
-                                "psi-pi:nTermGain",
+                                "nTermGain",
                                 &self.value.n_term_gain,
                             )?;
                             write_attrib_opt(
                                 &mut bytes,
-                                "psi-pi:cTermGain",
+                                "cTermGain",
                                 &self.value.c_term_gain,
                             )?;
                             write_attrib_opt(
                                 &mut bytes,
-                                "psi-pi:semiSpecific",
+                                "semiSpecific",
                                 &self.value.semi_specific,
                             )?;
                             write_attrib_opt(
                                 &mut bytes,
-                                "psi-pi:missedCleavages",
+                                "missedCleavages",
                                 &self.value.missed_cleavages,
                             )?;
                             write_attrib_opt(
                                 &mut bytes,
-                                "psi-pi:minDistance",
+                                "minDistance",
                                 &self.value.min_distance,
                             )?;
                             return Ok(Some(Event::Start(bytes)));
@@ -33261,7 +33261,7 @@ pub mod psi_pi {
                                 *self.state =
                                     EnzymeTypeSerializerState::EnzymeName(IterSerializer::new(
                                         self.value.enzyme_name.as_ref(),
-                                        Some("psi-pi:EnzymeName"),
+                                        Some("EnzymeName"),
                                         false,
                                     ))
                             }
@@ -33315,19 +33315,19 @@ pub mod psi_pi {
                         EnzymesTypeSerializerState::Init__ => {
                             *self.state = EnzymesTypeSerializerState::Enzyme(IterSerializer::new(
                                 &self.value.enzyme[..],
-                                Some("psi-pi:Enzyme"),
+                                Some("Enzyme"),
                                 false,
                             ));
                             let mut bytes = BytesStart::new(self.name);
                             if self.is_root {
                                 bytes.push_attribute((
-                                    &b"xmlns:psi-pi"[..],
+                                    &b"xmlns"[..],
                                     &super::super::NS_PSI_PI[..],
                                 ));
                             }
                             write_attrib_opt(
                                 &mut bytes,
-                                "psi-pi:independent",
+                                "independent",
                                 &self.value.independent,
                             )?;
                             return Ok(Some(Event::Start(bytes)));
@@ -33384,20 +33384,20 @@ pub mod psi_pi {
                                 ExternalDataTypeSerializerState::ExternalFormatDocumentation(
                                     IterSerializer::new(
                                         self.value.external_format_documentation.as_ref(),
-                                        Some("psi-pi:ExternalFormatDocumentation"),
+                                        Some("ExternalFormatDocumentation"),
                                         false,
                                     ),
                                 );
                             let mut bytes = BytesStart::new(self.name);
                             if self.is_root {
                                 bytes.push_attribute((
-                                    &b"xmlns:psi-pi"[..],
+                                    &b"xmlns"[..],
                                     &super::super::NS_PSI_PI[..],
                                 ));
                             }
-                            write_attrib(&mut bytes, "psi-pi:id", &self.value.id)?;
-                            write_attrib_opt(&mut bytes, "psi-pi:name", &self.value.name)?;
-                            write_attrib(&mut bytes, "psi-pi:location", &self.value.location)?;
+                            write_attrib(&mut bytes, "id", &self.value.id)?;
+                            write_attrib_opt(&mut bytes, "name", &self.value.name)?;
+                            write_attrib(&mut bytes, "location", &self.value.location)?;
                             return Ok(Some(Event::Start(bytes)));
                         }
                         ExternalDataTypeSerializerState::ExternalFormatDocumentation(x) => {
@@ -33407,7 +33407,7 @@ pub mod psi_pi {
                                     *self.state = ExternalDataTypeSerializerState::FileFormat(
                                         WithSerializer::serializer(
                                             &self.value.file_format,
-                                            Some("psi-pi:FileFormat"),
+                                            Some("FileFormat"),
                                             false,
                                         )?,
                                     )
@@ -33466,13 +33466,13 @@ pub mod psi_pi {
                             *self.state =
                                 FileFormatTypeSerializerState::CvParam(WithSerializer::serializer(
                                     &self.value.cv_param,
-                                    Some("psi-pi:cvParam"),
+                                    Some("cvParam"),
                                     false,
                                 )?);
                             let mut bytes = BytesStart::new(self.name);
                             if self.is_root {
                                 bytes.push_attribute((
-                                    &b"xmlns:psi-pi"[..],
+                                    &b"xmlns"[..],
                                     &super::super::NS_PSI_PI[..],
                                 ));
                             }
@@ -33530,13 +33530,13 @@ pub mod psi_pi {
                             *self.state =
                                 FilterTypeSerializerState::FilterType(WithSerializer::serializer(
                                     &self.value.filter_type,
-                                    Some("psi-pi:FilterType"),
+                                    Some("FilterType"),
                                     false,
                                 )?);
                             let mut bytes = BytesStart::new(self.name);
                             if self.is_root {
                                 bytes.push_attribute((
-                                    &b"xmlns:psi-pi"[..],
+                                    &b"xmlns"[..],
                                     &super::super::NS_PSI_PI[..],
                                 ));
                             }
@@ -33548,7 +33548,7 @@ pub mod psi_pi {
                                 *self.state =
                                     FilterTypeSerializerState::Include(IterSerializer::new(
                                         self.value.include.as_ref(),
-                                        Some("psi-pi:Include"),
+                                        Some("Include"),
                                         false,
                                     ))
                             }
@@ -33559,7 +33559,7 @@ pub mod psi_pi {
                                 *self.state =
                                     FilterTypeSerializerState::Exclude(IterSerializer::new(
                                         self.value.exclude.as_ref(),
-                                        Some("psi-pi:Exclude"),
+                                        Some("Exclude"),
                                         false,
                                     ))
                             }
@@ -33613,14 +33613,14 @@ pub mod psi_pi {
                             let mut bytes = BytesStart::new(self.name);
                             if self.is_root {
                                 bytes.push_attribute((
-                                    &b"xmlns:psi-pi"[..],
+                                    &b"xmlns"[..],
                                     &super::super::NS_PSI_PI[..],
                                 ));
                             }
-                            write_attrib(&mut bytes, "psi-pi:values", &self.value.values)?;
+                            write_attrib(&mut bytes, "values", &self.value.values)?;
                             write_attrib(
                                 &mut bytes,
-                                "psi-pi:measure_ref",
+                                "measure_ref",
                                 &self.value.measure_ref,
                             )?;
                             return Ok(Some(Event::Empty(bytes)));
@@ -33667,14 +33667,14 @@ pub mod psi_pi {
                             *self.state = FragmentationTableTypeSerializerState::Measure(
                                 IterSerializer::new(
                                     &self.value.measure[..],
-                                    Some("psi-pi:Measure"),
+                                    Some("Measure"),
                                     false,
                                 ),
                             );
                             let mut bytes = BytesStart::new(self.name);
                             if self.is_root {
                                 bytes.push_attribute((
-                                    &b"xmlns:psi-pi"[..],
+                                    &b"xmlns"[..],
                                     &super::super::NS_PSI_PI[..],
                                 ));
                             }
@@ -33732,13 +33732,13 @@ pub mod psi_pi {
                             *self.state =
                                 FragmentationTypeSerializerState::IonType(IterSerializer::new(
                                     &self.value.ion_type[..],
-                                    Some("psi-pi:IonType"),
+                                    Some("IonType"),
                                     false,
                                 ));
                             let mut bytes = BytesStart::new(self.name);
                             if self.is_root {
                                 bytes.push_attribute((
-                                    &b"xmlns:psi-pi"[..],
+                                    &b"xmlns"[..],
                                     &super::super::NS_PSI_PI[..],
                                 ));
                             }
@@ -33795,12 +33795,12 @@ pub mod psi_pi {
                             let mut bytes = BytesStart::new(self.name);
                             if self.is_root {
                                 bytes.push_attribute((
-                                    &b"xmlns:psi-pi"[..],
+                                    &b"xmlns"[..],
                                     &super::super::NS_PSI_PI[..],
                                 ));
                             }
-                            write_attrib(&mut bytes, "psi-pi:id", &self.value.id)?;
-                            write_attrib_opt(&mut bytes, "psi-pi:name", &self.value.name)?;
+                            write_attrib(&mut bytes, "id", &self.value.id)?;
+                            write_attrib_opt(&mut bytes, "name", &self.value.name)?;
                             return Ok(Some(Event::Empty(bytes)));
                         }
                         IdentifiableTypeSerializerState::Done__ => return Ok(None),
@@ -33844,13 +33844,13 @@ pub mod psi_pi {
                             let mut bytes = BytesStart::new(self.name);
                             if self.is_root {
                                 bytes.push_attribute((
-                                    &b"xmlns:psi-pi"[..],
+                                    &b"xmlns"[..],
                                     &super::super::NS_PSI_PI[..],
                                 ));
                             }
                             write_attrib(
                                 &mut bytes,
-                                "psi-pi:spectraData_ref",
+                                "spectraData_ref",
                                 &self.value.spectra_data_ref,
                             )?;
                             return Ok(Some(Event::Empty(bytes)));
@@ -33896,13 +33896,13 @@ pub mod psi_pi {
                             let mut bytes = BytesStart::new(self.name);
                             if self.is_root {
                                 bytes.push_attribute((
-                                    &b"xmlns:psi-pi"[..],
+                                    &b"xmlns"[..],
                                     &super::super::NS_PSI_PI[..],
                                 ));
                             }
                             write_attrib(
                                 &mut bytes,
-                                "psi-pi:spectrumIdentificationList_ref",
+                                "spectrumIdentificationList_ref",
                                 &self.value.spectrum_identification_list_ref,
                             )?;
                             return Ok(Some(Event::Empty(bytes)));
@@ -33957,13 +33957,13 @@ pub mod psi_pi {
                             *self.state =
                                 InputsTypeSerializerState::SourceFile(IterSerializer::new(
                                     &self.value.source_file[..],
-                                    Some("psi-pi:SourceFile"),
+                                    Some("SourceFile"),
                                     false,
                                 ));
                             let mut bytes = BytesStart::new(self.name);
                             if self.is_root {
                                 bytes.push_attribute((
-                                    &b"xmlns:psi-pi"[..],
+                                    &b"xmlns"[..],
                                     &super::super::NS_PSI_PI[..],
                                 ));
                             }
@@ -33975,7 +33975,7 @@ pub mod psi_pi {
                                 *self.state =
                                     InputsTypeSerializerState::SearchDatabase(IterSerializer::new(
                                         &self.value.search_database[..],
-                                        Some("psi-pi:SearchDatabase"),
+                                        Some("SearchDatabase"),
                                         false,
                                     ))
                             }
@@ -33987,7 +33987,7 @@ pub mod psi_pi {
                                     *self.state =
                                         InputsTypeSerializerState::SpectraData(IterSerializer::new(
                                             &self.value.spectra_data[..],
-                                            Some("psi-pi:SpectraData"),
+                                            Some("SpectraData"),
                                             false,
                                         ))
                                 }
@@ -34047,18 +34047,18 @@ pub mod psi_pi {
                             *self.state =
                                 IonTypeTypeSerializerState::FragmentArray(IterSerializer::new(
                                     &self.value.fragment_array[..],
-                                    Some("psi-pi:FragmentArray"),
+                                    Some("FragmentArray"),
                                     false,
                                 ));
                             let mut bytes = BytesStart::new(self.name);
                             if self.is_root {
                                 bytes.push_attribute((
-                                    &b"xmlns:psi-pi"[..],
+                                    &b"xmlns"[..],
                                     &super::super::NS_PSI_PI[..],
                                 ));
                             }
-                            write_attrib_opt(&mut bytes, "psi-pi:index", &self.value.index)?;
-                            write_attrib(&mut bytes, "psi-pi:charge", &self.value.charge)?;
+                            write_attrib_opt(&mut bytes, "index", &self.value.index)?;
+                            write_attrib(&mut bytes, "charge", &self.value.charge)?;
                             return Ok(Some(Event::Start(bytes)));
                         }
                         IonTypeTypeSerializerState::FragmentArray(x) => {
@@ -34068,7 +34068,7 @@ pub mod psi_pi {
                                     *self.state =
                                         IonTypeTypeSerializerState::UserParam(IterSerializer::new(
                                             &self.value.user_param[..],
-                                            Some("psi-pi:userParam"),
+                                            Some("userParam"),
                                             false,
                                         ))
                                 }
@@ -34080,7 +34080,7 @@ pub mod psi_pi {
                                 *self.state =
                                     IonTypeTypeSerializerState::CvParam(IterSerializer::new(
                                         &self.value.cv_param[..],
-                                        Some("psi-pi:cvParam"),
+                                        Some("cvParam"),
                                         false,
                                     ))
                             }
@@ -34144,13 +34144,13 @@ pub mod psi_pi {
                             let mut bytes = BytesStart::new(self.name);
                             if self.is_root {
                                 bytes.push_attribute((
-                                    &b"xmlns:psi-pi"[..],
+                                    &b"xmlns"[..],
                                     &super::super::NS_PSI_PI[..],
                                 ));
                             }
-                            write_attrib(&mut bytes, "psi-pi:id", &self.value.id)?;
-                            write_attrib_opt(&mut bytes, "psi-pi:name", &self.value.name)?;
-                            write_attrib(&mut bytes, "psi-pi:msLevel", &self.value.ms_level)?;
+                            write_attrib(&mut bytes, "id", &self.value.id)?;
+                            write_attrib_opt(&mut bytes, "name", &self.value.name)?;
+                            write_attrib(&mut bytes, "msLevel", &self.value.ms_level)?;
                             return Ok(Some(Event::Start(bytes)));
                         }
                         MassTableTypeSerializerState::Content__(x) => match x.next().transpose()? {
@@ -34202,26 +34202,26 @@ pub mod psi_pi {
                         MassTableTypeContentSerializerState::Init__ => match self.value {
                             super::MassTableTypeContent::Residue(x) => {
                                 *self.state = MassTableTypeContentSerializerState::Residue(
-                                    WithSerializer::serializer(x, Some("psi-pi:Residue"), false)?,
+                                    WithSerializer::serializer(x, Some("Residue"), false)?,
                                 )
                             }
                             super::MassTableTypeContent::AmbiguousResidue(x) => {
                                 *self.state = MassTableTypeContentSerializerState::AmbiguousResidue(
                                     WithSerializer::serializer(
                                         x,
-                                        Some("psi-pi:AmbiguousResidue"),
+                                        Some("AmbiguousResidue"),
                                         false,
                                     )?,
                                 )
                             }
                             super::MassTableTypeContent::CvParam(x) => {
                                 *self.state = MassTableTypeContentSerializerState::CvParam(
-                                    WithSerializer::serializer(x, Some("psi-pi:cvParam"), false)?,
+                                    WithSerializer::serializer(x, Some("cvParam"), false)?,
                                 )
                             }
                             super::MassTableTypeContent::UserParam(x) => {
                                 *self.state = MassTableTypeContentSerializerState::UserParam(
-                                    WithSerializer::serializer(x, Some("psi-pi:userParam"), false)?,
+                                    WithSerializer::serializer(x, Some("userParam"), false)?,
                                 )
                             }
                         },
@@ -34290,18 +34290,18 @@ pub mod psi_pi {
                         MeasureTypeSerializerState::Init__ => {
                             *self.state = MeasureTypeSerializerState::CvParam(IterSerializer::new(
                                 &self.value.cv_param[..],
-                                Some("psi-pi:cvParam"),
+                                Some("cvParam"),
                                 false,
                             ));
                             let mut bytes = BytesStart::new(self.name);
                             if self.is_root {
                                 bytes.push_attribute((
-                                    &b"xmlns:psi-pi"[..],
+                                    &b"xmlns"[..],
                                     &super::super::NS_PSI_PI[..],
                                 ));
                             }
-                            write_attrib(&mut bytes, "psi-pi:id", &self.value.id)?;
-                            write_attrib_opt(&mut bytes, "psi-pi:name", &self.value.name)?;
+                            write_attrib(&mut bytes, "id", &self.value.id)?;
+                            write_attrib_opt(&mut bytes, "name", &self.value.name)?;
                             return Ok(Some(Event::Start(bytes)));
                         }
                         MeasureTypeSerializerState::CvParam(x) => match x.next().transpose()? {
@@ -34360,14 +34360,14 @@ pub mod psi_pi {
                             *self.state = ModificationParamsTypeSerializerState::SearchModification(
                                 IterSerializer::new(
                                     &self.value.search_modification[..],
-                                    Some("psi-pi:SearchModification"),
+                                    Some("SearchModification"),
                                     false,
                                 ),
                             );
                             let mut bytes = BytesStart::new(self.name);
                             if self.is_root {
                                 bytes.push_attribute((
-                                    &b"xmlns:psi-pi"[..],
+                                    &b"xmlns"[..],
                                     &super::super::NS_PSI_PI[..],
                                 ));
                             }
@@ -34425,26 +34425,26 @@ pub mod psi_pi {
                             *self.state =
                                 ModificationTypeSerializerState::CvParam(IterSerializer::new(
                                     &self.value.cv_param[..],
-                                    Some("psi-pi:cvParam"),
+                                    Some("cvParam"),
                                     false,
                                 ));
                             let mut bytes = BytesStart::new(self.name);
                             if self.is_root {
                                 bytes.push_attribute((
-                                    &b"xmlns:psi-pi"[..],
+                                    &b"xmlns"[..],
                                     &super::super::NS_PSI_PI[..],
                                 ));
                             }
-                            write_attrib_opt(&mut bytes, "psi-pi:location", &self.value.location)?;
-                            write_attrib_opt(&mut bytes, "psi-pi:residues", &self.value.residues)?;
+                            write_attrib_opt(&mut bytes, "location", &self.value.location)?;
+                            write_attrib_opt(&mut bytes, "residues", &self.value.residues)?;
                             write_attrib_opt(
                                 &mut bytes,
-                                "psi-pi:avgMassDelta",
+                                "avgMassDelta",
                                 &self.value.avg_mass_delta,
                             )?;
                             write_attrib_opt(
                                 &mut bytes,
-                                "psi-pi:monoisotopicMassDelta",
+                                "monoisotopicMassDelta",
                                 &self.value.monoisotopic_mass_delta,
                             )?;
                             return Ok(Some(Event::Start(bytes)));
@@ -34543,24 +34543,24 @@ pub mod psi_pi {
                             *self.state =
                                 MzIdentMlTypeSerializerState::CvList(WithSerializer::serializer(
                                     &self.value.cv_list,
-                                    Some("psi-pi:cvList"),
+                                    Some("cvList"),
                                     false,
                                 )?);
                             let mut bytes = BytesStart::new(self.name);
                             if self.is_root {
                                 bytes.push_attribute((
-                                    &b"xmlns:psi-pi"[..],
+                                    &b"xmlns"[..],
                                     &super::super::NS_PSI_PI[..],
                                 ));
                             }
-                            write_attrib(&mut bytes, "psi-pi:id", &self.value.id)?;
-                            write_attrib_opt(&mut bytes, "psi-pi:name", &self.value.name)?;
+                            write_attrib(&mut bytes, "id", &self.value.id)?;
+                            write_attrib_opt(&mut bytes, "name", &self.value.name)?;
                             write_attrib_opt(
                                 &mut bytes,
-                                "psi-pi:creationDate",
+                                "creationDate",
                                 &self.value.creation_date,
                             )?;
-                            write_attrib(&mut bytes, "psi-pi:version", &self.value.version)?;
+                            write_attrib(&mut bytes, "version", &self.value.version)?;
                             return Ok(Some(Event::Start(bytes)));
                         }
                         MzIdentMlTypeSerializerState::CvList(x) => match x.next().transpose()? {
@@ -34569,7 +34569,7 @@ pub mod psi_pi {
                                 *self.state =
                                     MzIdentMlTypeSerializerState::CvParam(IterSerializer::new(
                                         &self.value.cv_param[..],
-                                        Some("psi-pi:cvParam"),
+                                        Some("cvParam"),
                                         false,
                                     ))
                             }
@@ -34580,7 +34580,7 @@ pub mod psi_pi {
                                 *self.state = MzIdentMlTypeSerializerState::AnalysisSoftwareList(
                                     IterSerializer::new(
                                         self.value.analysis_software_list.as_ref(),
-                                        Some("psi-pi:AnalysisSoftwareList"),
+                                        Some("AnalysisSoftwareList"),
                                         false,
                                     ),
                                 )
@@ -34593,7 +34593,7 @@ pub mod psi_pi {
                                     *self.state =
                                         MzIdentMlTypeSerializerState::Provider(IterSerializer::new(
                                             self.value.provider.as_ref(),
-                                            Some("psi-pi:Provider"),
+                                            Some("Provider"),
                                             false,
                                         ))
                                 }
@@ -34605,7 +34605,7 @@ pub mod psi_pi {
                                 *self.state = MzIdentMlTypeSerializerState::AuditCollection(
                                     IterSerializer::new(
                                         self.value.audit_collection.as_ref(),
-                                        Some("psi-pi:AuditCollection"),
+                                        Some("AuditCollection"),
                                         false,
                                     ),
                                 )
@@ -34619,7 +34619,7 @@ pub mod psi_pi {
                                         MzIdentMlTypeSerializerState::AnalysisSampleCollection(
                                             IterSerializer::new(
                                                 self.value.analysis_sample_collection.as_ref(),
-                                                Some("psi-pi:AnalysisSampleCollection"),
+                                                Some("AnalysisSampleCollection"),
                                                 false,
                                             ),
                                         )
@@ -34633,7 +34633,7 @@ pub mod psi_pi {
                                     *self.state = MzIdentMlTypeSerializerState::SequenceCollection(
                                         IterSerializer::new(
                                             self.value.sequence_collection.as_ref(),
-                                            Some("psi-pi:SequenceCollection"),
+                                            Some("SequenceCollection"),
                                             false,
                                         ),
                                     )
@@ -34647,7 +34647,7 @@ pub mod psi_pi {
                                     *self.state = MzIdentMlTypeSerializerState::AnalysisCollection(
                                         WithSerializer::serializer(
                                             &self.value.analysis_collection,
-                                            Some("psi-pi:AnalysisCollection"),
+                                            Some("AnalysisCollection"),
                                             false,
                                         )?,
                                     )
@@ -34662,7 +34662,7 @@ pub mod psi_pi {
                                         MzIdentMlTypeSerializerState::AnalysisProtocolCollection(
                                             WithSerializer::serializer(
                                                 &self.value.analysis_protocol_collection,
-                                                Some("psi-pi:AnalysisProtocolCollection"),
+                                                Some("AnalysisProtocolCollection"),
                                                 false,
                                             )?,
                                         )
@@ -34676,7 +34676,7 @@ pub mod psi_pi {
                                     *self.state = MzIdentMlTypeSerializerState::DataCollection(
                                         WithSerializer::serializer(
                                             &self.value.data_collection,
-                                            Some("psi-pi:DataCollection"),
+                                            Some("DataCollection"),
                                             false,
                                         )?,
                                     )
@@ -34691,7 +34691,7 @@ pub mod psi_pi {
                                         MzIdentMlTypeSerializerState::BibliographicReference(
                                             IterSerializer::new(
                                                 &self.value.bibliographic_reference[..],
-                                                Some("psi-pi:BibliographicReference"),
+                                                Some("BibliographicReference"),
                                                 false,
                                             ),
                                         )
@@ -34759,12 +34759,12 @@ pub mod psi_pi {
                             let mut bytes = BytesStart::new(self.name);
                             if self.is_root {
                                 bytes.push_attribute((
-                                    &b"xmlns:psi-pi"[..],
+                                    &b"xmlns"[..],
                                     &super::super::NS_PSI_PI[..],
                                 ));
                             }
-                            write_attrib(&mut bytes, "psi-pi:id", &self.value.id)?;
-                            write_attrib_opt(&mut bytes, "psi-pi:name", &self.value.name)?;
+                            write_attrib(&mut bytes, "id", &self.value.id)?;
+                            write_attrib_opt(&mut bytes, "name", &self.value.name)?;
                             return Ok(Some(Event::Start(bytes)));
                         }
                         OrganizationTypeSerializerState::Content__(x) => {
@@ -34817,17 +34817,17 @@ pub mod psi_pi {
                         OrganizationTypeContentSerializerState::Init__ => match self.value {
                             super::OrganizationTypeContent::CvParam(x) => {
                                 *self.state = OrganizationTypeContentSerializerState::CvParam(
-                                    WithSerializer::serializer(x, Some("psi-pi:cvParam"), false)?,
+                                    WithSerializer::serializer(x, Some("cvParam"), false)?,
                                 )
                             }
                             super::OrganizationTypeContent::UserParam(x) => {
                                 *self.state = OrganizationTypeContentSerializerState::UserParam(
-                                    WithSerializer::serializer(x, Some("psi-pi:userParam"), false)?,
+                                    WithSerializer::serializer(x, Some("userParam"), false)?,
                                 )
                             }
                             super::OrganizationTypeContent::Parent(x) => {
                                 *self.state = OrganizationTypeContentSerializerState::Parent(
-                                    WithSerializer::serializer(x, Some("psi-pi:Parent"), false)?,
+                                    WithSerializer::serializer(x, Some("Parent"), false)?,
                                 )
                             }
                         },
@@ -34906,7 +34906,7 @@ pub mod psi_pi {
                             let mut bytes = BytesStart::new(self.name);
                             if self.is_root {
                                 bytes.push_attribute((
-                                    &b"xmlns:psi-pi"[..],
+                                    &b"xmlns"[..],
                                     &super::super::NS_PSI_PI[..],
                                 ));
                             }
@@ -34959,12 +34959,12 @@ pub mod psi_pi {
                         ParamListTypeContentSerializerState::Init__ => match self.value {
                             super::ParamListTypeContent::CvParam(x) => {
                                 *self.state = ParamListTypeContentSerializerState::CvParam(
-                                    WithSerializer::serializer(x, Some("psi-pi:cvParam"), false)?,
+                                    WithSerializer::serializer(x, Some("cvParam"), false)?,
                                 )
                             }
                             super::ParamListTypeContent::UserParam(x) => {
                                 *self.state = ParamListTypeContentSerializerState::UserParam(
-                                    WithSerializer::serializer(x, Some("psi-pi:userParam"), false)?,
+                                    WithSerializer::serializer(x, Some("userParam"), false)?,
                                 )
                             }
                         },
@@ -35025,7 +35025,7 @@ pub mod psi_pi {
                                     *self.state = ParamTypeSerializerState::CvParam(
                                         WithSerializer::serializer(
                                             x,
-                                            Some("psi-pi:cvParam"),
+                                            Some("cvParam"),
                                             false,
                                         )?,
                                     )
@@ -35034,7 +35034,7 @@ pub mod psi_pi {
                                     *self.state = ParamTypeSerializerState::UserParam(
                                         WithSerializer::serializer(
                                             x,
-                                            Some("psi-pi:userParam"),
+                                            Some("userParam"),
                                             false,
                                         )?,
                                     )
@@ -35043,7 +35043,7 @@ pub mod psi_pi {
                             let mut bytes = BytesStart::new(self.name);
                             if self.is_root {
                                 bytes.push_attribute((
-                                    &b"xmlns:psi-pi"[..],
+                                    &b"xmlns"[..],
                                     &super::super::NS_PSI_PI[..],
                                 ));
                             }
@@ -35102,13 +35102,13 @@ pub mod psi_pi {
                             let mut bytes = BytesStart::new(self.name);
                             if self.is_root {
                                 bytes.push_attribute((
-                                    &b"xmlns:psi-pi"[..],
+                                    &b"xmlns"[..],
                                     &super::super::NS_PSI_PI[..],
                                 ));
                             }
                             write_attrib(
                                 &mut bytes,
-                                "psi-pi:peptideEvidence_ref",
+                                "peptideEvidence_ref",
                                 &self.value.peptide_evidence_ref,
                             )?;
                             return Ok(Some(Event::Empty(bytes)));
@@ -35164,33 +35164,33 @@ pub mod psi_pi {
                             let mut bytes = BytesStart::new(self.name);
                             if self.is_root {
                                 bytes.push_attribute((
-                                    &b"xmlns:psi-pi"[..],
+                                    &b"xmlns"[..],
                                     &super::super::NS_PSI_PI[..],
                                 ));
                             }
-                            write_attrib(&mut bytes, "psi-pi:id", &self.value.id)?;
-                            write_attrib_opt(&mut bytes, "psi-pi:name", &self.value.name)?;
+                            write_attrib(&mut bytes, "id", &self.value.id)?;
+                            write_attrib_opt(&mut bytes, "name", &self.value.name)?;
                             write_attrib(
                                 &mut bytes,
-                                "psi-pi:dBSequence_ref",
+                                "dBSequence_ref",
                                 &self.value.db_sequence_ref,
                             )?;
                             write_attrib(
                                 &mut bytes,
-                                "psi-pi:peptide_ref",
+                                "peptide_ref",
                                 &self.value.peptide_ref,
                             )?;
-                            write_attrib_opt(&mut bytes, "psi-pi:start", &self.value.start)?;
-                            write_attrib_opt(&mut bytes, "psi-pi:end", &self.value.end)?;
-                            write_attrib_opt(&mut bytes, "psi-pi:pre", &self.value.pre)?;
-                            write_attrib_opt(&mut bytes, "psi-pi:post", &self.value.post)?;
+                            write_attrib_opt(&mut bytes, "start", &self.value.start)?;
+                            write_attrib_opt(&mut bytes, "end", &self.value.end)?;
+                            write_attrib_opt(&mut bytes, "pre", &self.value.pre)?;
+                            write_attrib_opt(&mut bytes, "post", &self.value.post)?;
                             write_attrib_opt(
                                 &mut bytes,
-                                "psi-pi:translationTable_ref",
+                                "translationTable_ref",
                                 &self.value.translation_table_ref,
                             )?;
-                            write_attrib_opt(&mut bytes, "psi-pi:frame", &self.value.frame)?;
-                            write_attrib(&mut bytes, "psi-pi:isDecoy", &self.value.is_decoy)?;
+                            write_attrib_opt(&mut bytes, "frame", &self.value.frame)?;
+                            write_attrib(&mut bytes, "isDecoy", &self.value.is_decoy)?;
                             return Ok(Some(Event::Start(bytes)));
                         }
                         PeptideEvidenceTypeSerializerState::Content__(x) => {
@@ -35242,12 +35242,12 @@ pub mod psi_pi {
                         PeptideEvidenceTypeContentSerializerState::Init__ => match self.value {
                             super::PeptideEvidenceTypeContent::CvParam(x) => {
                                 *self.state = PeptideEvidenceTypeContentSerializerState::CvParam(
-                                    WithSerializer::serializer(x, Some("psi-pi:cvParam"), false)?,
+                                    WithSerializer::serializer(x, Some("cvParam"), false)?,
                                 )
                             }
                             super::PeptideEvidenceTypeContent::UserParam(x) => {
                                 *self.state = PeptideEvidenceTypeContentSerializerState::UserParam(
-                                    WithSerializer::serializer(x, Some("psi-pi:userParam"), false)?,
+                                    WithSerializer::serializer(x, Some("userParam"), false)?,
                                 )
                             }
                         },
@@ -35316,20 +35316,20 @@ pub mod psi_pi {
                                 PeptideHypothesisTypeSerializerState::SpectrumIdentificationItemRef(
                                     IterSerializer::new(
                                         &self.value.spectrum_identification_item_ref[..],
-                                        Some("psi-pi:SpectrumIdentificationItemRef"),
+                                        Some("SpectrumIdentificationItemRef"),
                                         false,
                                     ),
                                 );
                             let mut bytes = BytesStart::new(self.name);
                             if self.is_root {
                                 bytes.push_attribute((
-                                    &b"xmlns:psi-pi"[..],
+                                    &b"xmlns"[..],
                                     &super::super::NS_PSI_PI[..],
                                 ));
                             }
                             write_attrib(
                                 &mut bytes,
-                                "psi-pi:peptideEvidence_ref",
+                                "peptideEvidence_ref",
                                 &self.value.peptide_evidence_ref,
                             )?;
                             return Ok(Some(Event::Start(bytes)));
@@ -35391,12 +35391,12 @@ pub mod psi_pi {
                             let mut bytes = BytesStart::new(self.name);
                             if self.is_root {
                                 bytes.push_attribute((
-                                    &b"xmlns:psi-pi"[..],
+                                    &b"xmlns"[..],
                                     &super::super::NS_PSI_PI[..],
                                 ));
                             }
-                            write_attrib(&mut bytes, "psi-pi:id", &self.value.id)?;
-                            write_attrib_opt(&mut bytes, "psi-pi:name", &self.value.name)?;
+                            write_attrib(&mut bytes, "id", &self.value.id)?;
+                            write_attrib_opt(&mut bytes, "name", &self.value.name)?;
                             return Ok(Some(Event::Start(bytes)));
                         }
                         PeptideTypeSerializerState::Content__(x) => match x.next().transpose()? {
@@ -35453,7 +35453,7 @@ pub mod psi_pi {
                                 *self.state = PeptideTypeContentSerializerState::PeptideSequence(
                                     WithSerializer::serializer(
                                         x,
-                                        Some("psi-pi:PeptideSequence"),
+                                        Some("PeptideSequence"),
                                         false,
                                     )?,
                                 )
@@ -35462,7 +35462,7 @@ pub mod psi_pi {
                                 *self.state = PeptideTypeContentSerializerState::Modification(
                                     WithSerializer::serializer(
                                         x,
-                                        Some("psi-pi:Modification"),
+                                        Some("Modification"),
                                         false,
                                     )?,
                                 )
@@ -35472,19 +35472,19 @@ pub mod psi_pi {
                                     PeptideTypeContentSerializerState::SubstitutionModification(
                                         WithSerializer::serializer(
                                             x,
-                                            Some("psi-pi:SubstitutionModification"),
+                                            Some("SubstitutionModification"),
                                             false,
                                         )?,
                                     )
                             }
                             super::PeptideTypeContent::CvParam(x) => {
                                 *self.state = PeptideTypeContentSerializerState::CvParam(
-                                    WithSerializer::serializer(x, Some("psi-pi:cvParam"), false)?,
+                                    WithSerializer::serializer(x, Some("cvParam"), false)?,
                                 )
                             }
                             super::PeptideTypeContent::UserParam(x) => {
                                 *self.state = PeptideTypeContentSerializerState::UserParam(
-                                    WithSerializer::serializer(x, Some("psi-pi:userParam"), false)?,
+                                    WithSerializer::serializer(x, Some("userParam"), false)?,
                                 )
                             }
                         },
@@ -35565,21 +35565,21 @@ pub mod psi_pi {
                             let mut bytes = BytesStart::new(self.name);
                             if self.is_root {
                                 bytes.push_attribute((
-                                    &b"xmlns:psi-pi"[..],
+                                    &b"xmlns"[..],
                                     &super::super::NS_PSI_PI[..],
                                 ));
                             }
-                            write_attrib(&mut bytes, "psi-pi:id", &self.value.id)?;
-                            write_attrib_opt(&mut bytes, "psi-pi:name", &self.value.name)?;
-                            write_attrib_opt(&mut bytes, "psi-pi:lastName", &self.value.last_name)?;
+                            write_attrib(&mut bytes, "id", &self.value.id)?;
+                            write_attrib_opt(&mut bytes, "name", &self.value.name)?;
+                            write_attrib_opt(&mut bytes, "lastName", &self.value.last_name)?;
                             write_attrib_opt(
                                 &mut bytes,
-                                "psi-pi:firstName",
+                                "firstName",
                                 &self.value.first_name,
                             )?;
                             write_attrib_opt(
                                 &mut bytes,
-                                "psi-pi:midInitials",
+                                "midInitials",
                                 &self.value.mid_initials,
                             )?;
                             return Ok(Some(Event::Start(bytes)));
@@ -35632,19 +35632,19 @@ pub mod psi_pi {
                         PersonTypeContentSerializerState::Init__ => match self.value {
                             super::PersonTypeContent::CvParam(x) => {
                                 *self.state = PersonTypeContentSerializerState::CvParam(
-                                    WithSerializer::serializer(x, Some("psi-pi:cvParam"), false)?,
+                                    WithSerializer::serializer(x, Some("cvParam"), false)?,
                                 )
                             }
                             super::PersonTypeContent::UserParam(x) => {
                                 *self.state = PersonTypeContentSerializerState::UserParam(
-                                    WithSerializer::serializer(x, Some("psi-pi:userParam"), false)?,
+                                    WithSerializer::serializer(x, Some("userParam"), false)?,
                                 )
                             }
                             super::PersonTypeContent::Affiliation(x) => {
                                 *self.state = PersonTypeContentSerializerState::Affiliation(
                                     WithSerializer::serializer(
                                         x,
-                                        Some("psi-pi:Affiliation"),
+                                        Some("Affiliation"),
                                         false,
                                     )?,
                                 )
@@ -35719,12 +35719,12 @@ pub mod psi_pi {
                             let mut bytes = BytesStart::new(self.name);
                             if self.is_root {
                                 bytes.push_attribute((
-                                    &b"xmlns:psi-pi"[..],
+                                    &b"xmlns"[..],
                                     &super::super::NS_PSI_PI[..],
                                 ));
                             }
-                            write_attrib(&mut bytes, "psi-pi:id", &self.value.id)?;
-                            write_attrib_opt(&mut bytes, "psi-pi:name", &self.value.name)?;
+                            write_attrib(&mut bytes, "id", &self.value.id)?;
+                            write_attrib_opt(&mut bytes, "name", &self.value.name)?;
                             return Ok(Some(Event::Start(bytes)));
                         }
                         ProteinAmbiguityGroupTypeSerializerState::Content__(x) => match x
@@ -35779,9 +35779,9 @@ pub mod psi_pi {
                     match &mut *self.state {
                     ProteinAmbiguityGroupTypeContentSerializerState::Init__ => {
                         match self.value {
-                            super::ProteinAmbiguityGroupTypeContent::ProteinDetectionHypothesis(x) => *self.state = ProteinAmbiguityGroupTypeContentSerializerState::ProteinDetectionHypothesis(WithSerializer::serializer(x, Some("psi-pi:ProteinDetectionHypothesis"), false)?),
-                            super::ProteinAmbiguityGroupTypeContent::CvParam(x) => *self.state = ProteinAmbiguityGroupTypeContentSerializerState::CvParam(WithSerializer::serializer(x, Some("psi-pi:cvParam"), false)?),
-                            super::ProteinAmbiguityGroupTypeContent::UserParam(x) => *self.state = ProteinAmbiguityGroupTypeContentSerializerState::UserParam(WithSerializer::serializer(x, Some("psi-pi:userParam"), false)?),
+                            super::ProteinAmbiguityGroupTypeContent::ProteinDetectionHypothesis(x) => *self.state = ProteinAmbiguityGroupTypeContentSerializerState::ProteinDetectionHypothesis(WithSerializer::serializer(x, Some("ProteinDetectionHypothesis"), false)?),
+                            super::ProteinAmbiguityGroupTypeContent::CvParam(x) => *self.state = ProteinAmbiguityGroupTypeContentSerializerState::CvParam(WithSerializer::serializer(x, Some("cvParam"), false)?),
+                            super::ProteinAmbiguityGroupTypeContent::UserParam(x) => *self.state = ProteinAmbiguityGroupTypeContentSerializerState::UserParam(WithSerializer::serializer(x, Some("userParam"), false)?),
                         }
                     }
                     ProteinAmbiguityGroupTypeContentSerializerState::ProteinDetectionHypothesis(x) => {
@@ -35853,20 +35853,20 @@ pub mod psi_pi {
                             let mut bytes = BytesStart::new(self.name);
                             if self.is_root {
                                 bytes.push_attribute((
-                                    &b"xmlns:psi-pi"[..],
+                                    &b"xmlns"[..],
                                     &super::super::NS_PSI_PI[..],
                                 ));
                             }
-                            write_attrib(&mut bytes, "psi-pi:id", &self.value.id)?;
-                            write_attrib_opt(&mut bytes, "psi-pi:name", &self.value.name)?;
+                            write_attrib(&mut bytes, "id", &self.value.id)?;
+                            write_attrib_opt(&mut bytes, "name", &self.value.name)?;
                             write_attrib(
                                 &mut bytes,
-                                "psi-pi:dBSequence_ref",
+                                "dBSequence_ref",
                                 &self.value.db_sequence_ref,
                             )?;
                             write_attrib(
                                 &mut bytes,
-                                "psi-pi:passThreshold",
+                                "passThreshold",
                                 &self.value.pass_threshold,
                             )?;
                             return Ok(Some(Event::Start(bytes)));
@@ -35925,9 +35925,9 @@ pub mod psi_pi {
                     match &mut *self.state {
                         ProteinDetectionHypothesisTypeContentSerializerState::Init__ => {
                             match self.value {
-                            super::ProteinDetectionHypothesisTypeContent::PeptideHypothesis(x) => *self.state = ProteinDetectionHypothesisTypeContentSerializerState::PeptideHypothesis(WithSerializer::serializer(x, Some("psi-pi:PeptideHypothesis"), false)?),
-                            super::ProteinDetectionHypothesisTypeContent::CvParam(x) => *self.state = ProteinDetectionHypothesisTypeContentSerializerState::CvParam(WithSerializer::serializer(x, Some("psi-pi:cvParam"), false)?),
-                            super::ProteinDetectionHypothesisTypeContent::UserParam(x) => *self.state = ProteinDetectionHypothesisTypeContentSerializerState::UserParam(WithSerializer::serializer(x, Some("psi-pi:userParam"), false)?),
+                            super::ProteinDetectionHypothesisTypeContent::PeptideHypothesis(x) => *self.state = ProteinDetectionHypothesisTypeContentSerializerState::PeptideHypothesis(WithSerializer::serializer(x, Some("PeptideHypothesis"), false)?),
+                            super::ProteinDetectionHypothesisTypeContent::CvParam(x) => *self.state = ProteinDetectionHypothesisTypeContentSerializerState::CvParam(WithSerializer::serializer(x, Some("cvParam"), false)?),
+                            super::ProteinDetectionHypothesisTypeContent::UserParam(x) => *self.state = ProteinDetectionHypothesisTypeContentSerializerState::UserParam(WithSerializer::serializer(x, Some("userParam"), false)?),
                         }
                         }
                         ProteinDetectionHypothesisTypeContentSerializerState::PeptideHypothesis(
@@ -36012,12 +36012,12 @@ pub mod psi_pi {
                             let mut bytes = BytesStart::new(self.name);
                             if self.is_root {
                                 bytes.push_attribute((
-                                    &b"xmlns:psi-pi"[..],
+                                    &b"xmlns"[..],
                                     &super::super::NS_PSI_PI[..],
                                 ));
                             }
-                            write_attrib(&mut bytes, "psi-pi:id", &self.value.id)?;
-                            write_attrib_opt(&mut bytes, "psi-pi:name", &self.value.name)?;
+                            write_attrib(&mut bytes, "id", &self.value.id)?;
+                            write_attrib_opt(&mut bytes, "name", &self.value.name)?;
                             return Ok(Some(Event::Start(bytes)));
                         }
                         ProteinDetectionListTypeSerializerState::Content__(x) => match x
@@ -36072,9 +36072,9 @@ pub mod psi_pi {
                     match &mut *self.state {
                     ProteinDetectionListTypeContentSerializerState::Init__ => {
                         match self.value {
-                            super::ProteinDetectionListTypeContent::ProteinAmbiguityGroup(x) => *self.state = ProteinDetectionListTypeContentSerializerState::ProteinAmbiguityGroup(WithSerializer::serializer(x, Some("psi-pi:ProteinAmbiguityGroup"), false)?),
-                            super::ProteinDetectionListTypeContent::CvParam(x) => *self.state = ProteinDetectionListTypeContentSerializerState::CvParam(WithSerializer::serializer(x, Some("psi-pi:cvParam"), false)?),
-                            super::ProteinDetectionListTypeContent::UserParam(x) => *self.state = ProteinDetectionListTypeContentSerializerState::UserParam(WithSerializer::serializer(x, Some("psi-pi:userParam"), false)?),
+                            super::ProteinDetectionListTypeContent::ProteinAmbiguityGroup(x) => *self.state = ProteinDetectionListTypeContentSerializerState::ProteinAmbiguityGroup(WithSerializer::serializer(x, Some("ProteinAmbiguityGroup"), false)?),
+                            super::ProteinDetectionListTypeContent::CvParam(x) => *self.state = ProteinDetectionListTypeContentSerializerState::CvParam(WithSerializer::serializer(x, Some("cvParam"), false)?),
+                            super::ProteinDetectionListTypeContent::UserParam(x) => *self.state = ProteinDetectionListTypeContentSerializerState::UserParam(WithSerializer::serializer(x, Some("userParam"), false)?),
                         }
                     }
                     ProteinDetectionListTypeContentSerializerState::ProteinAmbiguityGroup(x) => {
@@ -36141,22 +36141,22 @@ pub mod psi_pi {
                                 ProteinDetectionProtocolTypeSerializerState::AnalysisParams(
                                     IterSerializer::new(
                                         self.value.analysis_params.as_ref(),
-                                        Some("psi-pi:AnalysisParams"),
+                                        Some("AnalysisParams"),
                                         false,
                                     ),
                                 );
                             let mut bytes = BytesStart::new(self.name);
                             if self.is_root {
                                 bytes.push_attribute((
-                                    &b"xmlns:psi-pi"[..],
+                                    &b"xmlns"[..],
                                     &super::super::NS_PSI_PI[..],
                                 ));
                             }
-                            write_attrib(&mut bytes, "psi-pi:id", &self.value.id)?;
-                            write_attrib_opt(&mut bytes, "psi-pi:name", &self.value.name)?;
+                            write_attrib(&mut bytes, "id", &self.value.id)?;
+                            write_attrib_opt(&mut bytes, "name", &self.value.name)?;
                             write_attrib(
                                 &mut bytes,
-                                "psi-pi:analysisSoftware_ref",
+                                "analysisSoftware_ref",
                                 &self.value.analysis_software_ref,
                             )?;
                             return Ok(Some(Event::Start(bytes)));
@@ -36169,7 +36169,7 @@ pub mod psi_pi {
                                         ProteinDetectionProtocolTypeSerializerState::Threshold(
                                             WithSerializer::serializer(
                                                 &self.value.threshold,
-                                                Some("psi-pi:Threshold"),
+                                                Some("Threshold"),
                                                 false,
                                             )?,
                                         )
@@ -36237,32 +36237,32 @@ pub mod psi_pi {
                                 ProteinDetectionTypeSerializerState::InputSpectrumIdentifications(
                                     IterSerializer::new(
                                         &self.value.input_spectrum_identifications[..],
-                                        Some("psi-pi:InputSpectrumIdentifications"),
+                                        Some("InputSpectrumIdentifications"),
                                         false,
                                     ),
                                 );
                             let mut bytes = BytesStart::new(self.name);
                             if self.is_root {
                                 bytes.push_attribute((
-                                    &b"xmlns:psi-pi"[..],
+                                    &b"xmlns"[..],
                                     &super::super::NS_PSI_PI[..],
                                 ));
                             }
-                            write_attrib(&mut bytes, "psi-pi:id", &self.value.id)?;
-                            write_attrib_opt(&mut bytes, "psi-pi:name", &self.value.name)?;
+                            write_attrib(&mut bytes, "id", &self.value.id)?;
+                            write_attrib_opt(&mut bytes, "name", &self.value.name)?;
                             write_attrib_opt(
                                 &mut bytes,
-                                "psi-pi:activityDate",
+                                "activityDate",
                                 &self.value.activity_date,
                             )?;
                             write_attrib(
                                 &mut bytes,
-                                "psi-pi:proteinDetectionList_ref",
+                                "proteinDetectionList_ref",
                                 &self.value.protein_detection_list_ref,
                             )?;
                             write_attrib(
                                 &mut bytes,
-                                "psi-pi:proteinDetectionProtocol_ref",
+                                "proteinDetectionProtocol_ref",
                                 &self.value.protein_detection_protocol_ref,
                             )?;
                             return Ok(Some(Event::Start(bytes)));
@@ -36318,15 +36318,15 @@ pub mod psi_pi {
                             let mut bytes = BytesStart::new(self.name);
                             if self.is_root {
                                 bytes.push_attribute((
-                                    &b"xmlns:psi-pi"[..],
+                                    &b"xmlns"[..],
                                     &super::super::NS_PSI_PI[..],
                                 ));
                             }
-                            write_attrib(&mut bytes, "psi-pi:id", &self.value.id)?;
-                            write_attrib_opt(&mut bytes, "psi-pi:name", &self.value.name)?;
+                            write_attrib(&mut bytes, "id", &self.value.id)?;
+                            write_attrib_opt(&mut bytes, "name", &self.value.name)?;
                             write_attrib_opt(
                                 &mut bytes,
-                                "psi-pi:activityDate",
+                                "activityDate",
                                 &self.value.activity_date,
                             )?;
                             return Ok(Some(Event::Empty(bytes)));
@@ -36375,21 +36375,21 @@ pub mod psi_pi {
                             *self.state =
                                 ProviderTypeSerializerState::ContactRole(IterSerializer::new(
                                     self.value.contact_role.as_ref(),
-                                    Some("psi-pi:ContactRole"),
+                                    Some("ContactRole"),
                                     false,
                                 ));
                             let mut bytes = BytesStart::new(self.name);
                             if self.is_root {
                                 bytes.push_attribute((
-                                    &b"xmlns:psi-pi"[..],
+                                    &b"xmlns"[..],
                                     &super::super::NS_PSI_PI[..],
                                 ));
                             }
-                            write_attrib(&mut bytes, "psi-pi:id", &self.value.id)?;
-                            write_attrib_opt(&mut bytes, "psi-pi:name", &self.value.name)?;
+                            write_attrib(&mut bytes, "id", &self.value.id)?;
+                            write_attrib_opt(&mut bytes, "name", &self.value.name)?;
                             write_attrib_opt(
                                 &mut bytes,
-                                "psi-pi:analysisSoftware_ref",
+                                "analysisSoftware_ref",
                                 &self.value.analysis_software_ref,
                             )?;
                             return Ok(Some(Event::Start(bytes)));
@@ -36445,12 +36445,12 @@ pub mod psi_pi {
                             let mut bytes = BytesStart::new(self.name);
                             if self.is_root {
                                 bytes.push_attribute((
-                                    &b"xmlns:psi-pi"[..],
+                                    &b"xmlns"[..],
                                     &super::super::NS_PSI_PI[..],
                                 ));
                             }
-                            write_attrib(&mut bytes, "psi-pi:code", &self.value.code)?;
-                            write_attrib(&mut bytes, "psi-pi:mass", &self.value.mass)?;
+                            write_attrib(&mut bytes, "code", &self.value.code)?;
+                            write_attrib(&mut bytes, "mass", &self.value.mass)?;
                             return Ok(Some(Event::Empty(bytes)));
                         }
                         ResidueTypeSerializerState::Done__ => return Ok(None),
@@ -36495,13 +36495,13 @@ pub mod psi_pi {
                             *self.state =
                                 RoleTypeSerializerState::CvParam(WithSerializer::serializer(
                                     &self.value.cv_param,
-                                    Some("psi-pi:cvParam"),
+                                    Some("cvParam"),
                                     false,
                                 )?);
                             let mut bytes = BytesStart::new(self.name);
                             if self.is_root {
                                 bytes.push_attribute((
-                                    &b"xmlns:psi-pi"[..],
+                                    &b"xmlns"[..],
                                     &super::super::NS_PSI_PI[..],
                                 ));
                             }
@@ -36562,12 +36562,12 @@ pub mod psi_pi {
                             let mut bytes = BytesStart::new(self.name);
                             if self.is_root {
                                 bytes.push_attribute((
-                                    &b"xmlns:psi-pi"[..],
+                                    &b"xmlns"[..],
                                     &super::super::NS_PSI_PI[..],
                                 ));
                             }
-                            write_attrib(&mut bytes, "psi-pi:id", &self.value.id)?;
-                            write_attrib_opt(&mut bytes, "psi-pi:name", &self.value.name)?;
+                            write_attrib(&mut bytes, "id", &self.value.id)?;
+                            write_attrib_opt(&mut bytes, "name", &self.value.name)?;
                             return Ok(Some(Event::Start(bytes)));
                         }
                         SampleTypeSerializerState::Content__(x) => match x.next().transpose()? {
@@ -36621,24 +36621,24 @@ pub mod psi_pi {
                                 *self.state = SampleTypeContentSerializerState::ContactRole(
                                     WithSerializer::serializer(
                                         x,
-                                        Some("psi-pi:ContactRole"),
+                                        Some("ContactRole"),
                                         false,
                                     )?,
                                 )
                             }
                             super::SampleTypeContent::SubSample(x) => {
                                 *self.state = SampleTypeContentSerializerState::SubSample(
-                                    WithSerializer::serializer(x, Some("psi-pi:SubSample"), false)?,
+                                    WithSerializer::serializer(x, Some("SubSample"), false)?,
                                 )
                             }
                             super::SampleTypeContent::CvParam(x) => {
                                 *self.state = SampleTypeContentSerializerState::CvParam(
-                                    WithSerializer::serializer(x, Some("psi-pi:cvParam"), false)?,
+                                    WithSerializer::serializer(x, Some("cvParam"), false)?,
                                 )
                             }
                             super::SampleTypeContent::UserParam(x) => {
                                 *self.state = SampleTypeContentSerializerState::UserParam(
-                                    WithSerializer::serializer(x, Some("psi-pi:userParam"), false)?,
+                                    WithSerializer::serializer(x, Some("userParam"), false)?,
                                 )
                             }
                         },
@@ -36707,13 +36707,13 @@ pub mod psi_pi {
                             let mut bytes = BytesStart::new(self.name);
                             if self.is_root {
                                 bytes.push_attribute((
-                                    &b"xmlns:psi-pi"[..],
+                                    &b"xmlns"[..],
                                     &super::super::NS_PSI_PI[..],
                                 ));
                             }
                             write_attrib(
                                 &mut bytes,
-                                "psi-pi:searchDatabase_ref",
+                                "searchDatabase_ref",
                                 &self.value.search_database_ref,
                             )?;
                             return Ok(Some(Event::Empty(bytes)));
@@ -36764,34 +36764,34 @@ pub mod psi_pi {
                                 SearchDatabaseTypeSerializerState::ExternalFormatDocumentation(
                                     IterSerializer::new(
                                         self.value.external_format_documentation.as_ref(),
-                                        Some("psi-pi:ExternalFormatDocumentation"),
+                                        Some("ExternalFormatDocumentation"),
                                         false,
                                     ),
                                 );
                             let mut bytes = BytesStart::new(self.name);
                             if self.is_root {
                                 bytes.push_attribute((
-                                    &b"xmlns:psi-pi"[..],
+                                    &b"xmlns"[..],
                                     &super::super::NS_PSI_PI[..],
                                 ));
                             }
-                            write_attrib(&mut bytes, "psi-pi:id", &self.value.id)?;
-                            write_attrib_opt(&mut bytes, "psi-pi:name", &self.value.name)?;
-                            write_attrib(&mut bytes, "psi-pi:location", &self.value.location)?;
-                            write_attrib_opt(&mut bytes, "psi-pi:version", &self.value.version)?;
+                            write_attrib(&mut bytes, "id", &self.value.id)?;
+                            write_attrib_opt(&mut bytes, "name", &self.value.name)?;
+                            write_attrib(&mut bytes, "location", &self.value.location)?;
+                            write_attrib_opt(&mut bytes, "version", &self.value.version)?;
                             write_attrib_opt(
                                 &mut bytes,
-                                "psi-pi:releaseDate",
+                                "releaseDate",
                                 &self.value.release_date,
                             )?;
                             write_attrib_opt(
                                 &mut bytes,
-                                "psi-pi:numDatabaseSequences",
+                                "numDatabaseSequences",
                                 &self.value.num_database_sequences,
                             )?;
                             write_attrib_opt(
                                 &mut bytes,
-                                "psi-pi:numResidues",
+                                "numResidues",
                                 &self.value.num_residues,
                             )?;
                             return Ok(Some(Event::Start(bytes)));
@@ -36803,7 +36803,7 @@ pub mod psi_pi {
                                     *self.state = SearchDatabaseTypeSerializerState::FileFormat(
                                         WithSerializer::serializer(
                                             &self.value.file_format,
-                                            Some("psi-pi:FileFormat"),
+                                            Some("FileFormat"),
                                             false,
                                         )?,
                                     )
@@ -36817,7 +36817,7 @@ pub mod psi_pi {
                                     *self.state = SearchDatabaseTypeSerializerState::DatabaseName(
                                         WithSerializer::serializer(
                                             &self.value.database_name,
-                                            Some("psi-pi:DatabaseName"),
+                                            Some("DatabaseName"),
                                             false,
                                         )?,
                                     )
@@ -36831,7 +36831,7 @@ pub mod psi_pi {
                                     *self.state = SearchDatabaseTypeSerializerState::CvParam(
                                         IterSerializer::new(
                                             &self.value.cv_param[..],
-                                            Some("psi-pi:cvParam"),
+                                            Some("cvParam"),
                                             false,
                                         ),
                                     )
@@ -36897,20 +36897,20 @@ pub mod psi_pi {
                             *self.state = SearchModificationTypeSerializerState::SpecificityRules(
                                 IterSerializer::new(
                                     &self.value.specificity_rules[..],
-                                    Some("psi-pi:SpecificityRules"),
+                                    Some("SpecificityRules"),
                                     false,
                                 ),
                             );
                             let mut bytes = BytesStart::new(self.name);
                             if self.is_root {
                                 bytes.push_attribute((
-                                    &b"xmlns:psi-pi"[..],
+                                    &b"xmlns"[..],
                                     &super::super::NS_PSI_PI[..],
                                 ));
                             }
-                            write_attrib(&mut bytes, "psi-pi:fixedMod", &self.value.fixed_mod)?;
-                            write_attrib(&mut bytes, "psi-pi:massDelta", &self.value.mass_delta)?;
-                            write_attrib(&mut bytes, "psi-pi:residues", &self.value.residues)?;
+                            write_attrib(&mut bytes, "fixedMod", &self.value.fixed_mod)?;
+                            write_attrib(&mut bytes, "massDelta", &self.value.mass_delta)?;
+                            write_attrib(&mut bytes, "residues", &self.value.residues)?;
                             return Ok(Some(Event::Start(bytes)));
                         }
                         SearchModificationTypeSerializerState::SpecificityRules(x) => {
@@ -36920,7 +36920,7 @@ pub mod psi_pi {
                                     *self.state = SearchModificationTypeSerializerState::CvParam(
                                         IterSerializer::new(
                                             &self.value.cv_param[..],
-                                            Some("psi-pi:cvParam"),
+                                            Some("cvParam"),
                                             false,
                                         ),
                                     )
@@ -36987,14 +36987,14 @@ pub mod psi_pi {
                             *self.state = SequenceCollectionTypeSerializerState::DbSequence(
                                 IterSerializer::new(
                                     &self.value.db_sequence[..],
-                                    Some("psi-pi:DBSequence"),
+                                    Some("DBSequence"),
                                     false,
                                 ),
                             );
                             let mut bytes = BytesStart::new(self.name);
                             if self.is_root {
                                 bytes.push_attribute((
-                                    &b"xmlns:psi-pi"[..],
+                                    &b"xmlns"[..],
                                     &super::super::NS_PSI_PI[..],
                                 ));
                             }
@@ -37007,7 +37007,7 @@ pub mod psi_pi {
                                     *self.state = SequenceCollectionTypeSerializerState::Peptide(
                                         IterSerializer::new(
                                             &self.value.peptide[..],
-                                            Some("psi-pi:Peptide"),
+                                            Some("Peptide"),
                                             false,
                                         ),
                                     )
@@ -37022,7 +37022,7 @@ pub mod psi_pi {
                                         SequenceCollectionTypeSerializerState::PeptideEvidence(
                                             IterSerializer::new(
                                                 &self.value.peptide_evidence[..],
-                                                Some("psi-pi:PeptideEvidence"),
+                                                Some("PeptideEvidence"),
                                                 false,
                                             ),
                                         )
@@ -37090,13 +37090,13 @@ pub mod psi_pi {
                             let mut bytes = BytesStart::new(self.name);
                             if self.is_root {
                                 bytes.push_attribute((
-                                    &b"xmlns:psi-pi"[..],
+                                    &b"xmlns"[..],
                                     &super::super::NS_PSI_PI[..],
                                 ));
                             }
-                            write_attrib(&mut bytes, "psi-pi:id", &self.value.id)?;
-                            write_attrib_opt(&mut bytes, "psi-pi:name", &self.value.name)?;
-                            write_attrib(&mut bytes, "psi-pi:location", &self.value.location)?;
+                            write_attrib(&mut bytes, "id", &self.value.id)?;
+                            write_attrib_opt(&mut bytes, "name", &self.value.name)?;
+                            write_attrib(&mut bytes, "location", &self.value.location)?;
                             return Ok(Some(Event::Start(bytes)));
                         }
                         SourceFileTypeSerializerState::Content__(x) => {
@@ -37153,7 +37153,7 @@ pub mod psi_pi {
                                 SourceFileTypeContentSerializerState::ExternalFormatDocumentation(
                                     WithSerializer::serializer(
                                         x,
-                                        Some("psi-pi:ExternalFormatDocumentation"),
+                                        Some("ExternalFormatDocumentation"),
                                         false,
                                     )?,
                                 ),
@@ -37161,19 +37161,19 @@ pub mod psi_pi {
                                 *self.state = SourceFileTypeContentSerializerState::FileFormat(
                                     WithSerializer::serializer(
                                         x,
-                                        Some("psi-pi:FileFormat"),
+                                        Some("FileFormat"),
                                         false,
                                     )?,
                                 )
                             }
                             super::SourceFileTypeContent::CvParam(x) => {
                                 *self.state = SourceFileTypeContentSerializerState::CvParam(
-                                    WithSerializer::serializer(x, Some("psi-pi:cvParam"), false)?,
+                                    WithSerializer::serializer(x, Some("cvParam"), false)?,
                                 )
                             }
                             super::SourceFileTypeContent::UserParam(x) => {
                                 *self.state = SourceFileTypeContentSerializerState::UserParam(
-                                    WithSerializer::serializer(x, Some("psi-pi:userParam"), false)?,
+                                    WithSerializer::serializer(x, Some("userParam"), false)?,
                                 )
                             }
                         },
@@ -37243,13 +37243,13 @@ pub mod psi_pi {
                             *self.state =
                                 SpecificityRulesTypeSerializerState::CvParam(IterSerializer::new(
                                     &self.value.cv_param[..],
-                                    Some("psi-pi:cvParam"),
+                                    Some("cvParam"),
                                     false,
                                 ));
                             let mut bytes = BytesStart::new(self.name);
                             if self.is_root {
                                 bytes.push_attribute((
-                                    &b"xmlns:psi-pi"[..],
+                                    &b"xmlns"[..],
                                     &super::super::NS_PSI_PI[..],
                                 ));
                             }
@@ -37310,20 +37310,20 @@ pub mod psi_pi {
                                 SpectraDataTypeSerializerState::ExternalFormatDocumentation(
                                     IterSerializer::new(
                                         self.value.external_format_documentation.as_ref(),
-                                        Some("psi-pi:ExternalFormatDocumentation"),
+                                        Some("ExternalFormatDocumentation"),
                                         false,
                                     ),
                                 );
                             let mut bytes = BytesStart::new(self.name);
                             if self.is_root {
                                 bytes.push_attribute((
-                                    &b"xmlns:psi-pi"[..],
+                                    &b"xmlns"[..],
                                     &super::super::NS_PSI_PI[..],
                                 ));
                             }
-                            write_attrib(&mut bytes, "psi-pi:id", &self.value.id)?;
-                            write_attrib_opt(&mut bytes, "psi-pi:name", &self.value.name)?;
-                            write_attrib(&mut bytes, "psi-pi:location", &self.value.location)?;
+                            write_attrib(&mut bytes, "id", &self.value.id)?;
+                            write_attrib_opt(&mut bytes, "name", &self.value.name)?;
+                            write_attrib(&mut bytes, "location", &self.value.location)?;
                             return Ok(Some(Event::Start(bytes)));
                         }
                         SpectraDataTypeSerializerState::ExternalFormatDocumentation(x) => {
@@ -37333,7 +37333,7 @@ pub mod psi_pi {
                                     *self.state = SpectraDataTypeSerializerState::FileFormat(
                                         WithSerializer::serializer(
                                             &self.value.file_format,
-                                            Some("psi-pi:FileFormat"),
+                                            Some("FileFormat"),
                                             false,
                                         )?,
                                     )
@@ -37347,7 +37347,7 @@ pub mod psi_pi {
                                     *self.state = SpectraDataTypeSerializerState::SpectrumIdFormat(
                                         WithSerializer::serializer(
                                             &self.value.spectrum_id_format,
-                                            Some("psi-pi:SpectrumIDFormat"),
+                                            Some("SpectrumIDFormat"),
                                             false,
                                         )?,
                                     )
@@ -37406,14 +37406,14 @@ pub mod psi_pi {
                             *self.state = SpectrumIdFormatTypeSerializerState::CvParam(
                                 WithSerializer::serializer(
                                     &self.value.cv_param,
-                                    Some("psi-pi:cvParam"),
+                                    Some("cvParam"),
                                     false,
                                 )?,
                             );
                             let mut bytes = BytesStart::new(self.name);
                             if self.is_root {
                                 bytes.push_attribute((
-                                    &b"xmlns:psi-pi"[..],
+                                    &b"xmlns"[..],
                                     &super::super::NS_PSI_PI[..],
                                 ));
                             }
@@ -37470,13 +37470,13 @@ pub mod psi_pi {
                             let mut bytes = BytesStart::new(self.name);
                             if self.is_root {
                                 bytes.push_attribute((
-                                    &b"xmlns:psi-pi"[..],
+                                    &b"xmlns"[..],
                                     &super::super::NS_PSI_PI[..],
                                 ));
                             }
                             write_attrib(
                                 &mut bytes,
-                                "psi-pi:spectrumIdentificationItem_ref",
+                                "spectrumIdentificationItem_ref",
                                 &self.value.spectrum_identification_item_ref,
                             )?;
                             return Ok(Some(Event::Empty(bytes)));
@@ -37536,51 +37536,51 @@ pub mod psi_pi {
                             let mut bytes = BytesStart::new(self.name);
                             if self.is_root {
                                 bytes.push_attribute((
-                                    &b"xmlns:psi-pi"[..],
+                                    &b"xmlns"[..],
                                     &super::super::NS_PSI_PI[..],
                                 ));
                             }
-                            write_attrib(&mut bytes, "psi-pi:id", &self.value.id)?;
-                            write_attrib_opt(&mut bytes, "psi-pi:name", &self.value.name)?;
+                            write_attrib(&mut bytes, "id", &self.value.id)?;
+                            write_attrib_opt(&mut bytes, "name", &self.value.name)?;
                             write_attrib(
                                 &mut bytes,
-                                "psi-pi:chargeState",
+                                "chargeState",
                                 &self.value.charge_state,
                             )?;
                             write_attrib(
                                 &mut bytes,
-                                "psi-pi:experimentalMassToCharge",
+                                "experimentalMassToCharge",
                                 &self.value.experimental_mass_to_charge,
                             )?;
                             write_attrib_opt(
                                 &mut bytes,
-                                "psi-pi:calculatedMassToCharge",
+                                "calculatedMassToCharge",
                                 &self.value.calculated_mass_to_charge,
                             )?;
                             write_attrib_opt(
                                 &mut bytes,
-                                "psi-pi:calculatedPI",
+                                "calculatedPI",
                                 &self.value.calculated_pi,
                             )?;
                             write_attrib(
                                 &mut bytes,
-                                "psi-pi:peptide_ref",
+                                "peptide_ref",
                                 &self.value.peptide_ref,
                             )?;
-                            write_attrib(&mut bytes, "psi-pi:rank", &self.value.rank)?;
+                            write_attrib(&mut bytes, "rank", &self.value.rank)?;
                             write_attrib(
                                 &mut bytes,
-                                "psi-pi:passThreshold",
+                                "passThreshold",
                                 &self.value.pass_threshold,
                             )?;
                             write_attrib_opt(
                                 &mut bytes,
-                                "psi-pi:massTable_ref",
+                                "massTable_ref",
                                 &self.value.mass_table_ref,
                             )?;
                             write_attrib_opt(
                                 &mut bytes,
-                                "psi-pi:sample_ref",
+                                "sample_ref",
                                 &self.value.sample_ref,
                             )?;
                             return Ok(Some(Event::Start(bytes)));
@@ -37640,10 +37640,10 @@ pub mod psi_pi {
                     match &mut *self.state {
                     SpectrumIdentificationItemTypeContentSerializerState::Init__ => {
                         match self.value {
-                            super::SpectrumIdentificationItemTypeContent::PeptideEvidenceRef(x) => *self.state = SpectrumIdentificationItemTypeContentSerializerState::PeptideEvidenceRef(WithSerializer::serializer(x, Some("psi-pi:PeptideEvidenceRef"), false)?),
-                            super::SpectrumIdentificationItemTypeContent::Fragmentation(x) => *self.state = SpectrumIdentificationItemTypeContentSerializerState::Fragmentation(WithSerializer::serializer(x, Some("psi-pi:Fragmentation"), false)?),
-                            super::SpectrumIdentificationItemTypeContent::CvParam(x) => *self.state = SpectrumIdentificationItemTypeContentSerializerState::CvParam(WithSerializer::serializer(x, Some("psi-pi:cvParam"), false)?),
-                            super::SpectrumIdentificationItemTypeContent::UserParam(x) => *self.state = SpectrumIdentificationItemTypeContentSerializerState::UserParam(WithSerializer::serializer(x, Some("psi-pi:userParam"), false)?),
+                            super::SpectrumIdentificationItemTypeContent::PeptideEvidenceRef(x) => *self.state = SpectrumIdentificationItemTypeContentSerializerState::PeptideEvidenceRef(WithSerializer::serializer(x, Some("PeptideEvidenceRef"), false)?),
+                            super::SpectrumIdentificationItemTypeContent::Fragmentation(x) => *self.state = SpectrumIdentificationItemTypeContentSerializerState::Fragmentation(WithSerializer::serializer(x, Some("Fragmentation"), false)?),
+                            super::SpectrumIdentificationItemTypeContent::CvParam(x) => *self.state = SpectrumIdentificationItemTypeContentSerializerState::CvParam(WithSerializer::serializer(x, Some("cvParam"), false)?),
+                            super::SpectrumIdentificationItemTypeContent::UserParam(x) => *self.state = SpectrumIdentificationItemTypeContentSerializerState::UserParam(WithSerializer::serializer(x, Some("userParam"), false)?),
                         }
                     }
                     SpectrumIdentificationItemTypeContentSerializerState::PeptideEvidenceRef(x) => {
@@ -37721,15 +37721,15 @@ pub mod psi_pi {
                             let mut bytes = BytesStart::new(self.name);
                             if self.is_root {
                                 bytes.push_attribute((
-                                    &b"xmlns:psi-pi"[..],
+                                    &b"xmlns"[..],
                                     &super::super::NS_PSI_PI[..],
                                 ));
                             }
-                            write_attrib(&mut bytes, "psi-pi:id", &self.value.id)?;
-                            write_attrib_opt(&mut bytes, "psi-pi:name", &self.value.name)?;
+                            write_attrib(&mut bytes, "id", &self.value.id)?;
+                            write_attrib_opt(&mut bytes, "name", &self.value.name)?;
                             write_attrib_opt(
                                 &mut bytes,
-                                "psi-pi:numSequencesSearched",
+                                "numSequencesSearched",
                                 &self.value.num_sequences_searched,
                             )?;
                             return Ok(Some(Event::Start(bytes)));
@@ -37791,10 +37791,10 @@ pub mod psi_pi {
                     match &mut *self.state {
                     SpectrumIdentificationListTypeContentSerializerState::Init__ => {
                         match self.value {
-                            super::SpectrumIdentificationListTypeContent::FragmentationTable(x) => *self.state = SpectrumIdentificationListTypeContentSerializerState::FragmentationTable(WithSerializer::serializer(x, Some("psi-pi:FragmentationTable"), false)?),
-                            super::SpectrumIdentificationListTypeContent::SpectrumIdentificationResult(x) => *self.state = SpectrumIdentificationListTypeContentSerializerState::SpectrumIdentificationResult(WithSerializer::serializer(x, Some("psi-pi:SpectrumIdentificationResult"), false)?),
-                            super::SpectrumIdentificationListTypeContent::CvParam(x) => *self.state = SpectrumIdentificationListTypeContentSerializerState::CvParam(WithSerializer::serializer(x, Some("psi-pi:cvParam"), false)?),
-                            super::SpectrumIdentificationListTypeContent::UserParam(x) => *self.state = SpectrumIdentificationListTypeContentSerializerState::UserParam(WithSerializer::serializer(x, Some("psi-pi:userParam"), false)?),
+                            super::SpectrumIdentificationListTypeContent::FragmentationTable(x) => *self.state = SpectrumIdentificationListTypeContentSerializerState::FragmentationTable(WithSerializer::serializer(x, Some("FragmentationTable"), false)?),
+                            super::SpectrumIdentificationListTypeContent::SpectrumIdentificationResult(x) => *self.state = SpectrumIdentificationListTypeContentSerializerState::SpectrumIdentificationResult(WithSerializer::serializer(x, Some("SpectrumIdentificationResult"), false)?),
+                            super::SpectrumIdentificationListTypeContent::CvParam(x) => *self.state = SpectrumIdentificationListTypeContentSerializerState::CvParam(WithSerializer::serializer(x, Some("cvParam"), false)?),
+                            super::SpectrumIdentificationListTypeContent::UserParam(x) => *self.state = SpectrumIdentificationListTypeContentSerializerState::UserParam(WithSerializer::serializer(x, Some("userParam"), false)?),
                         }
                     }
                     SpectrumIdentificationListTypeContentSerializerState::FragmentationTable(x) => {
@@ -37893,49 +37893,49 @@ pub mod psi_pi {
                 loop {
                     match &mut *self.state {
                     SpectrumIdentificationProtocolTypeSerializerState::Init__ => {
-                        *self.state = SpectrumIdentificationProtocolTypeSerializerState::SearchType(WithSerializer::serializer(&self.value.search_type, Some("psi-pi:SearchType"), false)?);
+                        *self.state = SpectrumIdentificationProtocolTypeSerializerState::SearchType(WithSerializer::serializer(&self.value.search_type, Some("SearchType"), false)?);
                         let mut bytes = BytesStart::new(self.name);
-                        if self.is_root { bytes.push_attribute((&b"xmlns:psi-pi"[..], &super::super::NS_PSI_PI[..])); }
-                        write_attrib(&mut bytes, "psi-pi:id", &self.value.id)?;
-                        write_attrib_opt(&mut bytes, "psi-pi:name", &self.value.name)?;
-                        write_attrib(&mut bytes, "psi-pi:analysisSoftware_ref", &self.value.analysis_software_ref)?;
+                        if self.is_root { bytes.push_attribute((&b"xmlns"[..], &super::super::NS_PSI_PI[..])); }
+                        write_attrib(&mut bytes, "id", &self.value.id)?;
+                        write_attrib_opt(&mut bytes, "name", &self.value.name)?;
+                        write_attrib(&mut bytes, "analysisSoftware_ref", &self.value.analysis_software_ref)?;
                         return Ok(Some(Event::Start(bytes)));
                     }
                     SpectrumIdentificationProtocolTypeSerializerState::SearchType(x) => match x.next().transpose()? {
                         Some(event) => return Ok(Some(event)),
-                        None => *self.state = SpectrumIdentificationProtocolTypeSerializerState::AdditionalSearchParams(IterSerializer::new(self.value.additional_search_params.as_ref(), Some("psi-pi:AdditionalSearchParams"), false)),
+                        None => *self.state = SpectrumIdentificationProtocolTypeSerializerState::AdditionalSearchParams(IterSerializer::new(self.value.additional_search_params.as_ref(), Some("AdditionalSearchParams"), false)),
                     }
                     SpectrumIdentificationProtocolTypeSerializerState::AdditionalSearchParams(x) => match x.next().transpose()? {
                         Some(event) => return Ok(Some(event)),
-                        None => *self.state = SpectrumIdentificationProtocolTypeSerializerState::ModificationParams(IterSerializer::new(self.value.modification_params.as_ref(), Some("psi-pi:ModificationParams"), false)),
+                        None => *self.state = SpectrumIdentificationProtocolTypeSerializerState::ModificationParams(IterSerializer::new(self.value.modification_params.as_ref(), Some("ModificationParams"), false)),
                     }
                     SpectrumIdentificationProtocolTypeSerializerState::ModificationParams(x) => match x.next().transpose()? {
                         Some(event) => return Ok(Some(event)),
-                        None => *self.state = SpectrumIdentificationProtocolTypeSerializerState::Enzymes(IterSerializer::new(self.value.enzymes.as_ref(), Some("psi-pi:Enzymes"), false)),
+                        None => *self.state = SpectrumIdentificationProtocolTypeSerializerState::Enzymes(IterSerializer::new(self.value.enzymes.as_ref(), Some("Enzymes"), false)),
                     }
                     SpectrumIdentificationProtocolTypeSerializerState::Enzymes(x) => match x.next().transpose()? {
                         Some(event) => return Ok(Some(event)),
-                        None => *self.state = SpectrumIdentificationProtocolTypeSerializerState::MassTable(IterSerializer::new(&self.value.mass_table[..], Some("psi-pi:MassTable"), false)),
+                        None => *self.state = SpectrumIdentificationProtocolTypeSerializerState::MassTable(IterSerializer::new(&self.value.mass_table[..], Some("MassTable"), false)),
                     }
                     SpectrumIdentificationProtocolTypeSerializerState::MassTable(x) => match x.next().transpose()? {
                         Some(event) => return Ok(Some(event)),
-                        None => *self.state = SpectrumIdentificationProtocolTypeSerializerState::FragmentTolerance(IterSerializer::new(self.value.fragment_tolerance.as_ref(), Some("psi-pi:FragmentTolerance"), false)),
+                        None => *self.state = SpectrumIdentificationProtocolTypeSerializerState::FragmentTolerance(IterSerializer::new(self.value.fragment_tolerance.as_ref(), Some("FragmentTolerance"), false)),
                     }
                     SpectrumIdentificationProtocolTypeSerializerState::FragmentTolerance(x) => match x.next().transpose()? {
                         Some(event) => return Ok(Some(event)),
-                        None => *self.state = SpectrumIdentificationProtocolTypeSerializerState::ParentTolerance(IterSerializer::new(self.value.parent_tolerance.as_ref(), Some("psi-pi:ParentTolerance"), false)),
+                        None => *self.state = SpectrumIdentificationProtocolTypeSerializerState::ParentTolerance(IterSerializer::new(self.value.parent_tolerance.as_ref(), Some("ParentTolerance"), false)),
                     }
                     SpectrumIdentificationProtocolTypeSerializerState::ParentTolerance(x) => match x.next().transpose()? {
                         Some(event) => return Ok(Some(event)),
-                        None => *self.state = SpectrumIdentificationProtocolTypeSerializerState::Threshold(WithSerializer::serializer(&self.value.threshold, Some("psi-pi:Threshold"), false)?),
+                        None => *self.state = SpectrumIdentificationProtocolTypeSerializerState::Threshold(WithSerializer::serializer(&self.value.threshold, Some("Threshold"), false)?),
                     }
                     SpectrumIdentificationProtocolTypeSerializerState::Threshold(x) => match x.next().transpose()? {
                         Some(event) => return Ok(Some(event)),
-                        None => *self.state = SpectrumIdentificationProtocolTypeSerializerState::DatabaseFilters(IterSerializer::new(self.value.database_filters.as_ref(), Some("psi-pi:DatabaseFilters"), false)),
+                        None => *self.state = SpectrumIdentificationProtocolTypeSerializerState::DatabaseFilters(IterSerializer::new(self.value.database_filters.as_ref(), Some("DatabaseFilters"), false)),
                     }
                     SpectrumIdentificationProtocolTypeSerializerState::DatabaseFilters(x) => match x.next().transpose()? {
                         Some(event) => return Ok(Some(event)),
-                        None => *self.state = SpectrumIdentificationProtocolTypeSerializerState::DatabaseTranslation(IterSerializer::new(self.value.database_translation.as_ref(), Some("psi-pi:DatabaseTranslation"), false)),
+                        None => *self.state = SpectrumIdentificationProtocolTypeSerializerState::DatabaseTranslation(IterSerializer::new(self.value.database_translation.as_ref(), Some("DatabaseTranslation"), false)),
                     }
                     SpectrumIdentificationProtocolTypeSerializerState::DatabaseTranslation(x) => match x.next().transpose()? {
                         Some(event) => return Ok(Some(event)),
@@ -37997,16 +37997,16 @@ pub mod psi_pi {
                             let mut bytes = BytesStart::new(self.name);
                             if self.is_root {
                                 bytes.push_attribute((
-                                    &b"xmlns:psi-pi"[..],
+                                    &b"xmlns"[..],
                                     &super::super::NS_PSI_PI[..],
                                 ));
                             }
-                            write_attrib(&mut bytes, "psi-pi:id", &self.value.id)?;
-                            write_attrib_opt(&mut bytes, "psi-pi:name", &self.value.name)?;
-                            write_attrib(&mut bytes, "psi-pi:spectrumID", &self.value.spectrum_id)?;
+                            write_attrib(&mut bytes, "id", &self.value.id)?;
+                            write_attrib_opt(&mut bytes, "name", &self.value.name)?;
+                            write_attrib(&mut bytes, "spectrumID", &self.value.spectrum_id)?;
                             write_attrib(
                                 &mut bytes,
-                                "psi-pi:spectraData_ref",
+                                "spectraData_ref",
                                 &self.value.spectra_data_ref,
                             )?;
                             return Ok(Some(Event::Start(bytes)));
@@ -38067,9 +38067,9 @@ pub mod psi_pi {
                     match &mut *self.state {
                     SpectrumIdentificationResultTypeContentSerializerState::Init__ => {
                         match self.value {
-                            super::SpectrumIdentificationResultTypeContent::SpectrumIdentificationItem(x) => *self.state = SpectrumIdentificationResultTypeContentSerializerState::SpectrumIdentificationItem(WithSerializer::serializer(x, Some("psi-pi:SpectrumIdentificationItem"), false)?),
-                            super::SpectrumIdentificationResultTypeContent::CvParam(x) => *self.state = SpectrumIdentificationResultTypeContentSerializerState::CvParam(WithSerializer::serializer(x, Some("psi-pi:cvParam"), false)?),
-                            super::SpectrumIdentificationResultTypeContent::UserParam(x) => *self.state = SpectrumIdentificationResultTypeContentSerializerState::UserParam(WithSerializer::serializer(x, Some("psi-pi:userParam"), false)?),
+                            super::SpectrumIdentificationResultTypeContent::SpectrumIdentificationItem(x) => *self.state = SpectrumIdentificationResultTypeContentSerializerState::SpectrumIdentificationItem(WithSerializer::serializer(x, Some("SpectrumIdentificationItem"), false)?),
+                            super::SpectrumIdentificationResultTypeContent::CvParam(x) => *self.state = SpectrumIdentificationResultTypeContentSerializerState::CvParam(WithSerializer::serializer(x, Some("cvParam"), false)?),
+                            super::SpectrumIdentificationResultTypeContent::UserParam(x) => *self.state = SpectrumIdentificationResultTypeContentSerializerState::UserParam(WithSerializer::serializer(x, Some("userParam"), false)?),
                         }
                     }
                     SpectrumIdentificationResultTypeContentSerializerState::SpectrumIdentificationItem(x) => {
@@ -38142,32 +38142,32 @@ pub mod psi_pi {
                             *self.state = SpectrumIdentificationTypeSerializerState::InputSpectra(
                                 IterSerializer::new(
                                     &self.value.input_spectra[..],
-                                    Some("psi-pi:InputSpectra"),
+                                    Some("InputSpectra"),
                                     false,
                                 ),
                             );
                             let mut bytes = BytesStart::new(self.name);
                             if self.is_root {
                                 bytes.push_attribute((
-                                    &b"xmlns:psi-pi"[..],
+                                    &b"xmlns"[..],
                                     &super::super::NS_PSI_PI[..],
                                 ));
                             }
-                            write_attrib(&mut bytes, "psi-pi:id", &self.value.id)?;
-                            write_attrib_opt(&mut bytes, "psi-pi:name", &self.value.name)?;
+                            write_attrib(&mut bytes, "id", &self.value.id)?;
+                            write_attrib_opt(&mut bytes, "name", &self.value.name)?;
                             write_attrib_opt(
                                 &mut bytes,
-                                "psi-pi:activityDate",
+                                "activityDate",
                                 &self.value.activity_date,
                             )?;
                             write_attrib(
                                 &mut bytes,
-                                "psi-pi:spectrumIdentificationProtocol_ref",
+                                "spectrumIdentificationProtocol_ref",
                                 &self.value.spectrum_identification_protocol_ref,
                             )?;
                             write_attrib(
                                 &mut bytes,
-                                "psi-pi:spectrumIdentificationList_ref",
+                                "spectrumIdentificationList_ref",
                                 &self.value.spectrum_identification_list_ref,
                             )?;
                             return Ok(Some(Event::Start(bytes)));
@@ -38180,7 +38180,7 @@ pub mod psi_pi {
                                         SpectrumIdentificationTypeSerializerState::SearchDatabaseRef(
                                             IterSerializer::new(
                                                 &self.value.search_database_ref[..],
-                                                Some("psi-pi:SearchDatabaseRef"),
+                                                Some("SearchDatabaseRef"),
                                                 false,
                                             ),
                                         )
@@ -38239,11 +38239,11 @@ pub mod psi_pi {
                             let mut bytes = BytesStart::new(self.name);
                             if self.is_root {
                                 bytes.push_attribute((
-                                    &b"xmlns:psi-pi"[..],
+                                    &b"xmlns"[..],
                                     &super::super::NS_PSI_PI[..],
                                 ));
                             }
-                            write_attrib(&mut bytes, "psi-pi:sample_ref", &self.value.sample_ref)?;
+                            write_attrib(&mut bytes, "sample_ref", &self.value.sample_ref)?;
                             return Ok(Some(Event::Empty(bytes)));
                         }
                         SubSampleTypeSerializerState::Done__ => return Ok(None),
@@ -38287,29 +38287,29 @@ pub mod psi_pi {
                             let mut bytes = BytesStart::new(self.name);
                             if self.is_root {
                                 bytes.push_attribute((
-                                    &b"xmlns:psi-pi"[..],
+                                    &b"xmlns"[..],
                                     &super::super::NS_PSI_PI[..],
                                 ));
                             }
                             write_attrib(
                                 &mut bytes,
-                                "psi-pi:originalResidue",
+                                "originalResidue",
                                 &self.value.original_residue,
                             )?;
                             write_attrib(
                                 &mut bytes,
-                                "psi-pi:replacementResidue",
+                                "replacementResidue",
                                 &self.value.replacement_residue,
                             )?;
-                            write_attrib_opt(&mut bytes, "psi-pi:location", &self.value.location)?;
+                            write_attrib_opt(&mut bytes, "location", &self.value.location)?;
                             write_attrib_opt(
                                 &mut bytes,
-                                "psi-pi:avgMassDelta",
+                                "avgMassDelta",
                                 &self.value.avg_mass_delta,
                             )?;
                             write_attrib_opt(
                                 &mut bytes,
-                                "psi-pi:monoisotopicMassDelta",
+                                "monoisotopicMassDelta",
                                 &self.value.monoisotopic_mass_delta,
                             )?;
                             return Ok(Some(Event::Empty(bytes)));
@@ -38356,13 +38356,13 @@ pub mod psi_pi {
                             *self.state =
                                 ToleranceTypeSerializerState::CvParam(IterSerializer::new(
                                     &self.value.cv_param[..],
-                                    Some("psi-pi:cvParam"),
+                                    Some("cvParam"),
                                     false,
                                 ));
                             let mut bytes = BytesStart::new(self.name);
                             if self.is_root {
                                 bytes.push_attribute((
-                                    &b"xmlns:psi-pi"[..],
+                                    &b"xmlns"[..],
                                     &super::super::NS_PSI_PI[..],
                                 ));
                             }
@@ -38418,18 +38418,18 @@ pub mod psi_pi {
                             *self.state =
                                 TranslationTableTypeSerializerState::CvParam(IterSerializer::new(
                                     &self.value.cv_param[..],
-                                    Some("psi-pi:cvParam"),
+                                    Some("cvParam"),
                                     false,
                                 ));
                             let mut bytes = BytesStart::new(self.name);
                             if self.is_root {
                                 bytes.push_attribute((
-                                    &b"xmlns:psi-pi"[..],
+                                    &b"xmlns"[..],
                                     &super::super::NS_PSI_PI[..],
                                 ));
                             }
-                            write_attrib(&mut bytes, "psi-pi:id", &self.value.id)?;
-                            write_attrib_opt(&mut bytes, "psi-pi:name", &self.value.name)?;
+                            write_attrib(&mut bytes, "id", &self.value.id)?;
+                            write_attrib_opt(&mut bytes, "name", &self.value.name)?;
                             return Ok(Some(Event::Start(bytes)));
                         }
                         TranslationTableTypeSerializerState::CvParam(x) => {
@@ -38483,24 +38483,24 @@ pub mod psi_pi {
                             let mut bytes = BytesStart::new(self.name);
                             if self.is_root {
                                 bytes.push_attribute((
-                                    &b"xmlns:psi-pi"[..],
+                                    &b"xmlns"[..],
                                     &super::super::NS_PSI_PI[..],
                                 ));
                             }
-                            write_attrib(&mut bytes, "psi-pi:name", &self.value.name)?;
-                            write_attrib_opt(&mut bytes, "psi-pi:value", &self.value.value)?;
+                            write_attrib(&mut bytes, "name", &self.value.name)?;
+                            write_attrib_opt(&mut bytes, "value", &self.value.value)?;
                             write_attrib_opt(
                                 &mut bytes,
-                                "psi-pi:unitAccession",
+                                "unitAccession",
                                 &self.value.unit_accession,
                             )?;
-                            write_attrib_opt(&mut bytes, "psi-pi:unitName", &self.value.unit_name)?;
+                            write_attrib_opt(&mut bytes, "unitName", &self.value.unit_name)?;
                             write_attrib_opt(
                                 &mut bytes,
-                                "psi-pi:unitCvRef",
+                                "unitCvRef",
                                 &self.value.unit_cv_ref,
                             )?;
-                            write_attrib_opt(&mut bytes, "psi-pi:type", &self.value.type_)?;
+                            write_attrib_opt(&mut bytes, "type", &self.value.type_)?;
                             return Ok(Some(Event::Empty(bytes)));
                         }
                         UserParamTypeSerializerState::Done__ => return Ok(None),
@@ -38544,14 +38544,14 @@ pub mod psi_pi {
                             let mut bytes = BytesStart::new(self.name);
                             if self.is_root {
                                 bytes.push_attribute((
-                                    &b"xmlns:psi-pi"[..],
+                                    &b"xmlns"[..],
                                     &super::super::NS_PSI_PI[..],
                                 ));
                             }
-                            write_attrib(&mut bytes, "psi-pi:fullName", &self.value.full_name)?;
-                            write_attrib_opt(&mut bytes, "psi-pi:version", &self.value.version)?;
-                            write_attrib(&mut bytes, "psi-pi:uri", &self.value.uri)?;
-                            write_attrib(&mut bytes, "psi-pi:id", &self.value.id)?;
+                            write_attrib(&mut bytes, "fullName", &self.value.full_name)?;
+                            write_attrib_opt(&mut bytes, "version", &self.value.version)?;
+                            write_attrib(&mut bytes, "uri", &self.value.uri)?;
+                            write_attrib(&mut bytes, "id", &self.value.id)?;
                             return Ok(Some(Event::Empty(bytes)));
                         }
                         CvTypeSerializerState::Done__ => return Ok(None),
@@ -38775,7 +38775,7 @@ pub mod xs {
                             let mut bytes = BytesStart::new(self.name);
                             if self.is_root {
                                 bytes.push_attribute((
-                                    &b"xmlns:psi-pi"[..],
+                                    &b"xmlns"[..],
                                     &super::super::NS_PSI_PI[..],
                                 ));
                             }
