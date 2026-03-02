@@ -330,7 +330,7 @@ impl MzIdentMLFactory {
 
     pub fn serialize(self) -> Result<String, String> {
         let mut writer = Writer::new_with_indent(std::io::Cursor::new(Vec::new()), b' ', 2);
-        let mut serializer = self.doc.serializer(Some("psi-pi:MzIdentML"), true)
+        let mut serializer = self.doc.serializer(Some("MzIdentML"), true)
             .map_err(|e| format!("Serialization error: {:?}", e))?;
         
         for event in &mut serializer {
@@ -338,19 +338,8 @@ impl MzIdentMLFactory {
             writer.write_event(event).map_err(|e| format!("XML write error: {:?}", e))?;
         }
         
-        let xml = String::from_utf8(writer.into_inner().into_inner())
-            .map_err(|e| format!("UTF8 error: {:?}", e))?;
-        
-        // Post-process to remove prefixes which are not allowed on attributes 
-        // and to simplify the file by using a default namespace.
-        // This is necessary because the generated code in mzidentml.rs hardcodes the prefix.
-        /*let xml = xml
-            .replace("<psi-pi:", "<")
-            .replace("</psi-pi:", "</")
-            .replace(" psi-pi:", " ")
-            .replace("xmlns:psi-pi=", "xmlns=");*/
-            
-        Ok(xml)
+        String::from_utf8(writer.into_inner().into_inner())
+            .map_err(|e| format!("UTF8 error: {:?}", e))
     }
 }
 
