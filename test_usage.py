@@ -93,5 +93,24 @@ def test():
         print(f"mzidentml-reader FAILED to parse the file: {e}")
         # Not exiting here so we can still see the output
 
+    # 5. Schema Validation
+    print("\nValidating against XSD...")
+    try:
+        from lxml import etree
+        schema_file = "mzIdentML1.3.0.xsd"
+        if os.path.exists(schema_file):
+            with open(schema_file, 'rb') as f:
+                schema_root = etree.XML(f.read())
+                schema = etree.XMLSchema(schema_root)
+                
+            with open(output_file, 'rb') as f:
+                doc = etree.XML(f.read())
+                schema.assertValid(doc)
+                print("Schema validation SUCCESSFUL!")
+        else:
+            print(f"Warning: {schema_file} not found, skipping schema validation.")
+    except Exception as e:
+        print(f"Schema validation FAILED: {e}")
+
 if __name__ == "__main__":
     test()
