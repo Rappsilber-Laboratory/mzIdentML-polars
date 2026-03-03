@@ -36,6 +36,7 @@ def test():
         "score": [10.5, 20.1, 15.0],
         "crosslinker_name": ["DSSO", "DSSO", "DSSO"],
         "crosslinker_accession": ["MS:1003124", "MS:1003124", "MS:1003124"],
+        "crosslinker_mass": [158.0038, 158.0038, 158.0038],
 
         # Required for crosslinks (is_crosslink = True)
         "peptide2_seq": [None, "KLS", None],
@@ -65,12 +66,32 @@ def test():
     try:
         xml_content = mzidentml_polars.write_mzidentml(csms, prot_seqs, spectra, {})
         print("Success! XML generated.")
-        with open("test_output.mzid", "w") as f:
+        output_file = "test_output.mzid"
+        with open(output_file, "w") as f:
             f.write(xml_content)
-        print("XML written to test_output.mzid")
+        print(f"XML written to {output_file}")
     except Exception as e:
         print(f"FAILED with error: {e}")
         sys.exit(1)
+
+    # 4. Verify with mzidentml-reader
+    print("\nVerifying with mzidentml-reader...")
+    from parser.process_dataset import sequences_and_residue_pairs
+    import tempfile
+    import os
+
+    try:
+        tmpdir = tempfile.gettempdir()
+        data = sequences_and_residue_pairs(output_file, tmpdir)
+        print("mzidentml-reader successfully parsed the file!")
+        # Basic validation of parsed data
+        if "residue_pairs" in data and len(data["residue_pairs"]) > 0:
+            print(f"Found {len(data['residue_pairs'])} residue pairs (crosslinks).")
+        else:
+            print("Warning: No residue pairs found by mzidentml-reader.")
+    except Exception as e:
+        print(f"mzidentml-reader FAILED to parse the file: {e}")
+        # Not exiting here so we can still see the output
 
 if __name__ == "__main__":
     test()

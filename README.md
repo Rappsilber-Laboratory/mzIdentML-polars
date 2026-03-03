@@ -60,6 +60,7 @@ csms = pl.DataFrame({
     "score": [10.5, 20.1, 15.0],
     "crosslinker_name": ["DSSO", "DSSO", "DSSO"],
     "crosslinker_accession": ["MS:1003124", "MS:1003124", "MS:1003124"],
+    "crosslinker_mass": [158.0038, 158.0038, 158.0038],
 
     # Required for crosslinks (is_crosslink = True)
     "peptide2_seq": [None, "KLS", None],
@@ -139,6 +140,7 @@ pip install pyarrow
 | `peptide2_end` | UInt32 | (Crosslink only) End position |
 | `crosslinker_name`| String | **Recommended**. Name of the crosslinker (e.g., `DSSO`) |
 | `crosslinker_accession`| String | **Recommended**. CV accession of the crosslinker (e.g., `MS:1003124`) |
+| `crosslinker_mass`| Float64| **Recommended**. Mass of the crosslinker |
 
 ## License
 

@@ -498,6 +498,7 @@ pub fn write_mzidentml(
     let c_score = csms_df.column("score").ok().and_then(|c| c.f64().ok());
     let c_xl_name = csms_df.column("crosslinker_name").ok().and_then(|c| c.str().ok());
     let c_xl_acc = csms_df.column("crosslinker_accession").ok().and_then(|c| c.str().ok());
+    let c_xl_mass = csms_df.column("crosslinker_mass").ok().and_then(|c| c.f64().ok());
 
     let get_cv_ref = |acc: &str| -> String {
         if acc.starts_with("MS:") { "PSI-MS".to_string() }
@@ -557,6 +558,7 @@ pub fn write_mzidentml(
                 linkage1.push(ModificationType {
                     location: Some(pos1),
                     cv_param: params,
+                    monoisotopic_mass_delta: Some(c_xl_mass.as_ref().and_then(|c| c.get(i)).unwrap_or(0.0)),
                     ..Default::default()
                 });
             }
@@ -585,6 +587,7 @@ pub fn write_mzidentml(
                 linkage2.push(ModificationType {
                     location: Some(pos2),
                     cv_param: params,
+                    monoisotopic_mass_delta: Some(c_xl_mass.as_ref().and_then(|c| c.get(i)).unwrap_or(0.0)),
                     ..Default::default()
                 });
             }
@@ -692,6 +695,7 @@ pub fn write_mzidentml(
                     linkage.push(ModificationType {
                         location: Some(pos1),
                         cv_param: params,
+                        monoisotopic_mass_delta: Some(c_xl_mass.as_ref().and_then(|c| c.get(i)).unwrap_or(0.0)),
                         ..Default::default()
                     });
                 }
@@ -716,6 +720,7 @@ pub fn write_mzidentml(
                     linkage.push(ModificationType {
                         location: Some(pos2),
                         cv_param: params,
+                        monoisotopic_mass_delta: Some(c_xl_mass.as_ref().and_then(|c| c.get(i)).unwrap_or(0.0)),
                         ..Default::default()
                     });
                 }
