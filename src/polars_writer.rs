@@ -304,13 +304,20 @@ impl MzIdentMLFactory {
 
     pub fn add_software(&mut self, id: &str, name: &str, version: &str) {
         if let Some(list) = &mut self.doc.analysis_software_list {
-            list.analysis_software.push(AnalysisSoftwareType {
-                id: id.to_string(),
-                name: Some(name.to_string()),
-                version: Some(version.to_string()),
-                uri: None,
-                contact_role: None,
-                software_name: ParamType::UserParam(UserParamType {
+            let software_name = match name.to_lowercase().as_str() {
+                "xi" => ParamType::CvParam(CvParamType {
+                    name: "xi".to_string(),
+                    accession: "MS:1002544".to_string(),
+                    cv_ref: "PSI-MS".to_string(),
+                    ..Default::default()
+                }),
+                "xifdr" => ParamType::CvParam(CvParamType {
+                    name: "xiFDR".to_string(),
+                    accession: "MS:1002543".to_string(),
+                    cv_ref: "PSI-MS".to_string(),
+                    ..Default::default()
+                }),
+                _ => ParamType::UserParam(UserParamType {
                     name: name.to_string(),
                     type_: None,
                     unit_accession: None,
@@ -318,6 +325,15 @@ impl MzIdentMLFactory {
                     unit_cv_ref: None,
                     value: None,
                 }),
+            };
+
+            list.analysis_software.push(AnalysisSoftwareType {
+                id: id.to_string(),
+                name: Some(name.to_string()),
+                version: Some(version.to_string()),
+                uri: None,
+                contact_role: None,
+                software_name,
                 customizations: None,
             });
         }
@@ -559,7 +575,8 @@ pub fn write_mzidentml(
 
     // 1. Setup metadata
     let sw_name = metadata.get_item("software_name").ok().flatten().and_then(|v| v.extract::<String>().ok()).unwrap_or_else(|| "mzidentml-polars".to_string());
-    factory.add_software("AS_1", &sw_name, "0.1.0");
+    let sw_version = metadata.get_item("software_version").ok().flatten().and_then(|v| v.extract::<String>().ok()).unwrap_or_else(|| "0.1.0".to_string());
+    factory.add_software("AS_1", &sw_name, &sw_version);
     factory.add_search_database("SearchDB_1", "Target Database");
     factory.add_protocol("SIP_1", "AS_1");
 
