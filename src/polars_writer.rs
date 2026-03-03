@@ -711,15 +711,8 @@ pub fn write_mzidentml(
         else { "PSI-MS".to_string() }
     };
 
-    // Map spectrum IDs to their SpectraData reference
-    let mut spec_id_to_sd_id = HashMap::new();
-    for i in 0..spec_df.height() {
-        if let (Some(sid), Some(path)) = (spec_ids_col.get(i), spec_paths_col.get(i)) {
-            if let Some(sd_id) = path_to_sd_id.get(path) {
-                spec_id_to_sd_id.insert(sid, sd_id);
-            }
-        }
-    }
+    // Group results by (SpectraData Ref, Spectrum ID) to avoid duplicate SIR elements
+    let mut grouped_results: HashMap<(String, String), (Vec<SpectrumIdentificationItemType>, Vec<CvParamType>)> = HashMap::new();
 
     for i in 0..csms_df.height() {
         let spec_id = c_spec_id.get(i).unwrap();
@@ -883,7 +876,8 @@ pub fn write_mzidentml(
                 }
             }
 
-            factory.add_spectrum_identification_result(sd_ref, spec_id, sii_list, sir_params);
+            let list = &mut grouped_results.entry((sd_ref.to_string(), spec_id.to_string())).or_insert((Vec::new(), sir_params)).0;
+            list.extend(sii_list);
         } else {
             // LINEAR OR LOOP-LINK
             let mut linkage = Vec::new();
@@ -949,7 +943,7 @@ pub fn write_mzidentml(
             let is_decoy1 = factory.decoy_map.get(prot1_id).cloned().unwrap_or(false);
             let ev1_id = factory.add_peptide_evidence(&pep_id, &dbseq1_ref, c_start1.get(i), c_end1.get(i), is_decoy1);
 
-            let sii = SpectrumIdentificationItemType {
+            let mut sii = SpectrumIdentificationItemType {
                 id: format!("SII_{}_{}", spec_id, i),
                 charge_state: c_charge.get(i).unwrap(),
                 experimental_mass_to_charge: c_exp_mz.as_ref().and_then(|c| c.get(i)).unwrap_or(0.0),
@@ -964,10 +958,9 @@ pub fn write_mzidentml(
                 ],
                 ..Default::default()
             };
-
-            let mut sii_list = vec![sii];
+            
             if is_loop_link.get(i).unwrap_or(false) {
-                sii_list[0].content.push(SpectrumIdentificationItemTypeContent::CvParam(CvParamType {
+                sii.content.push(SpectrumIdentificationItemTypeContent::CvParam(CvParamType {
                     name: "loop-link spectrum identification item".to_string(),
                     accession: "MS:1003329".to_string(),
                     cv_ref: "PSI-MS".to_string(),
@@ -977,20 +970,23 @@ pub fn write_mzidentml(
 
             if let Some(scores) = c_score {
                 if let Some(s) = scores.get(i) {
-                    for sii in &mut sii_list {
-                        sii.content.push(SpectrumIdentificationItemTypeContent::CvParam(CvParamType {
-                            name: "xi:score".to_string(),
-                            accession: "MS:1002545".to_string(),
-                            cv_ref: "PSI-MS".to_string(),
-                            value: Some(s.to_string()),
-                            ..Default::default()
-                        }));
-                    }
+                    sii.content.push(SpectrumIdentificationItemTypeContent::CvParam(CvParamType {
+                        name: "xi:score".to_string(),
+                        accession: "MS:1002545".to_string(),
+                        cv_ref: "PSI-MS".to_string(),
+                        value: Some(s.to_string()),
+                        ..Default::default()
+                    }));
                 }
             }
 
-            factory.add_spectrum_identification_result(sd_ref, spec_id, sii_list, sir_params);
+            grouped_results.entry((sd_ref.to_string(), spec_id.to_string())).or_insert((Vec::new(), sir_params)).0.push(sii);
         }
+    }
+
+    // 4. Add grouped results to factory
+    for ((sd_ref, spec_id), (items, sir_params)) in grouped_results {
+        factory.add_spectrum_identification_result(&sd_ref, &spec_id, items, sir_params);
     }
 
     factory.serialize().map_err(|e| PyErr::new::<pyo3::exceptions::PyRuntimeError, _>(e))
