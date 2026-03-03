@@ -757,7 +757,23 @@ pub fn write_mzidentml(
                             cv_ref: get_cv_ref(acc),
                             ..Default::default()
                         });
+                    } else {
+                        // Fallback generic cross-linker if name/acc is missing but is_xl is true
+                        params.push(CvParamType {
+                            name: "cross-linker".to_string(),
+                            accession: "MS:1002493".to_string(),
+                            cv_ref: "PSI-MS".to_string(),
+                            ..Default::default()
+                        });
                     }
+                } else {
+                    // Fallback generic cross-linker if columns themselves are missing
+                    params.push(CvParamType {
+                        name: "cross-linker".to_string(),
+                        accession: "MS:1002493".to_string(),
+                        cv_ref: "PSI-MS".to_string(),
+                        ..Default::default()
+                    });
                 }
                 params.push(CvParamType {
                     name: "cross-link donor".to_string(),
@@ -885,7 +901,21 @@ pub fn write_mzidentml(
                                 cv_ref: get_cv_ref(acc),
                                 ..Default::default()
                             });
+                        } else {
+                            params.push(CvParamType {
+                                name: "cross-linker".to_string(),
+                                accession: "MS:1002493".to_string(),
+                                cv_ref: "PSI-MS".to_string(),
+                                ..Default::default()
+                            });
                         }
+                    } else {
+                        params.push(CvParamType {
+                            name: "cross-linker".to_string(),
+                            accession: "MS:1002493".to_string(),
+                            cv_ref: "PSI-MS".to_string(),
+                            ..Default::default()
+                        });
                     }
                     params.push(CvParamType {
                         name: "cross-link donor".to_string(),
@@ -1046,6 +1076,8 @@ fn parse_proforma(proforma: &str) -> (String, Vec<ModificationType>) {
                     let parts: Vec<&str> = mod_str.split(':').collect();
                     cv_param.cv_ref = parts[0].to_uppercase();
                     cv_param.accession = mod_str.to_uppercase();
+                    // Use the part after colon as name if it's the only info we have, 
+                    // but some parsers might prefer the full string or a placeholder if it's just a number.
                     cv_param.name = parts[1].to_string();
                 } else {
                     cv_param.name = mod_str.to_string();
@@ -1055,6 +1087,7 @@ fn parse_proforma(proforma: &str) -> (String, Vec<ModificationType>) {
                 mods.push(ModificationType {
                     location: Some(clean_seq.len() as i32),
                     cv_param: vec![cv_param],
+                    monoisotopic_mass_delta: Some(0.0), // Default to 0.0 if unknown from ProForma
                     ..Default::default()
                 });
                 i = end + 1;

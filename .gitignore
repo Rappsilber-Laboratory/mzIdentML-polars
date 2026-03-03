@@ -3,3 +3,4 @@ target/
 .DS_Store
 .venv/
 test_output.mzid
+output_*.mzid
