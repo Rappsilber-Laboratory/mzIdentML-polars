@@ -92,6 +92,7 @@ spectra = pl.DataFrame({
 metadata = {
     "software_name": "xi",
     "software_version": "2.0.beta",
+    "author": "Max Mustermann",
     "parent_plus": 10.0,
     "parent_minus": 10.0,
     "frag_plus": 0.5,

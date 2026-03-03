@@ -302,6 +302,44 @@ impl MzIdentMLFactory {
         });
     }
 
+    pub fn set_author(&mut self, author_name: &str) {
+        let person_id = "PERSON_AUTHOR".to_string();
+        
+        let person = PersonType {
+            id: person_id.clone(),
+            name: Some(author_name.to_string()),
+            last_name: None,
+            first_name: None,
+            mid_initials: None,
+            content: Vec::new(),
+        };
+
+        if self.doc.audit_collection.is_none() {
+            self.doc.audit_collection = Some(AuditCollectionType { content: Vec::new() });
+        }
+        
+        if let Some(ac) = &mut self.doc.audit_collection {
+            ac.content.push(AuditCollectionTypeContent::Person(person));
+        }
+
+        self.doc.provider = Some(ProviderType {
+            id: "PROVIDER".to_string(),
+            name: None,
+            analysis_software_ref: None,
+            contact_role: Some(ContactRoleType {
+                contact_ref: person_id,
+                role: RoleType {
+                    cv_param: CvParamType {
+                        name: "researcher".to_string(),
+                        accession: "MS:1001271".to_string(),
+                        cv_ref: "PSI-MS".to_string(),
+                        ..Default::default()
+                    }
+                }
+            })
+        });
+    }
+
     pub fn add_software(&mut self, id: &str, name: &str, version: &str) {
         if let Some(list) = &mut self.doc.analysis_software_list {
             let software_name = match name.to_lowercase().as_str() {
@@ -577,6 +615,10 @@ pub fn write_mzidentml(
     let sw_name = metadata.get_item("software_name").ok().flatten().and_then(|v| v.extract::<String>().ok()).unwrap_or_else(|| "mzidentml-polars".to_string());
     let sw_version = metadata.get_item("software_version").ok().flatten().and_then(|v| v.extract::<String>().ok()).unwrap_or_else(|| "0.1.0".to_string());
     factory.add_software("AS_1", &sw_name, &sw_version);
+    
+    if let Some(author) = metadata.get_item("author").ok().flatten().and_then(|v| v.extract::<String>().ok()) {
+        factory.set_author(&author);
+    }
     factory.add_search_database("SearchDB_1", "Target Database");
     factory.add_protocol("SIP_1", "AS_1");
 
