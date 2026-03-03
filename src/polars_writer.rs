@@ -590,8 +590,10 @@ pub fn write_mzidentml(
 
             if let Some(scores) = c_score {
                 if let Some(s) = scores.get(i) {
-                    sii1.content.push(SpectrumIdentificationItemTypeContent::UserParam(UserParamType {
-                        name: "score".to_string(),
+                    sii1.content.push(SpectrumIdentificationItemTypeContent::CvParam(CvParamType {
+                        name: "xi:score".to_string(),
+                        accession: "MS:1002545".to_string(),
+                        cv_ref: "PSI-MS".to_string(),
                         value: Some(s.to_string()),
                         ..Default::default()
                     }));
@@ -621,8 +623,10 @@ pub fn write_mzidentml(
 
             if let Some(scores) = c_score {
                 if let Some(s) = scores.get(i) {
-                    sii2.content.push(SpectrumIdentificationItemTypeContent::UserParam(UserParamType {
-                        name: "score".to_string(),
+                    sii2.content.push(SpectrumIdentificationItemTypeContent::CvParam(CvParamType {
+                        name: "xi:score".to_string(),
+                        accession: "MS:1002545".to_string(),
+                        cv_ref: "PSI-MS".to_string(),
                         value: Some(s.to_string()),
                         ..Default::default()
                     }));
@@ -684,8 +688,10 @@ pub fn write_mzidentml(
 
             if let Some(scores) = c_score {
                 if let Some(s) = scores.get(i) {
-                    sii.content.push(SpectrumIdentificationItemTypeContent::UserParam(UserParamType {
-                        name: "score".to_string(),
+                    sii.content.push(SpectrumIdentificationItemTypeContent::CvParam(CvParamType {
+                        name: "xi:score".to_string(),
+                        accession: "MS:1002545".to_string(),
+                        cv_ref: "PSI-MS".to_string(),
                         value: Some(s.to_string()),
                         ..Default::default()
                     }));
