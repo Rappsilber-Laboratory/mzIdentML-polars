@@ -582,7 +582,7 @@ pub mod psi_pi {
             })
         }
     }
-    #[derive(Debug)]
+    #[derive(Debug, Default)]
     pub struct EnzymeType {
         pub id: String,
         pub name: Option<String>,
@@ -612,7 +612,7 @@ pub mod psi_pi {
             })
         }
     }
-    #[derive(Debug)]
+    #[derive(Debug, Default)]
     pub struct EnzymesType {
         pub independent: Option<bool>,
         pub enzyme: Vec<EnzymeType>,
@@ -960,7 +960,7 @@ pub mod psi_pi {
             })
         }
     }
-    #[derive(Debug)]
+    #[derive(Debug, Default)]
     pub struct ModificationParamsType {
         pub search_modification: Vec<SearchModificationType>,
     }
@@ -1784,7 +1784,7 @@ pub mod psi_pi {
             })
         }
     }
-    #[derive(Debug)]
+    #[derive(Debug, Default)]
     pub struct SearchModificationType {
         pub fixed_mod: bool,
         pub mass_delta: f32,
@@ -1884,7 +1884,7 @@ pub mod psi_pi {
             })
         }
     }
-    #[derive(Debug)]
+    #[derive(Debug, Default)]
     pub struct SpecificityRulesType {
         pub cv_param: Vec<CvParamType>,
     }
@@ -2033,7 +2033,7 @@ pub mod psi_pi {
             Ok(quick_xml_serialize::SpectrumIdentificationItemTypeContentSerializer { value: self, state: Box::new(quick_xml_serialize::SpectrumIdentificationItemTypeContentSerializerState::Init__) })
         }
     }
-    #[derive(Debug)]
+    #[derive(Debug, Default)]
     pub struct SpectrumIdentificationListType {
         pub id: String,
         pub name: Option<String>,
@@ -2115,7 +2115,7 @@ pub mod psi_pi {
             Ok(quick_xml_serialize::SpectrumIdentificationProtocolTypeSerializer { value: self, state: Box::new(quick_xml_serialize::SpectrumIdentificationProtocolTypeSerializerState::Init__), name: name.unwrap_or("SpectrumIdentificationProtocolType"), is_root })
         }
     }
-    #[derive(Debug)]
+    #[derive(Debug, Default)]
     pub struct SpectrumIdentificationResultType {
         pub id: String,
         pub name: Option<String>,
@@ -2241,7 +2241,7 @@ pub mod psi_pi {
             )
         }
     }
-    #[derive(Debug)]
+    #[derive(Debug, Default)]
     pub struct ToleranceType {
         pub cv_param: Vec<CvParamType>,
     }
@@ -2413,10 +2413,11 @@ pub mod psi_pi {
         }
     }
     pub type ListOfCharsType = super::xs::EntitiesType;
-    #[derive(Debug)]
+    #[derive(Debug, Default)]
     pub enum ListOfCharsOrAnyType {
-        EntitiesType(super::xs::EntitiesType),
+        #[default]
         Unknown,
+        EntitiesType(super::xs::EntitiesType),
     }
     impl DeserializeBytes for ListOfCharsOrAnyType {
         fn deserialize_bytes<R>(reader: &R, bytes: &[u8]) -> Result<Self, Error>

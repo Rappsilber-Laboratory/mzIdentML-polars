@@ -88,7 +88,16 @@ spectra = pl.DataFrame({
 })
 
 # 4. Generate mzIdentML XML
-xml_content = mzidentml_polars.write_mzidentml(csms, prot_seqs, spectra, {})
+metadata = {
+    "software_name": "xi",
+    "parent_plus": 10.0,
+    "parent_minus": 10.0,
+    "frag_plus": 0.5,
+    "frag_minus": 0.5,
+    "is_ppm": True
+}
+
+xml_content = mzidentml_polars.write_mzidentml(csms, prot_seqs, spectra, metadata)
 
 with open("output.mzid", "w") as f:
     f.write(xml_content)

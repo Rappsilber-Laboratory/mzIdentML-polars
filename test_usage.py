@@ -33,6 +33,7 @@ def test():
 
         # Recommended metadata (improves xiView/downstream compatibility)
         "experimental_mz": [1234.5, 678.9, 1234.5],
+        "calculated_mz": [1234.4, 678.8, 1234.3],
         "score": [10.5, 20.1, 15.0],
         "crosslinker_name": ["DSSO", "DSSO", "DSSO"],
         "crosslinker_accession": ["MS:1003124", "MS:1003124", "MS:1003124"],
@@ -62,9 +63,19 @@ def test():
         "file_path": ["data1.mzML", "data1.mzML", "data2.mzML"]
     })
 
+    # 4. Generate mzIdentML XML
+    metadata = {
+        "software_name": "xi",
+        "parent_plus": 10.0,
+        "parent_minus": 10.0,
+        "frag_plus": 0.5,
+        "frag_minus": 0.5,
+        "is_ppm": True
+    }
+    
     print("Attempting to call write_mzidentml...")
     try:
-        xml_content = mzidentml_polars.write_mzidentml(csms, prot_seqs, spectra, {})
+        xml_content = mzidentml_polars.write_mzidentml(csms, prot_seqs, spectra, metadata)
         print("Success! XML generated.")
         output_file = "test_output.mzid"
         with open(output_file, "w") as f:
