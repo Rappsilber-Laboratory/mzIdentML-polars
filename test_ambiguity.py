@@ -65,7 +65,7 @@ def test_ambiguity():
 
     try:
         xml_string = mzidentml_polars.write_mzidentml(csms, prot_seqs, spectra, metadata)
-        with open("ambiguity_test.mzid", "w") as f:
+        with open("output_ambiguity_test.mzid", "w") as f:
             f.write(xml_string)
         print("Success! XML generated for ambiguity test.")
     except Exception as e:
