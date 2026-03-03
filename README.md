@@ -55,6 +55,12 @@ csms = pl.DataFrame({
     # Explicitly link CSM to file (required for multi-file datasets)
     "file_path": ["data1.mzML", "data1.mzML", "data2.mzML"],
 
+    # Recommended metadata (improves xiView/downstream compatibility)
+    "experimental_mz": [1234.5, 678.9, 1234.5],
+    "score": [10.5, 20.1, 15.0],
+    "crosslinker_name": ["DSSO", "DSSO", "DSSO"],
+    "crosslinker_accession": ["MS:1003124", "MS:1003124", "MS:1003124"],
+
     # Required for crosslinks (is_crosslink = True)
     "peptide2_seq": [None, "KLS", None],
     "protein2_id": [None, "PROT1", None],
@@ -131,6 +137,8 @@ pip install pyarrow
 | `protein2_id` | String | (Crosslink only) Second protein ID |
 | `peptide2_start`| UInt32 | (Crosslink only) Start position |
 | `peptide2_end` | UInt32 | (Crosslink only) End position |
+| `crosslinker_name`| String | **Recommended**. Name of the crosslinker (e.g., `DSSO`) |
+| `crosslinker_accession`| String | **Recommended**. CV accession of the crosslinker (e.g., `MS:1003124`) |
 
 ## License
 

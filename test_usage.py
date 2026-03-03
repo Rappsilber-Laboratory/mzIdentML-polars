@@ -34,6 +34,8 @@ def test():
         # Recommended metadata (improves xiView/downstream compatibility)
         "experimental_mz": [1234.5, 678.9, 1234.5],
         "score": [10.5, 20.1, 15.0],
+        "crosslinker_name": ["DSSO", "DSSO", "DSSO"],
+        "crosslinker_accession": ["MS:1003124", "MS:1003124", "MS:1003124"],
 
         # Required for crosslinks (is_crosslink = True)
         "peptide2_seq": [None, "KLS", None],

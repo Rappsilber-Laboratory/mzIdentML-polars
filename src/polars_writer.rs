@@ -496,6 +496,15 @@ pub fn write_mzidentml(
     // Optional but recommended columns
     let c_exp_mz = csms_df.column("experimental_mz").ok().and_then(|c| c.f64().ok());
     let c_score = csms_df.column("score").ok().and_then(|c| c.f64().ok());
+    let c_xl_name = csms_df.column("crosslinker_name").ok().and_then(|c| c.str().ok());
+    let c_xl_acc = csms_df.column("crosslinker_accession").ok().and_then(|c| c.str().ok());
+
+    let get_cv_ref = |acc: &str| -> String {
+        if acc.starts_with("MS:") { "PSI-MS".to_string() }
+        else if acc.starts_with("XLMOD:") { "XLMOD".to_string() }
+        else if acc.starts_with("UNIMOD:") { "UNIMOD".to_string() }
+        else { "PSI-MS".to_string() }
+    };
 
     // Map spectrum IDs to their SpectraData reference
     let mut spec_id_to_sd_id = HashMap::new();
@@ -528,15 +537,26 @@ pub fn write_mzidentml(
             // 1. Add Peptide 1 with Linker DONOR modification
             let mut linkage1 = Vec::new();
             if let Some(pos1) = c_link_pos1.get(i) {
+                let mut params = vec![CvParamType {
+                    name: "crosslink donor".to_string(),
+                    accession: "MS:1002509".to_string(),
+                    cv_ref: "PSI-MS".to_string(),
+                    value: Some(xl_group_id.clone()),
+                    ..Default::default()
+                }];
+                if let (Some(names), Some(accs)) = (c_xl_name.as_ref(), c_xl_acc.as_ref()) {
+                    if let (Some(name), Some(acc)) = (names.get(i), accs.get(i)) {
+                        params.push(CvParamType {
+                            name: name.to_string(),
+                            accession: acc.to_string(),
+                            cv_ref: get_cv_ref(acc),
+                            ..Default::default()
+                        });
+                    }
+                }
                 linkage1.push(ModificationType {
                     location: Some(pos1),
-                    cv_param: vec![CvParamType {
-                        name: "crosslink donor".to_string(),
-                        accession: "MS:1002509".to_string(),
-                        cv_ref: "PSI-MS".to_string(),
-                        value: Some(xl_group_id.clone()),
-                        ..Default::default()
-                    }],
+                    cv_param: params,
                     ..Default::default()
                 });
             }
@@ -545,15 +565,26 @@ pub fn write_mzidentml(
             // 2. Add Peptide 2 with Linker ACCEPTOR modification
             let mut linkage2 = Vec::new();
             if let Some(pos2) = c_link_pos2.get(i) {
+                let mut params = vec![CvParamType {
+                    name: "crosslink acceptor".to_string(),
+                    accession: "MS:1002510".to_string(),
+                    cv_ref: "PSI-MS".to_string(),
+                    value: Some(xl_group_id.clone()),
+                    ..Default::default()
+                }];
+                if let (Some(names), Some(accs)) = (c_xl_name.as_ref(), c_xl_acc.as_ref()) {
+                    if let (Some(name), Some(acc)) = (names.get(i), accs.get(i)) {
+                        params.push(CvParamType {
+                            name: name.to_string(),
+                            accession: acc.to_string(),
+                            cv_ref: get_cv_ref(acc),
+                            ..Default::default()
+                        });
+                    }
+                }
                 linkage2.push(ModificationType {
                     location: Some(pos2),
-                    cv_param: vec![CvParamType {
-                        name: "crosslink acceptor".to_string(),
-                        accession: "MS:1002510".to_string(),
-                        cv_ref: "PSI-MS".to_string(),
-                        value: Some(xl_group_id.clone()),
-                        ..Default::default()
-                    }],
+                    cv_param: params,
                     ..Default::default()
                 });
             }
@@ -641,28 +672,50 @@ pub fn write_mzidentml(
             if is_looplink.get(i).unwrap_or(false) {
                 // Add Donor and Acceptor modifications to the SAME peptide
                 if let Some(pos1) = c_link_pos1.get(i) {
+                    let mut params = vec![CvParamType {
+                        name: "crosslink donor".to_string(),
+                        accession: "MS:1002509".to_string(),
+                        cv_ref: "PSI-MS".to_string(),
+                        value: Some(xl_group_id.clone()),
+                        ..Default::default()
+                    }];
+                    if let (Some(names), Some(accs)) = (c_xl_name.as_ref(), c_xl_acc.as_ref()) {
+                        if let (Some(name), Some(acc)) = (names.get(i), accs.get(i)) {
+                            params.push(CvParamType {
+                                name: name.to_string(),
+                                accession: acc.to_string(),
+                                cv_ref: get_cv_ref(acc),
+                                ..Default::default()
+                            });
+                        }
+                    }
                     linkage.push(ModificationType {
                         location: Some(pos1),
-                        cv_param: vec![CvParamType {
-                            name: "crosslink donor".to_string(),
-                            accession: "MS:1002509".to_string(),
-                            cv_ref: "PSI-MS".to_string(),
-                            value: Some(xl_group_id.clone()),
-                            ..Default::default()
-                        }],
+                        cv_param: params,
                         ..Default::default()
                     });
                 }
                 if let Some(pos2) = c_link_pos2.get(i) {
+                    let mut params = vec![CvParamType {
+                        name: "crosslink acceptor".to_string(),
+                        accession: "MS:1002510".to_string(),
+                        cv_ref: "PSI-MS".to_string(),
+                        value: Some(xl_group_id.clone()),
+                        ..Default::default()
+                    }];
+                    if let (Some(names), Some(accs)) = (c_xl_name.as_ref(), c_xl_acc.as_ref()) {
+                        if let (Some(name), Some(acc)) = (names.get(i), accs.get(i)) {
+                            params.push(CvParamType {
+                                name: name.to_string(),
+                                accession: acc.to_string(),
+                                cv_ref: get_cv_ref(acc),
+                                ..Default::default()
+                            });
+                        }
+                    }
                     linkage.push(ModificationType {
                         location: Some(pos2),
-                        cv_param: vec![CvParamType {
-                            name: "crosslink acceptor".to_string(),
-                            accession: "MS:1002510".to_string(),
-                            cv_ref: "PSI-MS".to_string(),
-                            value: Some(xl_group_id.clone()),
-                            ..Default::default()
-                        }],
+                        cv_param: params,
                         ..Default::default()
                     });
                 }
