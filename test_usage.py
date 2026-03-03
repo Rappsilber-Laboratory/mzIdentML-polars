@@ -31,6 +31,10 @@ def test():
         # Explicitly link CSM to file (required for multi-file datasets)
         "file_path": ["data1.mzML", "data1.mzML", "data2.mzML"],
 
+        # Recommended metadata (improves xiView/downstream compatibility)
+        "experimental_mz": [1234.5, 678.9, 1234.5],
+        "score": [10.5, 20.1, 15.0],
+
         # Required for crosslinks (is_crosslink = True)
         "peptide2_seq": [None, "KLS", None],
         "protein2_id": [None, "PROT1", None],

@@ -299,14 +299,13 @@ impl MzIdentMLFactory {
                 version: Some(version.to_string()),
                 uri: None,
                 contact_role: None,
-                software_name: ParamType::CvParam(CvParamType {
+                software_name: ParamType::UserParam(UserParamType {
                     name: name.to_string(),
-                    accession: "MS:1002511".to_string(), // Placeholder for now
-                    cv_ref: "PSI-MS".to_string(),
-                    value: None,
+                    type_: None,
                     unit_accession: None,
                     unit_name: None,
                     unit_cv_ref: None,
+                    value: None,
                 }),
                 customizations: None,
             });
@@ -351,6 +350,16 @@ impl MzIdentMLFactory {
                     ParamListTypeContent::CvParam(CvParamType {
                         name: "crosslinking search".to_string(),
                         accession: "MS:1002494".to_string(),
+                        cv_ref: "PSI-MS".to_string(),
+                        value: None,
+                        unit_accession: None,
+                        unit_name: None,
+                        unit_cv_ref: None,
+                    }),
+                    // Generic cross-linker placeholder
+                    ParamListTypeContent::CvParam(CvParamType {
+                        name: "cross-linker".to_string(),
+                        accession: "MS:1002493".to_string(),
                         cv_ref: "PSI-MS".to_string(),
                         value: None,
                         unit_accession: None,
@@ -484,6 +493,10 @@ pub fn write_mzidentml(
         .map_err(|_| PyErr::new::<pyo3::exceptions::PyValueError, _>("The 'csms' DataFrame must contain a 'file_path' column to link matches to spectra files."))?
         .str().map_err(|e| PyErr::new::<pyo3::exceptions::PyValueError, _>(format!("{}", e)))?;
 
+    // Optional but recommended columns
+    let c_exp_mz = csms_df.column("experimental_mz").ok().and_then(|c| c.f64().ok());
+    let c_score = csms_df.column("score").ok().and_then(|c| c.f64().ok());
+
     // Map spectrum IDs to their SpectraData reference
     let mut spec_id_to_sd_id = HashMap::new();
     for i in 0..spec_df.height() {
@@ -555,9 +568,10 @@ pub fn write_mzidentml(
             let ev2_id = factory.add_peptide_evidence(&pep2_ref, &dbseq2_ref, c_start2.get(i), c_end2.get(i), false);
 
             // SII for Peptide 1
-            let sii1 = SpectrumIdentificationItemType {
+            let mut sii1 = SpectrumIdentificationItemType {
                 id: format!("SII_{}_{}_p1", spec_id, i),
                 charge_state: c_charge.get(i).unwrap_or(2),
+                experimental_mass_to_charge: c_exp_mz.and_then(|c| c.get(i)).unwrap_or(0.0),
                 peptide_ref: pep1_ref,
                 rank: c_rank.get(i).unwrap_or(1) as i32,
                 pass_threshold: true,
@@ -574,10 +588,21 @@ pub fn write_mzidentml(
                 ..Default::default()
             };
 
+            if let Some(scores) = c_score {
+                if let Some(s) = scores.get(i) {
+                    sii1.content.push(SpectrumIdentificationItemTypeContent::UserParam(UserParamType {
+                        name: "score".to_string(),
+                        value: Some(s.to_string()),
+                        ..Default::default()
+                    }));
+                }
+            }
+
             // SII for Peptide 2
-            let sii2 = SpectrumIdentificationItemType {
+            let mut sii2 = SpectrumIdentificationItemType {
                 id: format!("SII_{}_{}_p2", spec_id, i),
                 charge_state: c_charge.get(i).unwrap_or(2),
+                experimental_mass_to_charge: c_exp_mz.and_then(|c| c.get(i)).unwrap_or(0.0),
                 peptide_ref: pep2_ref,
                 rank: c_rank.get(i).unwrap_or(1) as i32,
                 pass_threshold: true,
@@ -593,6 +618,16 @@ pub fn write_mzidentml(
                 ],
                 ..Default::default()
             };
+
+            if let Some(scores) = c_score {
+                if let Some(s) = scores.get(i) {
+                    sii2.content.push(SpectrumIdentificationItemTypeContent::UserParam(UserParamType {
+                        name: "score".to_string(),
+                        value: Some(s.to_string()),
+                        ..Default::default()
+                    }));
+                }
+            }
 
             factory.add_sii(spec_id, sii1, sd_ref);
             factory.add_sii(spec_id, sii2, sd_ref);
@@ -637,6 +672,7 @@ pub fn write_mzidentml(
             let mut sii = SpectrumIdentificationItemType {
                 id: format!("SII_{}_{}", spec_id, i),
                 charge_state: c_charge.get(i).unwrap_or(2),
+                experimental_mass_to_charge: c_exp_mz.and_then(|c| c.get(i)).unwrap_or(0.0),
                 peptide_ref: pep1_ref,
                 rank: c_rank.get(i).unwrap_or(1) as i32,
                 pass_threshold: true,
@@ -645,6 +681,16 @@ pub fn write_mzidentml(
                 })],
                 ..Default::default()
             };
+
+            if let Some(scores) = c_score {
+                if let Some(s) = scores.get(i) {
+                    sii.content.push(SpectrumIdentificationItemTypeContent::UserParam(UserParamType {
+                        name: "score".to_string(),
+                        value: Some(s.to_string()),
+                        ..Default::default()
+                    }));
+                }
+            }
 
             if is_looplink.get(i).unwrap_or(false) {
                 sii.content.push(SpectrumIdentificationItemTypeContent::CvParam(CvParamType {

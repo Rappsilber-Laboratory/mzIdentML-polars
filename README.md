@@ -123,6 +123,8 @@ pip install pyarrow
 | `rank` | UInt32 | Identification rank (1 = top match) |
 | `is_crosslink` | Boolean | Whether this is a crosslink match |
 | `is_looplink`  | Boolean | Whether this is a looplink match |
+| `experimental_mz`| Float64| **Recommended**. Observed precursor m/z |
+| `score` | Float64| **Recommended**. Primary search engine score |
 | `peptide1_link_pos` | Int32 | 1-based link position on peptide 1 |
 | `peptide2_link_pos` | Int32 | 1-based link position on peptide 2 (or site 2 for looplink) |
 | `peptide2_seq` | String | (Crosslink only) Second peptide sequence |

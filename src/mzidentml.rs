@@ -2287,7 +2287,7 @@ pub mod psi_pi {
             })
         }
     }
-    #[derive(Debug)]
+    #[derive(Debug, Default)]
     pub struct UserParamType {
         pub name: String,
         pub value: Option<String>,
