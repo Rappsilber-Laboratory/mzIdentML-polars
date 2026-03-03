@@ -148,13 +148,26 @@ impl MzIdentMLFactory {
         }
 
         let id = format!("dbseq_{}", protein_id);
+        let mut content = vec![DbSequenceTypeContent::Seq(sequence.to_string())];
+        let mut name = None;
+        if is_decoy {
+            name = Some("decoy".to_string());
+            content.push(DbSequenceTypeContent::CvParam(CvParamType {
+                name: "protein description".to_string(),
+                accession: "MS:1001088".to_string(),
+                cv_ref: "PSI-MS".to_string(),
+                value: Some("decoy".to_string()),
+                ..Default::default()
+            }));
+        }
+
         let db_seq = DbSequenceType {
             id: id.clone(),
-            name: None,
+            name,
             length: Some(sequence.len() as i32),
             search_database_ref: db_ref.to_string(),
             accession: accession.to_string(),
-            content: vec![DbSequenceTypeContent::Seq(sequence.to_string())],
+            content,
         };
 
         if let Some(sc) = &mut self.doc.sequence_collection {
@@ -279,7 +292,13 @@ impl MzIdentMLFactory {
                 unit_name: None,
                 unit_cv_ref: None,
             }),
-            cv_param: Vec::new(),
+            cv_param: vec![CvParamType {
+                name: "decoy DB type".to_string(),
+                accession: "MS:1001195".to_string(),
+                cv_ref: "PSI-MS".to_string(),
+                value: Some("decoy database".to_string()),
+                ..Default::default()
+            }],
         });
     }
 
