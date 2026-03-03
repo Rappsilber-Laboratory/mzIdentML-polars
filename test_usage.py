@@ -16,7 +16,7 @@ def test():
     # Supports Linear, Crosslinked, and Looplinked peptides
     # Standards mandate 2 SpectrumIdentificationItems for crosslinks
     csms = pl.DataFrame({
-        "spectrum_id": ["scan=123", "scan=456", "scan=789"],
+        "spectrum_id": ["index=1", "index=2", "index=1"],
         "peptide1_seq": ["PEPTIDEK", "PEPT[Unimod:35]IDEK", "PEPTIDEK"],
         "protein1_id": ["PROT1", "PROT2", "PROT1"],
         "peptide1_start": [1, 10, 1],
@@ -28,6 +28,9 @@ def test():
         "peptide1_link_pos": [None, 8, 2],
         "peptide2_link_pos": [None, 1, 8],
         
+        # Explicitly link CSM to file (required for multi-file datasets)
+        "file_path": ["data1.mzML", "data1.mzML", "data2.mzML"],
+
         # Required for crosslinks (is_crosslink = True)
         "peptide2_seq": [None, "KLS", None],
         "protein2_id": [None, "PROT1", None],
@@ -46,10 +49,10 @@ def test():
         pl.col("peptide2_end").cast(pl.UInt32),
     ])
 
-    # 3. Define Spectra
+    # 3. Define Spectra (Linking files to IDs)
     spectra = pl.DataFrame({
-        "spectrum_id": ["scan=123", "scan=456", "scan=789"],
-        "file_path": ["data.mzML", "data.mzML", "data.mzML"]
+        "spectrum_id": ["index=1", "index=2", "index=1"],
+        "file_path": ["data1.mzML", "data1.mzML", "data2.mzML"]
     })
 
     print("Attempting to call write_mzidentml...")

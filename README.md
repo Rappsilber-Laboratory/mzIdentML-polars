@@ -40,7 +40,7 @@ prot_seqs = pl.DataFrame({
 # Supports Linear, Crosslinked, and Looplinked peptides
 # Standards mandate 2 SpectrumIdentificationItems per crosslink match
 csms = pl.DataFrame({
-    "spectrum_id": ["scan=123", "scan=456", "scan=789"],
+    "spectrum_id": ["index=1", "index=2", "index=1"],
     "peptide1_seq": ["PEPTIDEK", "PEPT[Unimod:35]IDEK", "PEPTIDEK"],
     "protein1_id": ["PROT1", "PROT2", "PROT1"],
     "peptide1_start": [1, 10, 1],
@@ -52,6 +52,9 @@ csms = pl.DataFrame({
     "peptide1_link_pos": [None, 8, 2],
     "peptide2_link_pos": [None, 1, 8],
     
+    # Explicitly link CSM to file (required for multi-file datasets)
+    "file_path": ["data1.mzML", "data1.mzML", "data2.mzML"],
+
     # Required for crosslinks (is_crosslink = True)
     "peptide2_seq": [None, "KLS", None],
     "protein2_id": [None, "PROT1", None],
@@ -71,10 +74,10 @@ csms = pl.DataFrame({
     pl.col("peptide2_end").cast(pl.UInt32),
 ])
 
-# 3. Define Spectra
+# 3. Define Spectra (Linking files to IDs)
 spectra = pl.DataFrame({
-    "spectrum_id": ["scan=123", "scan=456", "scan=789"],
-    "file_path": ["data.mzML", "data.mzML", "data.mzML"]
+    "spectrum_id": ["index=1", "index=2", "index=1"],
+    "file_path": ["data1.mzML", "data1.mzML", "data2.mzML"]
 })
 
 # 4. Generate mzIdentML XML
@@ -110,7 +113,8 @@ pip install pyarrow
 ### `csms` (DataFrame)
 | Column | Type | Description |
 | :--- | :--- | :--- |
-| `spectrum_id` | String | ID of the spectrum in the source file |
+| `spectrum_id` | String | ID of the spectrum (e.g., `index=1` or `scan=123`) |
+| `file_path` | String | **Required**. Path to the source file to resolve duplicate IDs across files. |
 | `peptide1_seq` | String | ProForma v2 sequence of the first peptide |
 | `protein1_id` | String | ID matching `prot_seqs` |
 | `peptide1_start`| UInt32 | Start position in protein (1-based) |

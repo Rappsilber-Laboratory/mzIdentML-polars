@@ -444,9 +444,7 @@ pub fn write_mzidentml(
     }
     
     if spectra_data_ids.is_empty() {
-        // Fallback SD if none provided
-        factory.add_spectra_data("SD_1", "unknown_data");
-        spectra_data_ids.push("SD_1".to_string());
+        return Err(PyErr::new::<pyo3::exceptions::PyValueError, _>("No spectra files provided in the 'spectra' DataFrame."));
     }
 
     factory.add_analysis("SI_1", "SIP_1", "SIL_1", spectra_data_ids, vec!["SearchDB_1".to_string()]);
@@ -481,8 +479,10 @@ pub fn write_mzidentml(
     let c_link_pos2 = csms_df.column("peptide2_link_pos").map_err(|e| PyErr::new::<pyo3::exceptions::PyValueError, _>(format!("{}", e)))?.i32().map_err(|e| PyErr::new::<pyo3::exceptions::PyValueError, _>(format!("{}", e)))?;
     let is_looplink = csms_df.column("is_looplink").map_err(|e| PyErr::new::<pyo3::exceptions::PyValueError, _>(format!("{}", e)))?.bool().map_err(|e| PyErr::new::<pyo3::exceptions::PyValueError, _>(format!("{}", e)))?;
     
-    // Optional: file_path in csms_df for unique linking
-    let c_csm_file_path = csms_df.column("file_path").ok().and_then(|c| c.str().ok());
+    // file_path in csms_df is REQUIRED for unique linking
+    let c_csm_file_path = csms_df.column("file_path")
+        .map_err(|_| PyErr::new::<pyo3::exceptions::PyValueError, _>("The 'csms' DataFrame must contain a 'file_path' column to link matches to spectra files."))?
+        .str().map_err(|e| PyErr::new::<pyo3::exceptions::PyValueError, _>(format!("{}", e)))?;
 
     // Map spectrum IDs to their SpectraData reference
     let mut spec_id_to_sd_id = HashMap::new();
@@ -496,15 +496,16 @@ pub fn write_mzidentml(
 
     for i in 0..csms_df.height() {
         let spec_id = c_spec_id.get(i).unwrap();
-        let sd_ref = if let Some(csm_paths) = c_csm_file_path {
-            if let Some(path) = csm_paths.get(i) {
-                path_to_sd_id.get(path).map(|s| s.as_str()).unwrap_or("SD_1")
-            } else {
-                spec_id_to_sd_id.get(spec_id).map(|s| s.as_str()).unwrap_or("SD_1")
-            }
-        } else {
-            spec_id_to_sd_id.get(spec_id).map(|s| s.as_str()).unwrap_or("SD_1")
-        };
+        let path = c_csm_file_path.get(i).ok_or_else(|| {
+            PyErr::new::<pyo3::exceptions::PyValueError, _>(format!("Missing 'file_path' for CSM at row {}", i))
+        })?;
+
+        let sd_ref = path_to_sd_id.get(path).ok_or_else(|| {
+            PyErr::new::<pyo3::exceptions::PyValueError, _>(format!(
+                "The file path '{}' for spectrum '{}' was not found in the provided 'spectra' DataFrame. Please ensure all files used in identifications are registered.",
+                path, spec_id
+            ))
+        })?;
 
         let xl_group_id = format!("xl_{}", i);
 
