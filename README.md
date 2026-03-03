@@ -33,6 +33,7 @@ import mzidentml_polars
 prot_seqs = pl.DataFrame({
     "protein_id": ["PROT1", "PROT2", "DECOY_PROT1"],
     "accession": ["P12345", "Q67890", "D12345"],
+    "protein_name": ["BIPA_BACSU", "GCST_BACSU", None],
     "sequence": ["MAGA...END", "MSRV...STOP", "AGAM..."],
     "is_decoy": [False, False, True]
 })
@@ -127,14 +128,15 @@ pip install pyarrow
 | :--- | :--- | :--- |
 | `protein_id` | String | Unique internal ID for the protein |
 | `accession` | String | Public accession (e.g., UniProt) |
+| `protein_name` | String | **Optional**. Descriptive name for the protein (e.g., `BIPA_BACSU`) |
 | `sequence` | String | Full amino acid sequence |
-| `is_decoy` | Boolean | **Optional**. Whether the protein is a decoy (default: `false`) |
+| `is_decoy` | Boolean | Whether the protein is a decoy (default: `false`) |
 
 ### `csms` (DataFrame)
 | Column | Type | Description |
 | :--- | :--- | :--- |
 | `spectrum_id` | String | ID of the spectrum (e.g., `index=1` or `scan=123`) |
-| `file_path` | String | **Required**. Path to the source file to resolve duplicate IDs across files. |
+| `file_path` | String | Path to the source file to resolve duplicate IDs across files. |
 | `peptide1_seq` | String | ProForma v2 sequence of the first peptide |
 | `protein1_id` | String | ID matching `prot_seqs` |
 | `peptide1_start`| UInt32 | Start position in protein (1-based) |

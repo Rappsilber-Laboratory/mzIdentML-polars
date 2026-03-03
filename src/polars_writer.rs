@@ -142,16 +142,18 @@ impl MzIdentMLFactory {
         id
     }
 
-    pub fn add_db_sequence(&mut self, protein_id: &str, accession: &str, sequence: &str, db_ref: &str, is_decoy: bool) -> String {
+    pub fn add_db_sequence(&mut self, protein_id: &str, accession: &str, sequence: &str, db_ref: &str, is_decoy: bool, protein_name: Option<String>) -> String {
         if let Some(id) = self.db_seq_map.get(protein_id) {
             return id.clone();
         }
 
         let id = format!("dbseq_{}", protein_id);
         let mut content = vec![DbSequenceTypeContent::Seq(sequence.to_string())];
-        let mut name = None;
+        let mut final_name = protein_name;
         if is_decoy {
-            name = Some("decoy".to_string());
+            if final_name.is_none() {
+                final_name = Some("decoy".to_string());
+            }
             content.push(DbSequenceTypeContent::CvParam(CvParamType {
                 name: "protein description".to_string(),
                 accession: "MS:1001088".to_string(),
@@ -163,7 +165,7 @@ impl MzIdentMLFactory {
 
         let db_seq = DbSequenceType {
             id: id.clone(),
-            name,
+            name: final_name,
             length: Some(sequence.len() as i32),
             search_database_ref: db_ref.to_string(),
             accession: accession.to_string(),
@@ -659,12 +661,14 @@ pub fn write_mzidentml(
     let prot_ids = prot_df.column("protein_id").map_err(|e| PyErr::new::<pyo3::exceptions::PyValueError, _>(format!("{}", e)))?.str().map_err(|e| PyErr::new::<pyo3::exceptions::PyValueError, _>(format!("{}", e)))?;
     let prot_accs = prot_df.column("accession").map_err(|e| PyErr::new::<pyo3::exceptions::PyValueError, _>(format!("{}", e)))?.str().map_err(|e| PyErr::new::<pyo3::exceptions::PyValueError, _>(format!("{}", e)))?;
     let prot_seqs_col = prot_df.column("sequence").map_err(|e| PyErr::new::<pyo3::exceptions::PyValueError, _>(format!("{}", e)))?.str().map_err(|e| PyErr::new::<pyo3::exceptions::PyValueError, _>(format!("{}", e)))?;
+    let prot_names_col = prot_df.column("protein_name").ok().and_then(|c| c.str().ok());
     let prot_is_decoy = prot_df.column("is_decoy").ok().and_then(|c| c.bool().ok());
     
     for i in 0..prot_df.height() {
         if let (Some(id), Some(acc), Some(seq)) = (prot_ids.get(i), prot_accs.get(i), prot_seqs_col.get(i)) {
             let is_decoy = prot_is_decoy.as_ref().and_then(|c| c.get(i)).unwrap_or(false);
-            factory.add_db_sequence(id, acc, seq, "SearchDB_1", is_decoy);
+            let protein_name = prot_names_col.as_ref().and_then(|c| c.get(i)).map(|s| s.to_string());
+            factory.add_db_sequence(id, acc, seq, "SearchDB_1", is_decoy, protein_name);
         }
     }
 
@@ -1019,7 +1023,7 @@ mod tests {
     #[test]
     fn test_add_db_sequence() {
         let mut factory = MzIdentMLFactory::new("test_doc".to_string());
-        let id = factory.add_db_sequence("P12345", "ACC123", "MAGA", "DB1", false);
+        let id = factory.add_db_sequence("P12345", "ACC123", "MAGA", "DB1", false, None);
         assert_eq!(id, "dbseq_P12345");
         
         let sc = factory.doc.sequence_collection.as_ref().unwrap();
@@ -1031,7 +1035,7 @@ mod tests {
     fn test_serialization_basic() {
         let mut factory = MzIdentMLFactory::new("test_doc".to_string());
         factory.add_peptide("PEPTIDE");
-        factory.add_db_sequence("P12", "ACC", "M", "DB", false);
+        factory.add_db_sequence("P12", "ACC", "M", "DB", false, None);
         
         let xml = factory.serialize().unwrap();
         // println!("XML OUTPUT:\n{}", xml);

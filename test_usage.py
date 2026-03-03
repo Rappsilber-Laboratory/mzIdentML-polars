@@ -9,6 +9,7 @@ def test():
     prot_seqs = pl.DataFrame({
         "protein_id": ["PROT1", "PROT2", "DECOY_PROT1"],
         "accession": ["P12345", "Q67890", "D12345"],
+        "protein_name": ["BIPA_BACSU", "GCST_BACSU", None],
         "sequence": ["MAGA", "MSRV", "AGAM"],
         "is_decoy": [False, False, True]
     })
