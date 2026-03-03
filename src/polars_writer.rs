@@ -95,25 +95,48 @@ impl MzIdentMLFactory {
         self.cv_map.insert(id.to_string(), uri.to_string());
     }
 
-    pub fn add_peptide(&mut self, proforma: &str) -> String {
-        if let Some(id) = self.peptide_map.get(proforma) {
+    pub fn add_peptide(&mut self, proforma: &str, linkage_mods: Vec<ModificationType>) -> String {
+        let (clean_seq, mut mods) = parse_proforma(proforma);
+        
+        // Add linkage modifications
+        mods.extend(linkage_mods);
+        // Sort mods by location for consistent keying
+        mods.sort_by_key(|m| m.location.unwrap_or(0));
+
+        // Create a unique key for this peptide variant
+        let mut key = clean_seq.clone();
+        for m in &mods {
+            key.push('|');
+            key.push_str(&m.location.unwrap_or(0).to_string());
+            for cv in &m.cv_param {
+                key.push(':');
+                key.push_str(&cv.accession);
+                if let Some(v) = &cv.value {
+                    key.push('=');
+                    key.push_str(v);
+                }
+            }
+        }
+
+        if let Some(id) = self.peptide_map.get(&key) {
             return id.clone();
         }
 
         let id = format!("pep_{}", self.peptide_map.len());
-        
-        // For now, just store the sequence. 
-        // Parsing modifications would require a more detailed rustyms integration.
-        let peptide_struct = PeptideType {
+        let mut peptide_struct = PeptideType {
             id: id.clone(),
             name: None,
-            content: vec![PeptideTypeContent::PeptideSequence(proforma.to_string())],
+            content: vec![PeptideTypeContent::PeptideSequence(clean_seq)],
         };
+
+        for m in mods {
+            peptide_struct.content.push(PeptideTypeContent::Modification(m));
+        }
 
         if let Some(sc) = &mut self.doc.sequence_collection {
             sc.peptide.push(peptide_struct);
         }
-        self.peptide_map.insert(proforma.to_string(), id.clone());
+        self.peptide_map.insert(key, id.clone());
         id
     }
 
@@ -483,35 +506,62 @@ pub fn write_mzidentml(
             spec_id_to_sd_id.get(spec_id).map(|s| s.as_str()).unwrap_or("SD_1")
         };
 
-        let pep1_ref = factory.add_peptide(c_pep1.get(i).unwrap());
-        let prot1_id = c_prot1.get(i).unwrap();
-        let dbseq1_ref = format!("dbseq_{}", prot1_id);
-        let ev1_id = factory.add_peptide_evidence(&pep1_ref, &dbseq1_ref, c_start1.get(i), c_end1.get(i), false);
+        let xl_group_id = format!("xl_{}", i);
 
         if is_xl.get(i).unwrap_or(false) {
-            // CROSS-LINK MATCH: 2 SII elements
-            let xl_group_id = format!("{}", i);
-            let pep2_ref = factory.add_peptide(c_pep2.get(i).unwrap());
+            // CROSS-LINK MATCH
+            
+            // 1. Add Peptide 1 with Linker DONOR modification
+            let mut linkage1 = Vec::new();
+            if let Some(pos1) = c_link_pos1.get(i) {
+                linkage1.push(ModificationType {
+                    location: Some(pos1),
+                    cv_param: vec![CvParamType {
+                        name: "crosslink donor".to_string(),
+                        accession: "MS:1002509".to_string(),
+                        cv_ref: "PSI-MS".to_string(),
+                        value: Some(xl_group_id.clone()),
+                        ..Default::default()
+                    }],
+                    ..Default::default()
+                });
+            }
+            let pep1_ref = factory.add_peptide(c_pep1.get(i).unwrap(), linkage1);
+
+            // 2. Add Peptide 2 with Linker ACCEPTOR modification
+            let mut linkage2 = Vec::new();
+            if let Some(pos2) = c_link_pos2.get(i) {
+                linkage2.push(ModificationType {
+                    location: Some(pos2),
+                    cv_param: vec![CvParamType {
+                        name: "crosslink acceptor".to_string(),
+                        accession: "MS:1002510".to_string(),
+                        cv_ref: "PSI-MS".to_string(),
+                        value: Some(xl_group_id.clone()),
+                        ..Default::default()
+                    }],
+                    ..Default::default()
+                });
+            }
+            let pep2_ref = factory.add_peptide(c_pep2.get(i).unwrap(), linkage2);
+
+            let prot1_id = c_prot1.get(i).unwrap();
+            let dbseq1_ref = format!("dbseq_{}", prot1_id);
+            let ev1_id = factory.add_peptide_evidence(&pep1_ref, &dbseq1_ref, c_start1.get(i), c_end1.get(i), false);
+
             let prot2_id = c_prot2.get(i).unwrap();
             let dbseq2_ref = format!("dbseq_{}", prot2_id);
             let ev2_id = factory.add_peptide_evidence(&pep2_ref, &dbseq2_ref, c_start2.get(i), c_end2.get(i), false);
 
             // SII for Peptide 1
-            let mut sii1 = SpectrumIdentificationItemType {
+            let sii1 = SpectrumIdentificationItemType {
                 id: format!("SII_{}_{}_p1", spec_id, i),
-                name: None,
                 charge_state: c_charge.get(i).unwrap_or(2),
-                experimental_mass_to_charge: 0.0,
-                calculated_mass_to_charge: None,
-                calculated_pi: None,
                 peptide_ref: pep1_ref,
                 rank: c_rank.get(i).unwrap_or(1) as i32,
                 pass_threshold: true,
-                mass_table_ref: None,
-                sample_ref: None,
                 content: vec![
                     SpectrumIdentificationItemTypeContent::PeptideEvidenceRef(PeptideEvidenceRefType { peptide_evidence_ref: ev1_id }),
-                    // Link-level Group ID
                     SpectrumIdentificationItemTypeContent::CvParam(CvParamType {
                         name: "crosslink spectrum identification item".to_string(),
                         accession: "MS:1002511".to_string(),
@@ -520,21 +570,16 @@ pub fn write_mzidentml(
                         ..Default::default()
                     }),
                 ],
+                ..Default::default()
             };
 
             // SII for Peptide 2
-            let mut sii2 = SpectrumIdentificationItemType {
+            let sii2 = SpectrumIdentificationItemType {
                 id: format!("SII_{}_{}_p2", spec_id, i),
-                name: None,
                 charge_state: c_charge.get(i).unwrap_or(2),
-                experimental_mass_to_charge: 0.0,
-                calculated_mass_to_charge: None,
-                calculated_pi: None,
                 peptide_ref: pep2_ref,
                 rank: c_rank.get(i).unwrap_or(1) as i32,
                 pass_threshold: true,
-                mass_table_ref: None,
-                sample_ref: None,
                 content: vec![
                     SpectrumIdentificationItemTypeContent::PeptideEvidenceRef(PeptideEvidenceRefType { peptide_evidence_ref: ev2_id }),
                     SpectrumIdentificationItemTypeContent::CvParam(CvParamType {
@@ -545,47 +590,59 @@ pub fn write_mzidentml(
                         ..Default::default()
                     }),
                 ],
+                ..Default::default()
             };
-
-            // Add Link Positions
-            if let Some(pos1) = c_link_pos1.get(i) {
-                sii1.content.push(SpectrumIdentificationItemTypeContent::CvParam(CvParamType {
-                    name: "crosslink donor".to_string(),
-                    accession: "MS:1002509".to_string(),
-                    cv_ref: "PSI-MS".to_string(),
-                    value: Some(pos1.to_string()),
-                    ..Default::default()
-                }));
-            }
-            if let Some(pos2) = c_link_pos2.get(i) {
-                sii2.content.push(SpectrumIdentificationItemTypeContent::CvParam(CvParamType {
-                    name: "crosslink acceptor".to_string(),
-                    accession: "MS:1002510".to_string(),
-                    cv_ref: "PSI-MS".to_string(),
-                    value: Some(pos2.to_string()),
-                    ..Default::default()
-                }));
-            }
 
             factory.add_sii(spec_id, sii1, sd_ref);
             factory.add_sii(spec_id, sii2, sd_ref);
         } else {
-            // LINEAR OR LOOP-LINK: 1 SII element
+            // LINEAR OR LOOP-LINK
+            let mut linkage = Vec::new();
+            if is_looplink.get(i).unwrap_or(false) {
+                // Add Donor and Acceptor modifications to the SAME peptide
+                if let Some(pos1) = c_link_pos1.get(i) {
+                    linkage.push(ModificationType {
+                        location: Some(pos1),
+                        cv_param: vec![CvParamType {
+                            name: "crosslink donor".to_string(),
+                            accession: "MS:1002509".to_string(),
+                            cv_ref: "PSI-MS".to_string(),
+                            value: Some(xl_group_id.clone()),
+                            ..Default::default()
+                        }],
+                        ..Default::default()
+                    });
+                }
+                if let Some(pos2) = c_link_pos2.get(i) {
+                    linkage.push(ModificationType {
+                        location: Some(pos2),
+                        cv_param: vec![CvParamType {
+                            name: "crosslink acceptor".to_string(),
+                            accession: "MS:1002510".to_string(),
+                            cv_ref: "PSI-MS".to_string(),
+                            value: Some(xl_group_id.clone()),
+                            ..Default::default()
+                        }],
+                        ..Default::default()
+                    });
+                }
+            }
+
+            let pep1_ref = factory.add_peptide(c_pep1.get(i).unwrap(), linkage);
+            let prot1_id = c_prot1.get(i).unwrap();
+            let dbseq1_ref = format!("dbseq_{}", prot1_id);
+            let ev1_id = factory.add_peptide_evidence(&pep1_ref, &dbseq1_ref, c_start1.get(i), c_end1.get(i), false);
+
             let mut sii = SpectrumIdentificationItemType {
                 id: format!("SII_{}_{}", spec_id, i),
-                name: None,
                 charge_state: c_charge.get(i).unwrap_or(2),
-                experimental_mass_to_charge: 0.0,
-                calculated_mass_to_charge: None,
-                calculated_pi: None,
                 peptide_ref: pep1_ref,
                 rank: c_rank.get(i).unwrap_or(1) as i32,
                 pass_threshold: true,
-                mass_table_ref: None,
-                sample_ref: None,
                 content: vec![SpectrumIdentificationItemTypeContent::PeptideEvidenceRef(PeptideEvidenceRefType {
                     peptide_evidence_ref: ev1_id,
                 })],
+                ..Default::default()
             };
 
             if is_looplink.get(i).unwrap_or(false) {
@@ -593,29 +650,8 @@ pub fn write_mzidentml(
                     name: "looplink spectrum identification item".to_string(),
                     accession: "MS:1003329".to_string(),
                     cv_ref: "PSI-MS".to_string(),
-                    value: None,
                     ..Default::default()
                 }));
-                // Site 1
-                if let Some(pos1) = c_link_pos1.get(i) {
-                    sii.content.push(SpectrumIdentificationItemTypeContent::CvParam(CvParamType {
-                        name: "crosslink donor".to_string(),
-                        accession: "MS:1002509".to_string(),
-                        cv_ref: "PSI-MS".to_string(),
-                        value: Some(pos1.to_string()),
-                        ..Default::default()
-                    }));
-                }
-                // Site 2
-                if let Some(pos2) = c_link_pos2.get(i) {
-                    sii.content.push(SpectrumIdentificationItemTypeContent::CvParam(CvParamType {
-                        name: "crosslink acceptor".to_string(),
-                        accession: "MS:1002510".to_string(),
-                        cv_ref: "PSI-MS".to_string(),
-                        value: Some(pos2.to_string()),
-                        ..Default::default()
-                    }));
-                }
             }
             factory.add_sii(spec_id, sii, sd_ref);
         }
@@ -673,4 +709,48 @@ mod tests {
         assert!(xml.contains("psi-pi:DBSequence"));
         assert!(xml.contains("psi-pi:id=\"dbseq_P12\""));
     }
+}
+fn parse_proforma(proforma: &str) -> (String, Vec<ModificationType>) {
+    let mut clean_seq = String::new();
+    let mut mods = Vec::new();
+    let chars: Vec<char> = proforma.chars().collect();
+    let mut i = 0;
+    while i < chars.len() {
+        if chars[i] == '[' {
+            let start = i + 1;
+            let mut end = start;
+            while end < chars.len() && chars[end] != ']' {
+                end += 1;
+            }
+            if end < chars.len() {
+                let mod_str = &proforma[start..end];
+                let mut cv_param = CvParamType {
+                    cv_ref: "PSI-MS".to_string(),
+                    ..Default::default()
+                };
+                if mod_str.contains(':') {
+                    let parts: Vec<&str> = mod_str.split(':').collect();
+                    cv_param.cv_ref = parts[0].to_uppercase();
+                    cv_param.accession = mod_str.to_string();
+                    cv_param.name = parts[1].to_string();
+                } else {
+                    cv_param.name = mod_str.to_string();
+                    cv_param.accession = format!("UNKNOWN:{}", mod_str);
+                }
+                
+                mods.push(ModificationType {
+                    location: Some(clean_seq.len() as i32),
+                    cv_param: vec![cv_param],
+                    ..Default::default()
+                });
+                i = end + 1;
+            } else {
+                i += 1;
+            }
+        } else {
+            clean_seq.push(chars[i]);
+            i += 1;
+        }
+    }
+    (clean_seq, mods)
 }

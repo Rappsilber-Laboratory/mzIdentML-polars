@@ -17,7 +17,7 @@ def test():
     # Standards mandate 2 SpectrumIdentificationItems for crosslinks
     csms = pl.DataFrame({
         "spectrum_id": ["scan=123", "scan=456", "scan=789"],
-        "peptide1_seq": ["PEPTIDEK", "PEPTIDEK", "PEPTIDEK"],
+        "peptide1_seq": ["PEPTIDEK", "PEPT[Unimod:35]IDEK", "PEPTIDEK"],
         "protein1_id": ["PROT1", "PROT2", "PROT1"],
         "peptide1_start": [1, 10, 1],
         "peptide1_end": [8, 18, 8],

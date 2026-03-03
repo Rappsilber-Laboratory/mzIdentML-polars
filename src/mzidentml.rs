@@ -982,7 +982,7 @@ pub mod psi_pi {
             })
         }
     }
-    #[derive(Debug)]
+    #[derive(Debug, Default)]
     pub struct ModificationType {
         pub location: Option<i32>,
         pub residues: Option<super::xs::EntitiesType>,
@@ -1273,7 +1273,7 @@ pub mod psi_pi {
             })
         }
     }
-    #[derive(Debug)]
+    #[derive(Debug, Default)]
     pub struct PeptideType {
         pub id: String,
         pub name: Option<String>,
@@ -1972,7 +1972,7 @@ pub mod psi_pi {
             Ok(quick_xml_serialize::SpectrumIdentificationItemRefTypeSerializer { value: self, state: Box::new(quick_xml_serialize::SpectrumIdentificationItemRefTypeSerializerState::Init__), name: name.unwrap_or("SpectrumIdentificationItemRefType"), is_root })
         }
     }
-    #[derive(Debug)]
+    #[derive(Debug, Default)]
     pub struct SpectrumIdentificationItemType {
         pub id: String,
         pub name: Option<String>,
