@@ -138,9 +138,9 @@ pip install pyarrow
 | `spectrum_id` | String | ID of the spectrum (e.g., `index=1` or `scan=123`) |
 | `file_path` | String | Path to the source file to resolve duplicate IDs across files. |
 | `peptide1_seq` | String | ProForma v2 sequence of the first peptide |
-| `protein1_id` | String | ID matching `prot_seqs` |
-| `peptide1_start`| UInt32 | Start position in protein (1-based) |
-| `peptide1_end` | UInt32 | End position in protein (1-based) |
+| `protein1_id` | String / List[Str] | ID matching `prot_seqs` |
+| `peptide1_start`| UInt32 / List[U32] | Start position in protein (1-based) |
+| `peptide1_end` | UInt32 / List[U32] | End position in protein (1-based) |
 | `charge` | Int32 | Precursor charge state |
 | `rank` | UInt32 | Identification rank (1 = top match) |
 | `is_crosslink` | Boolean | Whether this is a crosslink match |
@@ -151,12 +151,25 @@ pip install pyarrow
 | `peptide1_link_pos` | Int32 | 1-based link position on peptide 1 |
 | `peptide2_link_pos` | Int32 | 1-based link position on peptide 2 (or site 2 for looplink) |
 | `peptide2_seq` | String | (Crosslink only) Second peptide sequence |
-| `protein2_id` | String | (Crosslink only) Second protein ID |
-| `peptide2_start`| UInt32 | (Crosslink only) Start position |
-| `peptide2_end` | UInt32 | (Crosslink only) End position |
+| `protein2_id` | String / List[Str] | (Crosslink only) Second protein ID |
+| `peptide2_start`| UInt32 / List[U32] | (Crosslink only) Start position |
+| `peptide2_end` | UInt32 / List[U32] | (Crosslink only) End position |
 | `crosslinker_name`| String | **Recommended**. Name of the crosslinker (e.g., `DSSO`) |
 | `crosslinker_accession`| String | **Recommended**. CV accession of the crosslinker (e.g., `MS:1003124`) |
 | `crosslinker_mass`| Float64| **Recommended**. Mass of the crosslinker |
+
+## Protein Ambiguity
+
+If a peptide sequence maps to multiple proteins, you can encode this using Polars **List** columns in the `csms` DataFrame. For each mapped protein, provide the corresponding ID, start, and end positions in the lists. The library will generate multiple `<PeptideEvidence>` entries for that match.
+
+```python
+csms = pl.DataFrame({
+    "protein1_id": [["PROT_A", "PROT_B"], ["PROT_C"]],
+    "peptide1_start": [[1, 50], [10]],
+    "peptide1_end": [[10, 60], [20]],
+    # ... other columns
+})
+```
 
 ## License
 

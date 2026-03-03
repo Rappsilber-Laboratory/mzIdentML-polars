@@ -3,8 +3,27 @@ use pyo3::types::{PyDict};
 use pyo3_polars::PyDataFrame;
 use std::collections::HashMap;
 use crate::mzidentml::psi_pi::*;
+use polars::prelude::*;
 use xsd_parser::quick_xml::WithSerializer;
 use xsd_parser::quick_xml::Writer;
+
+fn get_string_list(val: AnyValue) -> Vec<String> {
+    match val {
+        AnyValue::List(s) => s.str().unwrap().into_iter().flatten().map(|s| s.to_string()).collect(),
+        AnyValue::String(s) => vec![s.to_string()],
+        AnyValue::Null => Vec::new(),
+        _ => Vec::new(),
+    }
+}
+
+fn get_u32_list(val: AnyValue) -> Vec<u32> {
+    match val {
+        AnyValue::List(s) => s.u32().unwrap().into_iter().flatten().collect(),
+        AnyValue::UInt32(u) => vec![u],
+        AnyValue::Null => Vec::new(),
+        _ => Vec::new(),
+    }
+}
 
 /// Factory to manage the construction of the MzIdentML XML tree.
 pub struct MzIdentMLFactory {
@@ -675,17 +694,17 @@ pub fn write_mzidentml(
     // 2. Process CSMs
     let c_spec_id = csms_df.column("spectrum_id").map_err(|e| PyErr::new::<pyo3::exceptions::PyValueError, _>(format!("{}", e)))?.str().map_err(|e| PyErr::new::<pyo3::exceptions::PyValueError, _>(format!("{}", e)))?;
     let c_pep1 = csms_df.column("peptide1_seq").map_err(|e| PyErr::new::<pyo3::exceptions::PyValueError, _>(format!("{}", e)))?.str().map_err(|e| PyErr::new::<pyo3::exceptions::PyValueError, _>(format!("{}", e)))?;
-    let c_prot1 = csms_df.column("protein1_id").map_err(|e| PyErr::new::<pyo3::exceptions::PyValueError, _>(format!("{}", e)))?.str().map_err(|e| PyErr::new::<pyo3::exceptions::PyValueError, _>(format!("{}", e)))?;
-    let c_start1 = csms_df.column("peptide1_start").map_err(|e| PyErr::new::<pyo3::exceptions::PyValueError, _>(format!("{}", e)))?.u32().map_err(|e| PyErr::new::<pyo3::exceptions::PyValueError, _>(format!("{}", e)))?;
-    let c_end1 = csms_df.column("peptide1_end").map_err(|e| PyErr::new::<pyo3::exceptions::PyValueError, _>(format!("{}", e)))?.u32().map_err(|e| PyErr::new::<pyo3::exceptions::PyValueError, _>(format!("{}", e)))?;
+    let c_prot1 = csms_df.column("protein1_id").map_err(|e| PyErr::new::<pyo3::exceptions::PyValueError, _>(format!("{}", e)))?;
+    let c_start1 = csms_df.column("peptide1_start").map_err(|e| PyErr::new::<pyo3::exceptions::PyValueError, _>(format!("{}", e)))?;
+    let c_end1 = csms_df.column("peptide1_end").map_err(|e| PyErr::new::<pyo3::exceptions::PyValueError, _>(format!("{}", e)))?;
     let c_charge = csms_df.column("charge").map_err(|e| PyErr::new::<pyo3::exceptions::PyValueError, _>(format!("{}", e)))?.i32().map_err(|e| PyErr::new::<pyo3::exceptions::PyValueError, _>(format!("{}", e)))?;
     let c_rank = csms_df.column("rank").map_err(|e| PyErr::new::<pyo3::exceptions::PyValueError, _>(format!("{}", e)))?.u32().map_err(|e| PyErr::new::<pyo3::exceptions::PyValueError, _>(format!("{}", e)))?;
     
     let is_xl = csms_df.column("is_crosslink").map_err(|e| PyErr::new::<pyo3::exceptions::PyValueError, _>(format!("{}", e)))?.bool().map_err(|e| PyErr::new::<pyo3::exceptions::PyValueError, _>(format!("{}", e)))?;
     let c_pep2 = csms_df.column("peptide2_seq").map_err(|e| PyErr::new::<pyo3::exceptions::PyValueError, _>(format!("{}", e)))?.str().map_err(|e| PyErr::new::<pyo3::exceptions::PyValueError, _>(format!("{}", e)))?;
-    let c_prot2 = csms_df.column("protein2_id").map_err(|e| PyErr::new::<pyo3::exceptions::PyValueError, _>(format!("{}", e)))?.str().map_err(|e| PyErr::new::<pyo3::exceptions::PyValueError, _>(format!("{}", e)))?;
-    let c_start2 = csms_df.column("peptide2_start").map_err(|e| PyErr::new::<pyo3::exceptions::PyValueError, _>(format!("{}", e)))?.u32().map_err(|e| PyErr::new::<pyo3::exceptions::PyValueError, _>(format!("{}", e)))?;
-    let c_end2 = csms_df.column("peptide2_end").map_err(|e| PyErr::new::<pyo3::exceptions::PyValueError, _>(format!("{}", e)))?.u32().map_err(|e| PyErr::new::<pyo3::exceptions::PyValueError, _>(format!("{}", e)))?;
+    let c_prot2 = csms_df.column("protein2_id").map_err(|e| PyErr::new::<pyo3::exceptions::PyValueError, _>(format!("{}", e)))?;
+    let c_start2 = csms_df.column("peptide2_start").map_err(|e| PyErr::new::<pyo3::exceptions::PyValueError, _>(format!("{}", e)))?;
+    let c_end2 = csms_df.column("peptide2_end").map_err(|e| PyErr::new::<pyo3::exceptions::PyValueError, _>(format!("{}", e)))?;
 
     let c_link_pos1 = csms_df.column("peptide1_link_pos").map_err(|e| PyErr::new::<pyo3::exceptions::PyValueError, _>(format!("{}", e)))?.i32().map_err(|e| PyErr::new::<pyo3::exceptions::PyValueError, _>(format!("{}", e)))?;
     let c_link_pos2 = csms_df.column("peptide2_link_pos").map_err(|e| PyErr::new::<pyo3::exceptions::PyValueError, _>(format!("{}", e)))?.i32().map_err(|e| PyErr::new::<pyo3::exceptions::PyValueError, _>(format!("{}", e)))?;
@@ -812,15 +831,47 @@ pub fn write_mzidentml(
             let pep2_id = factory.add_peptide(c_pep2.get(i).unwrap(), linkage2);
             let _pep2_id_plain = pep2_id.replace("ident_", "").replace("pep_", "");
 
-            let prot1_id = c_prot1.get(i).unwrap();
-            let dbseq1_ref = format!("dbseq_{}", prot1_id);
-            let is_decoy1 = factory.decoy_map.get(prot1_id).cloned().unwrap_or(false);
-            let ev1_id = factory.add_peptide_evidence(&pep1_id, &dbseq1_ref, c_start1.get(i), c_end1.get(i), is_decoy1);
+            let prot1_list = get_string_list(c_prot1.get(i).unwrap());
+            let start1_list = get_u32_list(c_start1.get(i).unwrap());
+            let end1_list = get_u32_list(c_end1.get(i).unwrap());
 
-            let prot2_id = c_prot2.get(i).unwrap();
-            let dbseq2_ref = format!("dbseq_{}", prot2_id);
-            let is_decoy2 = factory.decoy_map.get(prot2_id).cloned().unwrap_or(false);
-            let ev2_id = factory.add_peptide_evidence(&pep2_id, &dbseq2_ref, c_start2.get(i), c_end2.get(i), is_decoy2);
+            let mut ev1_ids = Vec::new();
+            for j in 0..prot1_list.len() {
+                let p1 = &prot1_list[j];
+                let dbseq1_ref = format!("dbseq_{}", p1);
+                let is_decoy1 = factory.decoy_map.get(p1).cloned().unwrap_or(false);
+                let start = start1_list.get(j).cloned();
+                let end = end1_list.get(j).cloned();
+                ev1_ids.push(factory.add_peptide_evidence(&pep1_id, &dbseq1_ref, start, end, is_decoy1));
+            }
+
+            let prot2_list = get_string_list(c_prot2.get(i).unwrap());
+            let start2_list = get_u32_list(c_start2.get(i).unwrap());
+            let end2_list = get_u32_list(c_end2.get(i).unwrap());
+
+            let mut ev2_ids = Vec::new();
+            for j in 0..prot2_list.len() {
+                let p2 = &prot2_list[j];
+                let dbseq2_ref = format!("dbseq_{}", p2);
+                let is_decoy2 = factory.decoy_map.get(p2).cloned().unwrap_or(false);
+                let start = start2_list.get(j).cloned();
+                let end = end2_list.get(j).cloned();
+                ev2_ids.push(factory.add_peptide_evidence(&pep2_id, &dbseq2_ref, start, end, is_decoy2));
+            }
+
+            let mut content1 = Vec::new();
+            for ev_id in ev1_ids {
+                content1.push(SpectrumIdentificationItemTypeContent::PeptideEvidenceRef(PeptideEvidenceRefType {
+                    peptide_evidence_ref: ev_id,
+                }));
+            }
+            content1.push(SpectrumIdentificationItemTypeContent::CvParam(CvParamType {
+                name: "cross-link spectrum identification item".to_string(),
+                accession: "MS:1002511".to_string(),
+                value: Some(xl_group_id.clone()),
+                cv_ref: "PSI-MS".to_string(),
+                ..Default::default()
+            }));
 
             let sii1 = SpectrumIdentificationItemType {
                 id: format!("SII_{}_{}_p1", spec_id, i),
@@ -830,20 +881,23 @@ pub fn write_mzidentml(
                 rank: c_rank.get(i).unwrap() as i32,
                 pass_threshold: true,
                 peptide_ref: pep1_id,
-                content: vec![
-                    SpectrumIdentificationItemTypeContent::PeptideEvidenceRef(PeptideEvidenceRefType {
-                        peptide_evidence_ref: ev1_id,
-                    }),
-                    SpectrumIdentificationItemTypeContent::CvParam(CvParamType {
-                        name: "cross-link spectrum identification item".to_string(),
-                        accession: "MS:1002511".to_string(),
-                        value: Some(xl_group_id.clone()),
-                        cv_ref: "PSI-MS".to_string(),
-                        ..Default::default()
-                    }),
-                ],
+                content: content1,
                 ..Default::default()
             };
+
+            let mut content2 = Vec::new();
+            for ev_id in ev2_ids {
+                content2.push(SpectrumIdentificationItemTypeContent::PeptideEvidenceRef(PeptideEvidenceRefType {
+                    peptide_evidence_ref: ev_id,
+                }));
+            }
+            content2.push(SpectrumIdentificationItemTypeContent::CvParam(CvParamType {
+                name: "cross-link spectrum identification item".to_string(),
+                accession: "MS:1002511".to_string(),
+                value: Some(xl_group_id.clone()),
+                cv_ref: "PSI-MS".to_string(),
+                ..Default::default()
+            }));
 
             let sii2 = SpectrumIdentificationItemType {
                 id: format!("SII_{}_{}_p2", spec_id, i),
@@ -853,18 +907,7 @@ pub fn write_mzidentml(
                 rank: c_rank.get(i).unwrap() as i32,
                 pass_threshold: true,
                 peptide_ref: pep2_id,
-                content: vec![
-                    SpectrumIdentificationItemTypeContent::PeptideEvidenceRef(PeptideEvidenceRefType {
-                        peptide_evidence_ref: ev2_id,
-                    }),
-                    SpectrumIdentificationItemTypeContent::CvParam(CvParamType {
-                        name: "cross-link spectrum identification item".to_string(),
-                        accession: "MS:1002511".to_string(),
-                        value: Some(xl_group_id.clone()),
-                        cv_ref: "PSI-MS".to_string(),
-                        ..Default::default()
-                    }),
-                ],
+                content: content2,
                 ..Default::default()
             };
 
@@ -950,10 +993,27 @@ pub fn write_mzidentml(
 
             let pep_id = factory.add_peptide(pep1_seq, linkage);
             let _pep_id_plain = pep_id.replace("ident_", "").replace("pep_", "");
-            let prot1_id = c_prot1.get(i).unwrap();
-            let dbseq1_ref = format!("dbseq_{}", prot1_id);
-            let is_decoy1 = factory.decoy_map.get(prot1_id).cloned().unwrap_or(false);
-            let ev1_id = factory.add_peptide_evidence(&pep_id, &dbseq1_ref, c_start1.get(i), c_end1.get(i), is_decoy1);
+            
+            let prot1_list = get_string_list(c_prot1.get(i).unwrap());
+            let start1_list = get_u32_list(c_start1.get(i).unwrap());
+            let end1_list = get_u32_list(c_end1.get(i).unwrap());
+
+            let mut ev_ids = Vec::new();
+            for j in 0..prot1_list.len() {
+                let p1 = &prot1_list[j];
+                let dbseq1_ref = format!("dbseq_{}", p1);
+                let is_decoy1 = factory.decoy_map.get(p1).cloned().unwrap_or(false);
+                let start = start1_list.get(j).cloned();
+                let end = end1_list.get(j).cloned();
+                ev_ids.push(factory.add_peptide_evidence(&pep_id, &dbseq1_ref, start, end, is_decoy1));
+            }
+
+            let mut content = Vec::new();
+            for ev_id in ev_ids {
+                content.push(SpectrumIdentificationItemTypeContent::PeptideEvidenceRef(PeptideEvidenceRefType {
+                    peptide_evidence_ref: ev_id,
+                }));
+            }
 
             let mut sii = SpectrumIdentificationItemType {
                 id: format!("SII_{}_{}", spec_id, i),
@@ -963,11 +1023,7 @@ pub fn write_mzidentml(
                 rank: c_rank.get(i).unwrap() as i32,
                 pass_threshold: true,
                 peptide_ref: pep_id,
-                content: vec![
-                    SpectrumIdentificationItemTypeContent::PeptideEvidenceRef(PeptideEvidenceRefType {
-                        peptide_evidence_ref: ev1_id,
-                    }),
-                ],
+                content,
                 ..Default::default()
             };
             
