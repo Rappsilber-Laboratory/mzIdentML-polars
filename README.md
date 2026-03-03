@@ -125,6 +125,7 @@ pip install pyarrow
 | `protein_id` | String | Unique internal ID for the protein |
 | `accession` | String | Public accession (e.g., UniProt) |
 | `sequence` | String | Full amino acid sequence |
+| `is_decoy` | Boolean | **Optional**. Whether the protein is a decoy (default: `false`) |
 
 ### `csms` (DataFrame)
 | Column | Type | Description |

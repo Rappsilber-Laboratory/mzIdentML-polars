@@ -13,6 +13,7 @@ pub struct MzIdentMLFactory {
     db_seq_map: HashMap<String, String>,  // Protein ID -> DBSequence ID
     pep_evidence_map: HashMap<(String, String), String>, // (Peptide ID, Protein ID) -> Evidence ID
     cv_map: HashMap<String, String>,      // CV ID -> URI
+    decoy_map: HashMap<String, bool>,     // Protein ID -> is_decoy
 }
 
 impl MzIdentMLFactory {
@@ -72,6 +73,7 @@ impl MzIdentMLFactory {
             db_seq_map: HashMap::new(),
             pep_evidence_map: HashMap::new(),
             cv_map: HashMap::new(),
+            decoy_map: HashMap::new(),
         };
 
         factory.add_cv("PSI-MS", "PSI-MS", "https://raw.githubusercontent.com/HUPO-PSI/psi-ms-CV/master/psi-ms.obo");
@@ -140,7 +142,7 @@ impl MzIdentMLFactory {
         id
     }
 
-    pub fn add_db_sequence(&mut self, protein_id: &str, accession: &str, sequence: &str, db_ref: &str) -> String {
+    pub fn add_db_sequence(&mut self, protein_id: &str, accession: &str, sequence: &str, db_ref: &str, is_decoy: bool) -> String {
         if let Some(id) = self.db_seq_map.get(protein_id) {
             return id.clone();
         }
@@ -159,6 +161,7 @@ impl MzIdentMLFactory {
             sc.db_sequence.push(db_seq);
         }
         self.db_seq_map.insert(protein_id.to_string(), id.clone());
+        self.decoy_map.insert(protein_id.to_string(), is_decoy);
         id
     }
 
@@ -578,10 +581,12 @@ pub fn write_mzidentml(
     let prot_ids = prot_df.column("protein_id").map_err(|e| PyErr::new::<pyo3::exceptions::PyValueError, _>(format!("{}", e)))?.str().map_err(|e| PyErr::new::<pyo3::exceptions::PyValueError, _>(format!("{}", e)))?;
     let prot_accs = prot_df.column("accession").map_err(|e| PyErr::new::<pyo3::exceptions::PyValueError, _>(format!("{}", e)))?.str().map_err(|e| PyErr::new::<pyo3::exceptions::PyValueError, _>(format!("{}", e)))?;
     let prot_seqs_col = prot_df.column("sequence").map_err(|e| PyErr::new::<pyo3::exceptions::PyValueError, _>(format!("{}", e)))?.str().map_err(|e| PyErr::new::<pyo3::exceptions::PyValueError, _>(format!("{}", e)))?;
+    let prot_is_decoy = prot_df.column("is_decoy").ok().and_then(|c| c.bool().ok());
     
     for i in 0..prot_df.height() {
         if let (Some(id), Some(acc), Some(seq)) = (prot_ids.get(i), prot_accs.get(i), prot_seqs_col.get(i)) {
-            factory.add_db_sequence(id, acc, seq, "SearchDB_1");
+            let is_decoy = prot_is_decoy.as_ref().and_then(|c| c.get(i)).unwrap_or(false);
+            factory.add_db_sequence(id, acc, seq, "SearchDB_1", is_decoy);
         }
     }
 
@@ -727,11 +732,13 @@ pub fn write_mzidentml(
 
             let prot1_id = c_prot1.get(i).unwrap();
             let dbseq1_ref = format!("dbseq_{}", prot1_id);
-            let ev1_id = factory.add_peptide_evidence(&pep1_id, &dbseq1_ref, c_start1.get(i), c_end1.get(i), false);
+            let is_decoy1 = factory.decoy_map.get(prot1_id).cloned().unwrap_or(false);
+            let ev1_id = factory.add_peptide_evidence(&pep1_id, &dbseq1_ref, c_start1.get(i), c_end1.get(i), is_decoy1);
 
             let prot2_id = c_prot2.get(i).unwrap();
             let dbseq2_ref = format!("dbseq_{}", prot2_id);
-            let ev2_id = factory.add_peptide_evidence(&pep2_id, &dbseq2_ref, c_start2.get(i), c_end2.get(i), false);
+            let is_decoy2 = factory.decoy_map.get(prot2_id).cloned().unwrap_or(false);
+            let ev2_id = factory.add_peptide_evidence(&pep2_id, &dbseq2_ref, c_start2.get(i), c_end2.get(i), is_decoy2);
 
             let sii1 = SpectrumIdentificationItemType {
                 id: format!("SII_{}_{}_p1", spec_id, i),
@@ -857,7 +864,8 @@ pub fn write_mzidentml(
             let _pep_id_plain = pep_id.replace("ident_", "").replace("pep_", "");
             let prot1_id = c_prot1.get(i).unwrap();
             let dbseq1_ref = format!("dbseq_{}", prot1_id);
-            let ev1_id = factory.add_peptide_evidence(&pep_id, &dbseq1_ref, c_start1.get(i), c_end1.get(i), false);
+            let is_decoy1 = factory.decoy_map.get(prot1_id).cloned().unwrap_or(false);
+            let ev1_id = factory.add_peptide_evidence(&pep_id, &dbseq1_ref, c_start1.get(i), c_end1.get(i), is_decoy1);
 
             let sii = SpectrumIdentificationItemType {
                 id: format!("SII_{}_{}", spec_id, i),
@@ -933,7 +941,7 @@ mod tests {
     #[test]
     fn test_add_db_sequence() {
         let mut factory = MzIdentMLFactory::new("test_doc".to_string());
-        let id = factory.add_db_sequence("P12345", "ACC123", "MAGA", "DB1");
+        let id = factory.add_db_sequence("P12345", "ACC123", "MAGA", "DB1", false);
         assert_eq!(id, "dbseq_P12345");
         
         let sc = factory.doc.sequence_collection.as_ref().unwrap();
@@ -945,7 +953,7 @@ mod tests {
     fn test_serialization_basic() {
         let mut factory = MzIdentMLFactory::new("test_doc".to_string());
         factory.add_peptide("PEPTIDE");
-        factory.add_db_sequence("P12", "ACC", "M", "DB");
+        factory.add_db_sequence("P12", "ACC", "M", "DB", false);
         
         let xml = factory.serialize().unwrap();
         // println!("XML OUTPUT:\n{}", xml);
