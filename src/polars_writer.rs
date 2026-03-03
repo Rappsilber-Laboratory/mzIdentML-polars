@@ -634,7 +634,7 @@ pub fn write_mzidentml(
     
     // Process SpectraData
     let spec_df = spectra.as_ref();
-    let spec_ids_col = spec_df.column("spectrum_id").map_err(|e| PyErr::new::<pyo3::exceptions::PyValueError, _>(format!("{}", e)))?.str().map_err(|e| PyErr::new::<pyo3::exceptions::PyValueError, _>(format!("{}", e)))?;
+    let _spec_ids_col = spec_df.column("spectrum_id").map_err(|e| PyErr::new::<pyo3::exceptions::PyValueError, _>(format!("{}", e)))?.str().map_err(|e| PyErr::new::<pyo3::exceptions::PyValueError, _>(format!("{}", e)))?;
     let spec_paths_col = spec_df.column("file_path").map_err(|e| PyErr::new::<pyo3::exceptions::PyValueError, _>(format!("{}", e)))?.str().map_err(|e| PyErr::new::<pyo3::exceptions::PyValueError, _>(format!("{}", e)))?;
     
     let mut spectra_data_ids = Vec::new();
@@ -748,13 +748,7 @@ pub fn write_mzidentml(
             // 1. Add Peptide 1 with Linker DONOR modification
             let mut linkage1 = Vec::new();
             if let Some(pos1) = c_link_pos1.get(i) {
-                let mut params = vec![CvParamType {
-                    name: "cross-link donor".to_string(),
-                    accession: "MS:1002509".to_string(),
-                    cv_ref: "PSI-MS".to_string(),
-                    value: Some(xl_group_id.clone()),
-                    ..Default::default()
-                }];
+                let mut params = Vec::new();
                 if let (Some(names), Some(accs)) = (c_xl_name.as_ref(), c_xl_acc.as_ref()) {
                     if let (Some(name), Some(acc)) = (names.get(i), accs.get(i)) {
                         params.push(CvParamType {
@@ -765,6 +759,13 @@ pub fn write_mzidentml(
                         });
                     }
                 }
+                params.push(CvParamType {
+                    name: "cross-link donor".to_string(),
+                    accession: "MS:1002509".to_string(),
+                    cv_ref: "PSI-MS".to_string(),
+                    value: Some(xl_group_id.clone()),
+                    ..Default::default()
+                });
                 linkage1.push(ModificationType {
                     location: Some(pos1),
                     cv_param: params,
@@ -778,23 +779,13 @@ pub fn write_mzidentml(
             // 2. Add Peptide 2 with Linker ACCEPTOR modification
             let mut linkage2 = Vec::new();
             if let Some(pos2) = c_link_pos2.get(i) {
-                let mut params = vec![CvParamType {
+                let params = vec![CvParamType {
                     name: "cross-link acceptor".to_string(),
                     accession: "MS:1002510".to_string(),
                     cv_ref: "PSI-MS".to_string(),
                     value: Some(xl_group_id.clone()),
                     ..Default::default()
                 }];
-                if let (Some(names), Some(accs)) = (c_xl_name.as_ref(), c_xl_acc.as_ref()) {
-                    if let (Some(name), Some(acc)) = (names.get(i), accs.get(i)) {
-                        params.push(CvParamType {
-                            name: name.to_string(),
-                            accession: acc.to_string(),
-                            cv_ref: get_cv_ref(acc),
-                            ..Default::default()
-                        });
-                    }
-                }
                 linkage2.push(ModificationType {
                     location: Some(pos2),
                     cv_param: params,
@@ -885,13 +876,7 @@ pub fn write_mzidentml(
             if is_loop_link.get(i).unwrap_or(false) {
                 // Add Donor and Acceptor modifications to the SAME peptide
                 if let Some(pos1) = c_link_pos1.get(i) {
-                    let mut params = vec![CvParamType {
-                        name: "cross-link donor".to_string(),
-                        accession: "MS:1002509".to_string(),
-                        cv_ref: "PSI-MS".to_string(),
-                        value: Some(xl_group_id.clone()),
-                        ..Default::default()
-                    }];
+                    let mut params = Vec::new();
                     if let (Some(names), Some(accs)) = (c_xl_name.as_ref(), c_xl_acc.as_ref()) {
                         if let (Some(name), Some(acc)) = (names.get(i), accs.get(i)) {
                             params.push(CvParamType {
@@ -902,6 +887,13 @@ pub fn write_mzidentml(
                             });
                         }
                     }
+                    params.push(CvParamType {
+                        name: "cross-link donor".to_string(),
+                        accession: "MS:1002509".to_string(),
+                        cv_ref: "PSI-MS".to_string(),
+                        value: Some(xl_group_id.clone()),
+                        ..Default::default()
+                    });
                     linkage.push(ModificationType {
                         location: Some(pos1),
                         cv_param: params,
@@ -910,23 +902,13 @@ pub fn write_mzidentml(
                     });
                 }
                 if let Some(pos2) = c_link_pos2.get(i) {
-                    let mut params = vec![CvParamType {
+                    let params = vec![CvParamType {
                         name: "cross-link acceptor".to_string(),
                         accession: "MS:1002510".to_string(),
                         cv_ref: "PSI-MS".to_string(),
                         value: Some(xl_group_id.clone()),
                         ..Default::default()
                     }];
-                    if let (Some(names), Some(accs)) = (c_xl_name.as_ref(), c_xl_acc.as_ref()) {
-                        if let (Some(name), Some(acc)) = (names.get(i), accs.get(i)) {
-                            params.push(CvParamType {
-                                name: name.to_string(),
-                                accession: acc.to_string(),
-                                cv_ref: get_cv_ref(acc),
-                                ..Default::default()
-                            });
-                        }
-                    }
                     linkage.push(ModificationType {
                         location: Some(pos2),
                         cv_param: params,
@@ -1063,11 +1045,11 @@ fn parse_proforma(proforma: &str) -> (String, Vec<ModificationType>) {
                 if mod_str.contains(':') {
                     let parts: Vec<&str> = mod_str.split(':').collect();
                     cv_param.cv_ref = parts[0].to_uppercase();
-                    cv_param.accession = mod_str.to_string();
+                    cv_param.accession = mod_str.to_uppercase();
                     cv_param.name = parts[1].to_string();
                 } else {
                     cv_param.name = mod_str.to_string();
-                    cv_param.accession = format!("UNKNOWN:{}", mod_str);
+                    cv_param.accession = format!("UNKNOWN:{}", mod_str).to_uppercase();
                 }
                 
                 mods.push(ModificationType {

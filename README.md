@@ -161,3 +161,7 @@ pip install pyarrow
 ## License
 
 This project is licensed under the AGPL-3.0 License.
+
+## TODO
+- Exposing Search Protocol settings (Enzymes, Search Mods) in the metadata dictionary.
+- Implementing basic Protein Grouping (ProteinDetectionList) support, even as a simple 1-to-1 mapping if full inference isn't required.
