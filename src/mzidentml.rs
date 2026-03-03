@@ -410,7 +410,7 @@ pub mod psi_pi {
             })
         }
     }
-    #[derive(Debug)]
+    #[derive(Debug, Default)]
     pub struct CvParamType {
         pub name: String,
         pub value: Option<String>,

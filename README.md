@@ -37,37 +37,44 @@ prot_seqs = pl.DataFrame({
 })
 
 # 2. Define Identifications (CSMs)
-# Supports both Linear and Crosslinked peptides
-# NOTE: Columns must be cast to expected types (UInt32, Int32, Boolean)
+# Supports Linear, Crosslinked, and Looplinked peptides
+# Standards mandate 2 SpectrumIdentificationItems per crosslink match
 csms = pl.DataFrame({
-    "spectrum_id": ["scan=123", "scan=456"],
-    "peptide1_seq": ["PEPTIDEK", "PEPT[Unimod:35]IDEK"],
-    "protein1_id": ["PROT1", "PROT2"],
-    "peptide1_start": [1, 10],
-    "peptide1_end": [8, 18],
-    "charge": [2, 3],
-    "rank": [1, 1],
-    "is_crosslink": [False, True],
+    "spectrum_id": ["scan=123", "scan=456", "scan=789"],
+    "peptide1_seq": ["PEPTIDEK", "PEPTIDEK", "PEPTIDEK"],
+    "protein1_id": ["PROT1", "PROT2", "PROT1"],
+    "peptide1_start": [1, 10, 1],
+    "peptide1_end": [8, 18, 8],
+    "charge": [2, 3, 2],
+    "rank": [1, 1, 1],
+    "is_crosslink": [False, True, False],
+    "is_looplink": [False, False, True],
+    "peptide1_link_pos": [None, 8, 2],
+    "peptide2_link_pos": [None, 1, 8],
     
     # Required for crosslinks (is_crosslink = True)
-    "peptide2_seq": [None, "KLS"],
-    "protein2_id": [None, "PROT1"],
-    "peptide2_start": [None, 5],
-    "peptide2_end": [None, 12]
+    "peptide2_seq": [None, "KLS", None],
+    "protein2_id": [None, "PROT1", None],
+    "peptide2_start": [None, 5, None],
+    "peptide2_end": [None, 12, None]
 }).with_columns([
     pl.col("peptide1_start").cast(pl.UInt32),
     pl.col("peptide1_end").cast(pl.UInt32),
     pl.col("charge").cast(pl.Int32),
     pl.col("rank").cast(pl.UInt32),
     pl.col("is_crosslink").cast(pl.Boolean),
+    pl.col("is_looplink").cast(pl.Boolean),
+    # 1-based residue indices
+    pl.col("peptide1_link_pos").cast(pl.Int32),
+    pl.col("peptide2_link_pos").cast(pl.Int32),
     pl.col("peptide2_start").cast(pl.UInt32),
     pl.col("peptide2_end").cast(pl.UInt32),
 ])
 
-# 3. Define Spectra (placeholder for now)
+# 3. Define Spectra
 spectra = pl.DataFrame({
-    "spectrum_id": ["scan=123", "scan=456"],
-    "file_path": ["data.mzML", "data.mzML"]
+    "spectrum_id": ["scan=123", "scan=456", "scan=789"],
+    "file_path": ["data.mzML", "data.mzML", "data.mzML"]
 })
 
 # 4. Generate mzIdentML XML
@@ -111,6 +118,9 @@ pip install pyarrow
 | `charge` | Int32 | Precursor charge state |
 | `rank` | UInt32 | Identification rank (1 = top match) |
 | `is_crosslink` | Boolean | Whether this is a crosslink match |
+| `is_looplink`  | Boolean | Whether this is a looplink match |
+| `peptide1_link_pos` | Int32 | 1-based link position on peptide 1 |
+| `peptide2_link_pos` | Int32 | 1-based link position on peptide 2 (or site 2 for looplink) |
 | `peptide2_seq` | String | (Crosslink only) Second peptide sequence |
 | `protein2_id` | String | (Crosslink only) Second protein ID |
 | `peptide2_start`| UInt32 | (Crosslink only) Start position |
