@@ -767,7 +767,14 @@ pub fn write_mzidentml(
                             ..Default::default()
                         });
                     } else {
-                        // Specific linker info missing
+                        // Fallback generic cross-linker info to satisfy xiView parser
+                        // Using MS:1002508 (crosslinking attribute) as it is the correct parent term
+                        params.push(CvParamType {
+                            name: "cross-linker".to_string(),
+                            accession: "MS:1002508".to_string(),
+                            cv_ref: "PSI-MS".to_string(),
+                            ..Default::default()
+                        });
                     }
                 }
                 params.push(CvParamType {
@@ -790,13 +797,38 @@ pub fn write_mzidentml(
             // 2. Add Peptide 2 with Linker ACCEPTOR modification
             let mut linkage2 = Vec::new();
             if let Some(pos2) = c_link_pos2.get(i) {
-                let params = vec![CvParamType {
+                let mut params = Vec::new();
+                if let (Some(names), Some(accs)) = (c_xl_name.as_ref(), c_xl_acc.as_ref()) {
+                    if let (Some(name), Some(acc)) = (names.get(i), accs.get(i)) {
+                        params.push(CvParamType {
+                            name: name.to_string(),
+                            accession: acc.to_string(),
+                            cv_ref: get_cv_ref(acc),
+                            ..Default::default()
+                        });
+                    } else {
+                        params.push(CvParamType {
+                            name: "cross-linker".to_string(),
+                            accession: "MS:1002508".to_string(),
+                            cv_ref: "PSI-MS".to_string(),
+                            ..Default::default()
+                        });
+                    }
+                } else {
+                    params.push(CvParamType {
+                        name: "cross-linker".to_string(),
+                        accession: "MS:1002508".to_string(),
+                        cv_ref: "PSI-MS".to_string(),
+                        ..Default::default()
+                    });
+                }
+                params.push(CvParamType {
                     name: "cross-link acceptor".to_string(),
                     accession: "MS:1002510".to_string(),
                     cv_ref: "PSI-MS".to_string(),
                     value: Some(xl_group_id.clone()),
                     ..Default::default()
-                }];
+                });
                 linkage2.push(ModificationType {
                     location: Some(pos2),
                     cv_param: params,
@@ -921,10 +953,22 @@ pub fn write_mzidentml(
                                 ..Default::default()
                             });
                         } else {
-                            // Don't add incorrect fallbacks
+                            // Fallback generic cross-linker info to satisfy xiView parser
+                            params.push(CvParamType {
+                                name: "cross-linker".to_string(),
+                                accession: "MS:1002508".to_string(),
+                                cv_ref: "PSI-MS".to_string(),
+                                ..Default::default()
+                            });
                         }
                     } else {
-                        // Don't add incorrect fallbacks
+                        // Fallback generic cross-linker info to satisfy xiView parser
+                        params.push(CvParamType {
+                            name: "cross-linker".to_string(),
+                            accession: "MS:1002508".to_string(),
+                            cv_ref: "PSI-MS".to_string(),
+                            ..Default::default()
+                        });
                     }
                     params.push(CvParamType {
                         name: "cross-link donor".to_string(),
@@ -941,13 +985,38 @@ pub fn write_mzidentml(
                     });
                 }
                 if let Some(pos2) = c_link_pos2.get(i) {
-                    let params = vec![CvParamType {
+                    let mut params = Vec::new();
+                    if let (Some(names), Some(accs)) = (c_xl_name.as_ref(), c_xl_acc.as_ref()) {
+                        if let (Some(name), Some(acc)) = (names.get(i), accs.get(i)) {
+                            params.push(CvParamType {
+                                name: name.to_string(),
+                                accession: acc.to_string(),
+                                cv_ref: get_cv_ref(acc),
+                                ..Default::default()
+                            });
+                        } else {
+                            params.push(CvParamType {
+                                name: "cross-linker".to_string(),
+                                accession: "MS:1002508".to_string(),
+                                cv_ref: "PSI-MS".to_string(),
+                                ..Default::default()
+                            });
+                        }
+                    } else {
+                        params.push(CvParamType {
+                            name: "cross-linker".to_string(),
+                            accession: "MS:1002508".to_string(),
+                            cv_ref: "PSI-MS".to_string(),
+                            ..Default::default()
+                        });
+                    }
+                    params.push(CvParamType {
                         name: "cross-link acceptor".to_string(),
                         accession: "MS:1002510".to_string(),
                         cv_ref: "PSI-MS".to_string(),
                         value: Some(xl_group_id.clone()),
                         ..Default::default()
-                    }];
+                    });
                     linkage.push(ModificationType {
                         location: Some(pos2),
                         cv_param: params,
