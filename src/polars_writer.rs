@@ -758,24 +758,24 @@ pub fn write_mzidentml(
             let mut linkage1 = Vec::new();
             if let Some(pos1) = c_link_pos1.get(i) {
                 let mut params = Vec::new();
-                if let (Some(names), Some(accs)) = (c_xl_name.as_ref(), c_xl_acc.as_ref()) {
-                    if let (Some(name), Some(acc)) = (names.get(i), accs.get(i)) {
-                        params.push(CvParamType {
-                            name: name.to_string(),
-                            accession: acc.to_string(),
-                            cv_ref: get_cv_ref(acc),
-                            ..Default::default()
-                        });
-                    } else {
-                        // Fallback generic cross-linker info to satisfy xiView parser
-                        // Using MS:1002508 (crosslinking attribute) as it is the correct parent term
-                        params.push(CvParamType {
-                            name: "cross-linker".to_string(),
-                            accession: "MS:1002508".to_string(),
-                            cv_ref: "PSI-MS".to_string(),
-                            ..Default::default()
-                        });
-                    }
+                let xl_name = c_xl_name.as_ref().and_then(|c| c.get(i));
+                let xl_acc = c_xl_acc.as_ref().and_then(|c| c.get(i));
+
+                if let (Some(name), Some(acc)) = (xl_name, xl_acc) {
+                    params.push(CvParamType {
+                        name: name.to_string(),
+                        accession: acc.to_string(),
+                        cv_ref: get_cv_ref(acc),
+                        ..Default::default()
+                    });
+                } else {
+                    // Fallback to "unknown modification" to ensure a 'name' key is created for the parser
+                    params.push(CvParamType {
+                        name: "unknown modification".to_string(),
+                        accession: "MS:1001460".to_string(),
+                        cv_ref: "PSI-MS".to_string(),
+                        ..Default::default()
+                    });
                 }
                 params.push(CvParamType {
                     name: "cross-link donor".to_string(),
@@ -798,26 +798,20 @@ pub fn write_mzidentml(
             let mut linkage2 = Vec::new();
             if let Some(pos2) = c_link_pos2.get(i) {
                 let mut params = Vec::new();
-                if let (Some(names), Some(accs)) = (c_xl_name.as_ref(), c_xl_acc.as_ref()) {
-                    if let (Some(name), Some(acc)) = (names.get(i), accs.get(i)) {
-                        params.push(CvParamType {
-                            name: name.to_string(),
-                            accession: acc.to_string(),
-                            cv_ref: get_cv_ref(acc),
-                            ..Default::default()
-                        });
-                    } else {
-                        params.push(CvParamType {
-                            name: "cross-linker".to_string(),
-                            accession: "MS:1002508".to_string(),
-                            cv_ref: "PSI-MS".to_string(),
-                            ..Default::default()
-                        });
-                    }
+                let xl_name = c_xl_name.as_ref().and_then(|c| c.get(i));
+                let xl_acc = c_xl_acc.as_ref().and_then(|c| c.get(i));
+
+                if let (Some(name), Some(acc)) = (xl_name, xl_acc) {
+                    params.push(CvParamType {
+                        name: name.to_string(),
+                        accession: acc.to_string(),
+                        cv_ref: get_cv_ref(acc),
+                        ..Default::default()
+                    });
                 } else {
                     params.push(CvParamType {
-                        name: "cross-linker".to_string(),
-                        accession: "MS:1002508".to_string(),
+                        name: "unknown modification".to_string(),
+                        accession: "MS:1001460".to_string(),
                         cv_ref: "PSI-MS".to_string(),
                         ..Default::default()
                     });
@@ -944,28 +938,20 @@ pub fn write_mzidentml(
                 // Add Donor and Acceptor modifications to the SAME peptide
                 if let Some(pos1) = c_link_pos1.get(i) {
                     let mut params = Vec::new();
-                    if let (Some(names), Some(accs)) = (c_xl_name.as_ref(), c_xl_acc.as_ref()) {
-                        if let (Some(name), Some(acc)) = (names.get(i), accs.get(i)) {
-                            params.push(CvParamType {
-                                name: name.to_string(),
-                                accession: acc.to_string(),
-                                cv_ref: get_cv_ref(acc),
-                                ..Default::default()
-                            });
-                        } else {
-                            // Fallback generic cross-linker info to satisfy xiView parser
-                            params.push(CvParamType {
-                                name: "cross-linker".to_string(),
-                                accession: "MS:1002508".to_string(),
-                                cv_ref: "PSI-MS".to_string(),
-                                ..Default::default()
-                            });
-                        }
-                    } else {
-                        // Fallback generic cross-linker info to satisfy xiView parser
+                    let xl_name = c_xl_name.as_ref().and_then(|c| c.get(i));
+                    let xl_acc = c_xl_acc.as_ref().and_then(|c| c.get(i));
+
+                    if let (Some(name), Some(acc)) = (xl_name, xl_acc) {
                         params.push(CvParamType {
-                            name: "cross-linker".to_string(),
-                            accession: "MS:1002508".to_string(),
+                            name: name.to_string(),
+                            accession: acc.to_string(),
+                            cv_ref: get_cv_ref(acc),
+                            ..Default::default()
+                        });
+                    } else {
+                        params.push(CvParamType {
+                            name: "unknown modification".to_string(),
+                            accession: "MS:1001460".to_string(),
                             cv_ref: "PSI-MS".to_string(),
                             ..Default::default()
                         });
@@ -986,26 +972,20 @@ pub fn write_mzidentml(
                 }
                 if let Some(pos2) = c_link_pos2.get(i) {
                     let mut params = Vec::new();
-                    if let (Some(names), Some(accs)) = (c_xl_name.as_ref(), c_xl_acc.as_ref()) {
-                        if let (Some(name), Some(acc)) = (names.get(i), accs.get(i)) {
-                            params.push(CvParamType {
-                                name: name.to_string(),
-                                accession: acc.to_string(),
-                                cv_ref: get_cv_ref(acc),
-                                ..Default::default()
-                            });
-                        } else {
-                            params.push(CvParamType {
-                                name: "cross-linker".to_string(),
-                                accession: "MS:1002508".to_string(),
-                                cv_ref: "PSI-MS".to_string(),
-                                ..Default::default()
-                            });
-                        }
+                    let xl_name = c_xl_name.as_ref().and_then(|c| c.get(i));
+                    let xl_acc = c_xl_acc.as_ref().and_then(|c| c.get(i));
+
+                    if let (Some(name), Some(acc)) = (xl_name, xl_acc) {
+                        params.push(CvParamType {
+                            name: name.to_string(),
+                            accession: acc.to_string(),
+                            cv_ref: get_cv_ref(acc),
+                            ..Default::default()
+                        });
                     } else {
                         params.push(CvParamType {
-                            name: "cross-linker".to_string(),
-                            accession: "MS:1002508".to_string(),
+                            name: "unknown modification".to_string(),
+                            accession: "MS:1001460".to_string(),
                             cv_ref: "PSI-MS".to_string(),
                             ..Default::default()
                         });
