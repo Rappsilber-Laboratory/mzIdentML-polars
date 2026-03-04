@@ -442,16 +442,6 @@ impl MzIdentMLFactory {
                         unit_name: None,
                         unit_cv_ref: None,
                     }),
-                    // Generic cross-linker placeholder
-                    ParamListTypeContent::CvParam(CvParamType {
-                        name: "cross-linker".to_string(),
-                        accession: "MS:1002493".to_string(),
-                        cv_ref: "PSI-MS".to_string(),
-                        value: None,
-                        unit_accession: None,
-                        unit_name: None,
-                        unit_cv_ref: None,
-                    }),
                 ],
             }),
             modification_params: None,
@@ -777,22 +767,8 @@ pub fn write_mzidentml(
                             ..Default::default()
                         });
                     } else {
-                        // Fallback generic cross-linker if name/acc is missing but is_xl is true
-                        params.push(CvParamType {
-                            name: "cross-linker".to_string(),
-                            accession: "MS:1002493".to_string(),
-                            cv_ref: "PSI-MS".to_string(),
-                            ..Default::default()
-                        });
+                        // Specific linker info missing
                     }
-                } else {
-                    // Fallback generic cross-linker if columns themselves are missing
-                    params.push(CvParamType {
-                        name: "cross-linker".to_string(),
-                        accession: "MS:1002493".to_string(),
-                        cv_ref: "PSI-MS".to_string(),
-                        ..Default::default()
-                    });
                 }
                 params.push(CvParamType {
                     name: "cross-link donor".to_string(),
@@ -945,20 +921,10 @@ pub fn write_mzidentml(
                                 ..Default::default()
                             });
                         } else {
-                            params.push(CvParamType {
-                                name: "cross-linker".to_string(),
-                                accession: "MS:1002493".to_string(),
-                                cv_ref: "PSI-MS".to_string(),
-                                ..Default::default()
-                            });
+                            // Don't add incorrect fallbacks
                         }
                     } else {
-                        params.push(CvParamType {
-                            name: "cross-linker".to_string(),
-                            accession: "MS:1002493".to_string(),
-                            cv_ref: "PSI-MS".to_string(),
-                            ..Default::default()
-                        });
+                        // Don't add incorrect fallbacks
                     }
                     params.push(CvParamType {
                         name: "cross-link donor".to_string(),
