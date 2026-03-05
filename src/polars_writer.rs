@@ -10,6 +10,10 @@ use flate2::write::GzEncoder;
 use flate2::Compression;
 
 
+mod cv_data {
+    include!(concat!(env!("OUT_DIR"), "/cv_data.rs"));
+}
+
 fn get_string_list(val: AnyValue) -> Vec<String> {
     match val {
         AnyValue::List(s) => s.str().unwrap().into_iter().flatten().map(|s| s.to_string()).collect(),
@@ -1302,20 +1306,35 @@ fn parse_proforma(proforma: &str) -> (String, Vec<ModificationType>) {
                     cv_ref: "PSI-MS".to_string(),
                     ..Default::default()
                 };
+                let mut mass_delta = 0.0;
+                
                 if mod_str.contains(':') {
                     let parts: Vec<&str> = mod_str.split(':').collect();
-                    cv_param.cv_ref = parts[0].to_uppercase();
+                    let cv_id = parts[0].to_uppercase();
+                    cv_param.cv_ref = if cv_id == "UNIMOD" { "UNIMOD" } else { "PSI-MS" }.to_string();
                     cv_param.accession = mod_str.to_uppercase();
-                    cv_param.name = parts[1].to_string();
+                    if let Some(data) = cv_data::lookup_mod(&cv_param.accession) {
+                        cv_param.name = data.name.to_string();
+                        mass_delta = data.mono_mass;
+                    } else {
+                        cv_param.name = parts[1].to_string();
+                    }
                 } else {
-                    cv_param.name = mod_str.to_string();
-                    cv_param.accession = format!("UNKNOWN:{}", mod_str).to_uppercase();
+                    if let Some((acc, mass)) = cv_data::lookup_mod_by_name(mod_str) {
+                        cv_param.name = mod_str.to_string();
+                        cv_param.accession = acc.to_string();
+                        cv_param.cv_ref = if acc.starts_with("UNIMOD:") { "UNIMOD" } else { "PSI-MS" }.to_string();
+                        mass_delta = mass;
+                    } else {
+                        cv_param.name = mod_str.to_string();
+                        cv_param.accession = format!("UNKNOWN:{}", mod_str).to_uppercase();
+                    }
                 }
                 
                 mods.push(ModificationType {
                     location: Some(clean_seq.len() as i32),
                     cv_param: vec![cv_param],
-                    monoisotopic_mass_delta: Some(0.0),
+                    monoisotopic_mass_delta: Some(mass_delta),
                     ..Default::default()
                 });
                 i = end + 1;
