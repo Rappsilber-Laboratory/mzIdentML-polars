@@ -4,3 +4,4 @@ target/
 .venv/
 test_output.mzid
 output_*.mzid
+__pycache__
