@@ -1149,25 +1149,18 @@ pub fn prepare_factory(
 
                     let mut xl_name_param = "unknown modification".to_string();
                     let mut xl_acc_param = "MS:1001460".to_string();
-                    let mut xl_mass_val = c_xl_mass.as_ref().and_then(|c| c.get(i)).unwrap_or(0.0);
 
                     if let Some(acc) = xl_acc {
                         xl_acc_param = acc.to_string();
                         if let Some(data) = cv_data::lookup_mod(acc) {
                             xl_name_param = data.name.to_string();
-                            if xl_mass_val == 0.0 {
-                                xl_mass_val = data.mono_mass;
-                            }
                         } else if let Some(name) = xl_name {
                             xl_name_param = name.to_string();
                         }
                     } else if let Some(name) = xl_name {
                         xl_name_param = name.to_string();
-                        if let Some((acc, mass)) = cv_data::lookup_mod_by_name(name) {
+                        if let Some((acc, _)) = cv_data::lookup_mod_by_name(name) {
                             xl_acc_param = acc.to_string();
-                            if xl_mass_val == 0.0 {
-                                xl_mass_val = mass;
-                            }
                         }
                     }
 
