@@ -27,14 +27,19 @@ The primary functions are `write_mzidentml` (for file output) and `serialize_mzi
 
 ### Writing to a File (Recommended)
 
+This method is memory-efficient as it streams the XML directly to the disk. It also supports **automatic Gzip compression** if the filename ends in `.gz`.
+
 ```python
 import polars as pl
 import mzidentml_polars
 
 # ... define DataFrames ...
 
-# Generate mzIdentML directly to a file (fast and memory-efficient)
+# Generate mzIdentML directly to a file
 mzidentml_polars.write_mzidentml(csms, prot_seqs, spectra, metadata, "output.mzid")
+
+# Automatic Gzip compression
+mzidentml_polars.write_mzidentml(csms, prot_seqs, spectra, metadata, "output.mzid.gz")
 ```
 
 ### Serializing to a String
@@ -43,6 +48,19 @@ mzidentml_polars.write_mzidentml(csms, prot_seqs, spectra, metadata, "output.mzi
 # Generate mzIdentML as a string (if needed for further processing)
 xml_string = mzidentml_polars.serialize_mzidentml(csms, prot_seqs, spectra, metadata)
 ```
+
+## Testing
+
+The project includes a comprehensive test suite using `pytest` that validates output against official mzIdentML XML schemas.
+
+### Prerequisites
+```bash
+pip install pytest lxml
+```
+
+### Running Tests
+```bash
+pytest tests/
 ```
 
 ## Troubleshooting

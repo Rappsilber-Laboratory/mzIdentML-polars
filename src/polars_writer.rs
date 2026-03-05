@@ -6,6 +6,8 @@ use crate::mzidentml::psi_pi::*;
 use polars::prelude::*;
 use xsd_parser::quick_xml::WithSerializer;
 use xsd_parser::quick_xml::Writer;
+use flate2::write::GzEncoder;
+use flate2::Compression;
 
 fn get_string_list(val: AnyValue) -> Vec<String> {
     match val {
@@ -680,8 +682,15 @@ impl MzIdentMLFactory {
 
     pub fn serialize_to_file(self, path: &str) -> Result<(), String> {
         let file = std::fs::File::create(path).map_err(|e| format!("File creation error for '{}': {:?}", path, e))?;
-        let mut writer = Writer::new_with_indent(file, b' ', 2);
-        self.serialize_internal(&mut writer)
+        
+        if path.ends_with(".gz") {
+            let encoder = GzEncoder::new(file, Compression::default());
+            let mut writer = Writer::new_with_indent(encoder, b' ', 2);
+            self.serialize_internal(&mut writer)
+        } else {
+            let mut writer = Writer::new_with_indent(file, b' ', 2);
+            self.serialize_internal(&mut writer)
+        }
     }
 }
 

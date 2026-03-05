@@ -1305,6 +1305,7 @@ dependencies = [
 name = "mzidentml"
 version = "0.1.0"
 dependencies = [
+ "flate2",
  "num-bigint",
  "num-traits",
  "polars",

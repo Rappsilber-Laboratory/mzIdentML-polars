@@ -159,7 +159,6 @@ def test_write_to_file(default_metadata, base_protein_seqs, base_spectra, xsd_pa
     finally:
         if os.path.exists(tmp_path):
             os.remove(tmp_path)
-
 def test_filetype_derivation(default_metadata, base_protein_seqs, base_spectra, xsd_path):
     """Test that filetype is correctly derived from extension."""
     # Use .mgf for one of the spectra
@@ -206,3 +205,65 @@ def test_filetype_derivation(default_metadata, base_protein_seqs, base_spectra, 
     assert 'accession="MS:1001062"' in xml
     # Check for MGF nativeID format accession
     assert 'accession="MS:1000775"' in xml
+
+def test_write_gzip(default_metadata, base_protein_seqs, base_spectra, xsd_path):
+    """Test generating mzIdentML with Gzip compression."""
+    csms = pl.DataFrame({
+        "spectrum_id": ["index=1"],
+        "peptide1_seq": ["PEPTIDEK"],
+        "protein1_id": ["PROT1"],
+        "peptide1_start": [1],
+        "peptide1_end": [8],
+        "charge": [2],
+        "rank": [1],
+        "is_crosslink": [False],
+        "is_looplink": [False],
+        "file_path": ["data1.mzML"],
+        "peptide2_seq": [None],
+        "protein2_id": [None],
+        "peptide2_start": [None],
+        "peptide2_end": [None],
+        "peptide1_link_pos": [None],
+        "peptide2_link_pos": [None],
+    }).with_columns([
+        pl.col("peptide1_start").cast(pl.UInt32),
+        pl.col("peptide1_end").cast(pl.UInt32),
+        pl.col("charge").cast(pl.Int32),
+        pl.col("rank").cast(pl.UInt32),
+        pl.col("is_crosslink").cast(pl.Boolean),
+        pl.col("is_looplink").cast(pl.Boolean),
+        pl.col("peptide2_start").cast(pl.UInt32),
+        pl.col("peptide2_end").cast(pl.UInt32),
+        pl.col("peptide1_link_pos").cast(pl.Int32),
+        pl.col("peptide2_link_pos").cast(pl.Int32),
+        pl.col("peptide2_seq").cast(pl.String),
+        pl.col("protein2_id").cast(pl.String),
+    ])
+
+    with tempfile.NamedTemporaryFile(suffix=".mzid.gz", delete=False) as tmp:
+        tmp_path = tmp.name
+        
+    try:
+        mzidentml_polars.write_mzidentml(csms, base_protein_seqs, base_spectra, default_metadata, tmp_path)
+        assert os.path.exists(tmp_path)
+        
+        # Verify it's actually a gzip file
+        import gzip
+        with gzip.open(tmp_path, 'rt') as f:
+            content = f.read()
+            assert "mzIdentML" in content
+            
+        # Optional: Full validation of de-compressed content
+        with tempfile.NamedTemporaryFile(suffix=".mzid", delete=False) as decomp_tmp:
+            decomp_path = decomp_tmp.name
+            with gzip.open(tmp_path, 'rb') as f_in:
+                decomp_tmp.write(f_in.read())
+            
+        try:
+            validate_mzid(decomp_path, xsd_path)
+        finally:
+            os.remove(decomp_path)
+            
+    finally:
+        if os.path.exists(tmp_path):
+            os.remove(tmp_path)
