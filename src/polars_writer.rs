@@ -9,6 +9,7 @@ use xsd_parser::quick_xml::Writer;
 use flate2::write::GzEncoder;
 use flate2::Compression;
 
+
 fn get_string_list(val: AnyValue) -> Vec<String> {
     match val {
         AnyValue::List(s) => s.str().unwrap().into_iter().flatten().map(|s| s.to_string()).collect(),
@@ -230,6 +231,7 @@ impl MzIdentMLFactory {
         factory.add_cv("UNIMOD", "UNIMOD", "http://www.unimod.org/obo/unimod.obo");
         factory.add_cv("UO", "Unit Ontology", "http://purl.obolibrary.org/obo/uo.obo");
         factory.add_cv("XLMOD", "PSI-XLMOD", "https://raw.githubusercontent.com/HUPO-PSI/mzIdentML/master/cv/XLMOD.obo");
+        factory.add_cv("PSI-MOD", "PSI-MOD", "https://raw.githubusercontent.com/HUPO-PSI/psi-mod-CV/master/PSI-MOD.obo");
 
         factory
     }
@@ -848,6 +850,7 @@ pub fn prepare_factory(
         if acc.starts_with("MS:") { "PSI-MS".to_string() }
         else if acc.starts_with("XLMOD:") { "XLMOD".to_string() }
         else if acc.starts_with("UNIMOD:") { "UNIMOD".to_string() }
+        else if acc.starts_with("MOD:") { "PSI-MOD".to_string() }
         else { "PSI-MS".to_string() }
     };
 
@@ -892,6 +895,10 @@ pub fn prepare_factory(
                 let xl_name = c_xl_name.as_ref().and_then(|c| c.get(i));
                 let xl_acc = c_xl_acc.as_ref().and_then(|c| c.get(i));
 
+                let mut xl_name_param = "unknown modification".to_string();
+                let mut xl_acc_param = "MS:1001460".to_string();
+                let mut xl_mass_val = c_xl_mass.as_ref().and_then(|c| c.get(i)).unwrap_or(0.0);
+
                 if let (Some(name), Some(acc)) = (xl_name, xl_acc) {
                     params.push(CvParamType {
                         name: name.to_string(),
@@ -900,7 +907,6 @@ pub fn prepare_factory(
                         ..Default::default()
                     });
                 } else {
-                    // Fallback to "unknown modification" to ensure a 'name' key is created for the parser
                     params.push(CvParamType {
                         name: "unknown modification".to_string(),
                         accession: "MS:1001460".to_string(),
@@ -908,6 +914,7 @@ pub fn prepare_factory(
                         ..Default::default()
                     });
                 }
+
                 params.push(CvParamType {
                     name: "cross-link donor".to_string(),
                     accession: "MS:1002509".to_string(),
@@ -1301,8 +1308,6 @@ fn parse_proforma(proforma: &str) -> (String, Vec<ModificationType>) {
                     let parts: Vec<&str> = mod_str.split(':').collect();
                     cv_param.cv_ref = parts[0].to_uppercase();
                     cv_param.accession = mod_str.to_uppercase();
-                    // Use the part after colon as name if it's the only info we have, 
-                    // but some parsers might prefer the full string or a placeholder if it's just a number.
                     cv_param.name = parts[1].to_string();
                 } else {
                     cv_param.name = mod_str.to_string();
@@ -1312,7 +1317,7 @@ fn parse_proforma(proforma: &str) -> (String, Vec<ModificationType>) {
                 mods.push(ModificationType {
                     location: Some(clean_seq.len() as i32),
                     cv_param: vec![cv_param],
-                    monoisotopic_mass_delta: Some(0.0), // Default to 0.0 if unknown from ProForma
+                    monoisotopic_mass_delta: Some(0.0),
                     ..Default::default()
                 });
                 i = end + 1;
