@@ -8,10 +8,10 @@ def default_metadata():
         "software_name": "xi",
         "software_version": "2.0.beta",
         "author": "Max Mustermann",
-        "parent_plus": 10.0,
-        "parent_minus": 10.0,
-        "frag_plus": 0.5,
-        "frag_minus": 0.5,
+        "parent_plus": 5.0,
+        "parent_minus": 5.0,
+        "frag_plus": 10.0,
+        "frag_minus": 10.0,
         "is_ppm": True
     }
 

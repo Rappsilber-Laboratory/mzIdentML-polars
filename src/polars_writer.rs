@@ -765,10 +765,10 @@ pub fn prepare_factory(
     factory.add_protocol("SIP_1", "AS_1");
 
     // Add tolerances from metadata
-    let p_plus = metadata.get_item("parent_plus").ok().flatten().and_then(|v| v.extract::<f64>().ok()).unwrap_or(10.0);
-    let p_minus = metadata.get_item("parent_minus").ok().flatten().and_then(|v| v.extract::<f64>().ok()).unwrap_or(10.0);
-    let f_plus = metadata.get_item("frag_plus").ok().flatten().and_then(|v| v.extract::<f64>().ok()).unwrap_or(0.5);
-    let f_minus = metadata.get_item("frag_minus").ok().flatten().and_then(|v| v.extract::<f64>().ok()).unwrap_or(0.5);
+    let p_plus = metadata.get_item("parent_plus").ok().flatten().and_then(|v| v.extract::<f64>().ok()).unwrap_or(5.0);
+    let p_minus = metadata.get_item("parent_minus").ok().flatten().and_then(|v| v.extract::<f64>().ok()).unwrap_or(5.0);
+    let f_plus = metadata.get_item("frag_plus").ok().flatten().and_then(|v| v.extract::<f64>().ok()).unwrap_or(10.0);
+    let f_minus = metadata.get_item("frag_minus").ok().flatten().and_then(|v| v.extract::<f64>().ok()).unwrap_or(10.0);
     let is_ppm = metadata.get_item("is_ppm").ok().flatten().and_then(|v| v.extract::<bool>().ok()).unwrap_or(true);
     factory.set_tolerances(0, p_plus, p_minus, f_plus, f_minus, is_ppm);
     
