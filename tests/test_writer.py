@@ -144,6 +144,8 @@ def test_write_to_file(default_metadata, base_protein_seqs, base_spectra, xsd_pa
         pl.col("peptide2_end").cast(pl.UInt32),
         pl.col("peptide1_link_pos").cast(pl.Int32),
         pl.col("peptide2_link_pos").cast(pl.Int32),
+        pl.col("peptide2_seq").cast(pl.String),
+        pl.col("protein2_id").cast(pl.String),
     ])
 
     with tempfile.NamedTemporaryFile(suffix=".mzid", delete=False) as tmp:

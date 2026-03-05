@@ -659,8 +659,7 @@ impl MzIdentMLFactory {
         }
     }
 
-    pub fn serialize(self) -> Result<String, String> {
-        let mut writer = Writer::new_with_indent(std::io::Cursor::new(Vec::new()), b' ', 2);
+    fn serialize_internal<W: std::io::Write>(&self, writer: &mut Writer<W>) -> Result<(), String> {
         let mut serializer = self.doc.serializer(Some("MzIdentML"), true)
             .map_err(|e| format!("Serialization error: {:?}", e))?;
         
@@ -668,19 +667,30 @@ impl MzIdentMLFactory {
             let event = event.map_err(|e| format!("XML event error: {:?}", e))?;
             writer.write_event(event).map_err(|e| format!("XML write error: {:?}", e))?;
         }
+        Ok(())
+    }
+
+    pub fn serialize(self) -> Result<String, String> {
+        let mut writer = Writer::new_with_indent(std::io::Cursor::new(Vec::new()), b' ', 2);
+        self.serialize_internal(&mut writer)?;
         
         String::from_utf8(writer.into_inner().into_inner())
             .map_err(|e| format!("UTF8 error: {:?}", e))
     }
+
+    pub fn serialize_to_file(self, path: &str) -> Result<(), String> {
+        let file = std::fs::File::create(path).map_err(|e| format!("File creation error for '{}': {:?}", path, e))?;
+        let mut writer = Writer::new_with_indent(file, b' ', 2);
+        self.serialize_internal(&mut writer)
+    }
 }
 
-#[pyfunction]
-pub fn write_mzidentml(
+pub fn prepare_factory(
     csms: PyDataFrame,
     prot_seqs: PyDataFrame,
     spectra: PyDataFrame,
     metadata: Bound<'_, PyDict>,
-) -> PyResult<String> {
+) -> PyResult<MzIdentMLFactory> {
     let mut factory = MzIdentMLFactory::new("mzidentml_export".to_string());
     
     let csms_df = csms.as_ref();
@@ -1136,7 +1146,30 @@ pub fn write_mzidentml(
         factory.add_spectrum_identification_result(&sd_ref, &spec_id, items, sir_params);
     }
 
+    Ok(factory)
+}
+
+#[pyfunction]
+pub fn write_mzidentml(
+    csms: PyDataFrame,
+    prot_seqs: PyDataFrame,
+    spectra: PyDataFrame,
+    metadata: Bound<'_, PyDict>,
+) -> PyResult<String> {
+    let factory = prepare_factory(csms, prot_seqs, spectra, metadata)?;
     factory.serialize().map_err(|e| PyErr::new::<pyo3::exceptions::PyRuntimeError, _>(e))
+}
+
+#[pyfunction]
+pub fn write_mzidentml_to_file(
+    csms: PyDataFrame,
+    prot_seqs: PyDataFrame,
+    spectra: PyDataFrame,
+    metadata: Bound<'_, PyDict>,
+    path: String,
+) -> PyResult<()> {
+    let factory = prepare_factory(csms, prot_seqs, spectra, metadata)?;
+    factory.serialize_to_file(&path).map_err(|e| PyErr::new::<pyo3::exceptions::PyRuntimeError, _>(e))
 }
 
 #[cfg(test)]
