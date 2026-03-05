@@ -56,7 +56,7 @@ def test_basic_crosslinking(default_metadata, base_protein_seqs, base_spectra, x
         pl.col("peptide2_end").cast(pl.UInt32),
     ])
 
-    xml_content = mzidentml_polars.write_mzidentml(csms, base_protein_seqs, base_spectra, default_metadata)
+    xml_content = mzidentml_polars.serialize_mzidentml(csms, base_protein_seqs, base_spectra, default_metadata)
     assert xml_content is not None
     assert "mzIdentML" in xml_content
     
@@ -101,7 +101,7 @@ def test_ambiguity(default_metadata, base_protein_seqs, base_spectra, xsd_path):
         pl.col("peptide2_link_pos").cast(pl.Int32),
     ])
 
-    xml_content = mzidentml_polars.write_mzidentml(csms, base_protein_seqs, base_spectra, default_metadata)
+    xml_content = mzidentml_polars.serialize_mzidentml(csms, base_protein_seqs, base_spectra, default_metadata)
     assert xml_content is not None
     assert "PeptideEvidenceRef" in xml_content
     
@@ -152,7 +152,7 @@ def test_write_to_file(default_metadata, base_protein_seqs, base_spectra, xsd_pa
         tmp_path = tmp.name
         
     try:
-        mzidentml_polars.write_mzidentml_to_file(csms, base_protein_seqs, base_spectra, default_metadata, tmp_path)
+        mzidentml_polars.write_mzidentml(csms, base_protein_seqs, base_spectra, default_metadata, tmp_path)
         assert os.path.exists(tmp_path)
         assert os.path.getsize(tmp_path) > 0
         validate_mzid(tmp_path, xsd_path)

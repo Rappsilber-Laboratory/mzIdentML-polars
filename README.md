@@ -23,88 +23,26 @@ pip install .
 
 ## Usage
 
-The primary function is `write_mzidentml`, which takes three Polars DataFrames and a dictionary for metadata.
+The primary functions are `write_mzidentml` (for file output) and `serialize_mzidentml` (for string output). Both take three Polars DataFrames and a dictionary for metadata.
+
+### Writing to a File (Recommended)
 
 ```python
 import polars as pl
 import mzidentml_polars
 
-# 1. Define Protein Sequences
-prot_seqs = pl.DataFrame({
-    "protein_id": ["PROT1", "PROT2", "DECOY_PROT1"],
-    "accession": ["P12345", "Q67890", "D12345"],
-    "protein_name": ["BIPA_BACSU", "GCST_BACSU", None],
-    "sequence": ["MAGA...END", "MSRV...STOP", "AGAM..."],
-    "is_decoy": [False, False, True]
-})
+# ... define DataFrames ...
 
-# 2. Define Identifications (CSMs)
-# Supports Linear, Crosslinked, and Looplinked peptides
-# Standards mandate 2 SpectrumIdentificationItems per crosslink match
-csms = pl.DataFrame({
-    "spectrum_id": ["index=1", "index=2", "index=1"],
-    "peptide1_seq": ["PEPTIDEK", "PEPT[Unimod:35]IDEK", "PEPTIDEK"],
-    "protein1_id": ["DECOY_PROT1", "PROT2", "PROT1"],
-    "peptide1_start": [1, 10, 1],
-    "peptide1_end": [8, 18, 8],
-    "charge": [2, 3, 2],
-    "rank": [1, 1, 1],
-    "is_crosslink": [False, True, False],
-    "is_looplink": [False, False, True],
-    "peptide1_link_pos": [None, 8, 2],
-    "peptide2_link_pos": [None, 1, 8],
-    
-    # Explicitly link CSM to file (required for multi-file datasets)
-    "file_path": ["data1.mzML", "data1.mzML", "data2.mzML"],
+# Generate mzIdentML directly to a file (fast and memory-efficient)
+mzidentml_polars.write_mzidentml(csms, prot_seqs, spectra, metadata, "output.mzid")
+```
 
-    # Recommended metadata (improves xiView/downstream compatibility)
-    "experimental_mz": [1234.5, 678.9, 1234.5],
-    "score": [10.5, 20.1, 15.0],
-    "crosslinker_name": ["DSSO", "DSSO", "DSSO"],
-    "crosslinker_accession": ["MS:1003124", "MS:1003124", "MS:1003124"],
-    "crosslinker_mass": [158.0038, 158.0038, 158.0038],
+### Serializing to a String
 
-    # Required for crosslinks (is_crosslink = True)
-    "peptide2_seq": [None, "KLS", None],
-    "protein2_id": [None, "PROT1", None],
-    "peptide2_start": [None, 5, None],
-    "peptide2_end": [None, 12, None]
-}).with_columns([
-    pl.col("peptide1_start").cast(pl.UInt32),
-    pl.col("peptide1_end").cast(pl.UInt32),
-    pl.col("charge").cast(pl.Int32),
-    pl.col("rank").cast(pl.UInt32),
-    pl.col("is_crosslink").cast(pl.Boolean),
-    pl.col("is_looplink").cast(pl.Boolean),
-    # 1-based residue indices
-    pl.col("peptide1_link_pos").cast(pl.Int32),
-    pl.col("peptide2_link_pos").cast(pl.Int32),
-    pl.col("peptide2_start").cast(pl.UInt32),
-    pl.col("peptide2_end").cast(pl.UInt32),
-])
-
-# 3. Define Spectra (Linking files to IDs)
-spectra = pl.DataFrame({
-    "spectrum_id": ["index=1", "index=2", "index=1"],
-    "file_path": ["data1.mzML", "data1.mzML", "data2.mzML"]
-})
-
-# 4. Generate mzIdentML XML
-metadata = {
-    "software_name": "xi",
-    "software_version": "2.0.beta",
-    "author": "Max Mustermann",
-    "parent_plus": 10.0,
-    "parent_minus": 10.0,
-    "frag_plus": 0.5,
-    "frag_minus": 0.5,
-    "is_ppm": True
-}
-
-xml_content = mzidentml_polars.write_mzidentml(csms, prot_seqs, spectra, metadata)
-
-with open("output.mzid", "w") as f:
-    f.write(xml_content)
+```python
+# Generate mzIdentML as a string (if needed for further processing)
+xml_string = mzidentml_polars.serialize_mzidentml(csms, prot_seqs, spectra, metadata)
+```
 ```
 
 ## Troubleshooting

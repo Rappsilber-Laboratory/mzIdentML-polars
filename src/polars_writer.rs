@@ -1150,7 +1150,7 @@ pub fn prepare_factory(
 }
 
 #[pyfunction]
-pub fn write_mzidentml(
+pub fn serialize_mzidentml(
     csms: PyDataFrame,
     prot_seqs: PyDataFrame,
     spectra: PyDataFrame,
@@ -1161,7 +1161,7 @@ pub fn write_mzidentml(
 }
 
 #[pyfunction]
-pub fn write_mzidentml_to_file(
+pub fn write_mzidentml(
     csms: PyDataFrame,
     prot_seqs: PyDataFrame,
     spectra: PyDataFrame,
