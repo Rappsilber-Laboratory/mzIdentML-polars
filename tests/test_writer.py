@@ -201,10 +201,18 @@ def test_filetype_derivation(default_metadata, base_protein_seqs, base_spectra, 
 
     xml = mzidentml_polars.serialize_mzidentml(csms, base_protein_seqs, mgf_spectra, default_metadata)
     
-    # Check for MGF format accession
     assert 'accession="MS:1001062"' in xml
     # Check for MGF nativeID format accession
     assert 'accession="MS:1000775"' in xml
+
+    # Test .mzML.gz
+    mzml_gz_spectra = pl.DataFrame({
+        "spectrum_id": ["index=1"],
+        "file_path": ["test_data.mzML.gz"]
+    })
+    xml_gz = mzidentml_polars.serialize_mzidentml(csms.with_columns(pl.lit("test_data.mzML.gz").alias("file_path")), base_protein_seqs, mzml_gz_spectra, default_metadata)
+    assert 'accession="MS:1000584"' in xml_gz
+    assert 'accession="MS:1001530"' in xml_gz
 
 def test_write_gzip(default_metadata, base_protein_seqs, base_spectra, xsd_path):
     """Test generating mzIdentML with Gzip compression."""

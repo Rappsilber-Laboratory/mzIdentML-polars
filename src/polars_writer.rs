@@ -28,7 +28,10 @@ fn get_u32_list(val: AnyValue) -> Vec<u32> {
 }
 
 fn derive_spectra_data_format(location: &str) -> (CvParamType, CvParamType) {
-    let lower = location.to_lowercase();
+    let mut lower = location.to_lowercase();
+    if lower.ends_with(".gz") {
+        lower = lower[..lower.len() - 3].to_string();
+    }
     if lower.ends_with(".mzml") {
         (
             CvParamType {
@@ -85,6 +88,51 @@ fn derive_spectra_data_format(location: &str) -> (CvParamType, CvParamType) {
             CvParamType {
                 name: "mzXML nativeID format".to_string(),
                 accession: "MS:1000776".to_string(),
+                cv_ref: "PSI-MS".to_string(),
+                ..Default::default()
+            },
+        )
+    } else if lower.ends_with(".d") {
+        (
+            CvParamType {
+                name: "Bruker format".to_string(),
+                accession: "MS:1000526".to_string(),
+                cv_ref: "PSI-MS".to_string(),
+                ..Default::default()
+            },
+            CvParamType {
+                name: "Bruker nativeID format".to_string(),
+                accession: "MS:1000769".to_string(),
+                cv_ref: "PSI-MS".to_string(),
+                ..Default::default()
+            },
+        )
+    } else if lower.ends_with(".wiff") {
+        (
+            CvParamType {
+                name: "ABI WIFF format".to_string(),
+                accession: "MS:1000562".to_string(),
+                cv_ref: "PSI-MS".to_string(),
+                ..Default::default()
+            },
+            CvParamType {
+                name: "WIFF nativeID format".to_string(),
+                accession: "MS:1000770".to_string(),
+                cv_ref: "PSI-MS".to_string(),
+                ..Default::default()
+            },
+        )
+    } else if lower.ends_with(".pkl") {
+        (
+            CvParamType {
+                name: "MassLynx format".to_string(),
+                accession: "MS:1000583".to_string(),
+                cv_ref: "PSI-MS".to_string(),
+                ..Default::default()
+            },
+            CvParamType {
+                name: "MassLynx nativeID format".to_string(),
+                accession: "MS:1000771".to_string(),
                 cv_ref: "PSI-MS".to_string(),
                 ..Default::default()
             },
