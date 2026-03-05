@@ -25,6 +25,87 @@ fn get_u32_list(val: AnyValue) -> Vec<u32> {
     }
 }
 
+fn derive_spectra_data_format(location: &str) -> (CvParamType, CvParamType) {
+    let lower = location.to_lowercase();
+    if lower.ends_with(".mzml") {
+        (
+            CvParamType {
+                name: "mzML format".to_string(),
+                accession: "MS:1000584".to_string(),
+                cv_ref: "PSI-MS".to_string(),
+                ..Default::default()
+            },
+            CvParamType {
+                name: "mzML unique identifier".to_string(),
+                accession: "MS:1001530".to_string(),
+                cv_ref: "PSI-MS".to_string(),
+                ..Default::default()
+            },
+        )
+    } else if lower.ends_with(".mgf") {
+        (
+            CvParamType {
+                name: "MGF format".to_string(),
+                accession: "MS:1001062".to_string(),
+                cv_ref: "PSI-MS".to_string(),
+                ..Default::default()
+            },
+            CvParamType {
+                name: "MGF nativeID format".to_string(),
+                accession: "MS:1000775".to_string(),
+                cv_ref: "PSI-MS".to_string(),
+                ..Default::default()
+            },
+        )
+    } else if lower.ends_with(".raw") {
+        (
+            CvParamType {
+                name: "Thermo RAW format".to_string(),
+                accession: "MS:1000563".to_string(),
+                cv_ref: "PSI-MS".to_string(),
+                ..Default::default()
+            },
+            CvParamType {
+                name: "Thermo nativeID format".to_string(),
+                accession: "MS:1000768".to_string(),
+                cv_ref: "PSI-MS".to_string(),
+                ..Default::default()
+            },
+        )
+    } else if lower.ends_with(".mzxml") {
+        (
+            CvParamType {
+                name: "mzXML format".to_string(),
+                accession: "MS:1000566".to_string(),
+                cv_ref: "PSI-MS".to_string(),
+                ..Default::default()
+            },
+            CvParamType {
+                name: "mzXML nativeID format".to_string(),
+                accession: "MS:1000776".to_string(),
+                cv_ref: "PSI-MS".to_string(),
+                ..Default::default()
+            },
+        )
+    } else {
+        // Default to mzML if unknown
+        (
+            CvParamType {
+                name: "mzML format".to_string(),
+                accession: "MS:1000584".to_string(),
+                cv_ref: "PSI-MS".to_string(),
+                ..Default::default()
+            },
+            CvParamType {
+                name: "mzML unique identifier".to_string(),
+                accession: "MS:1001530".to_string(),
+                cv_ref: "PSI-MS".to_string(),
+                ..Default::default()
+            },
+        )
+    }
+}
+
 /// Factory to manage the construction of the MzIdentML XML tree.
 pub struct MzIdentMLFactory {
     pub doc: MzIdentMlType,
@@ -253,32 +334,15 @@ impl MzIdentMLFactory {
     }
 
     pub fn add_spectra_data(&mut self, id: &str, location: &str) {
+        let (file_format, id_format) = derive_spectra_data_format(location);
         self.doc.data_collection.inputs.spectra_data.push(SpectraDataType {
             id: id.to_string(),
             name: None,
             location: location.to_string(),
             external_format_documentation: None,
-            file_format: FileFormatType {
-                cv_param: CvParamType {
-                    name: "mzML format".to_string(),
-                    accession: "MS:1000584".to_string(),
-                    cv_ref: "PSI-MS".to_string(),
-                    value: None,
-                    unit_accession: None,
-                    unit_name: None,
-                    unit_cv_ref: None,
-                }
-            },
+            file_format: FileFormatType { cv_param: file_format },
             spectrum_id_format: SpectrumIdFormatType {
-                 cv_param: CvParamType {
-                    name: "mzML unique identifier".to_string(),
-                    accession: "MS:1001530".to_string(),
-                    cv_ref: "PSI-MS".to_string(),
-                    value: None,
-                    unit_accession: None,
-                    unit_name: None,
-                    unit_cv_ref: None,
-                }
+                 cv_param: id_format
             },
         });
     }

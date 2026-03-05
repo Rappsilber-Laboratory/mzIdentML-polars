@@ -157,3 +157,50 @@ def test_write_to_file(default_metadata, base_protein_seqs, base_spectra, xsd_pa
     finally:
         if os.path.exists(tmp_path):
             os.remove(tmp_path)
+
+def test_filetype_derivation(default_metadata, base_protein_seqs, base_spectra, xsd_path):
+    """Test that filetype is correctly derived from extension."""
+    # Use .mgf for one of the spectra
+    mgf_spectra = pl.DataFrame({
+        "spectrum_id": ["index=1"],
+        "file_path": ["test_data.mgf"]
+    })
+    
+    csms = pl.DataFrame({
+        "spectrum_id": ["index=1"],
+        "peptide1_seq": ["PEPTIDEK"],
+        "protein1_id": ["PROT1"],
+        "peptide1_start": [1],
+        "peptide1_end": [8],
+        "charge": [2],
+        "rank": [1],
+        "is_crosslink": [False],
+        "is_looplink": [False],
+        "file_path": ["test_data.mgf"],
+        "peptide2_seq": [None],
+        "protein2_id": [None],
+        "peptide2_start": [None],
+        "peptide2_end": [None],
+        "peptide1_link_pos": [None],
+        "peptide2_link_pos": [None],
+    }).with_columns([
+        pl.col("peptide1_start").cast(pl.UInt32),
+        pl.col("peptide1_end").cast(pl.UInt32),
+        pl.col("charge").cast(pl.Int32),
+        pl.col("rank").cast(pl.UInt32),
+        pl.col("is_crosslink").cast(pl.Boolean),
+        pl.col("is_looplink").cast(pl.Boolean),
+        pl.col("peptide2_start").cast(pl.UInt32),
+        pl.col("peptide2_end").cast(pl.UInt32),
+        pl.col("peptide1_link_pos").cast(pl.Int32),
+        pl.col("peptide2_link_pos").cast(pl.Int32),
+        pl.col("peptide2_seq").cast(pl.String),
+        pl.col("protein2_id").cast(pl.String),
+    ])
+
+    xml = mzidentml_polars.serialize_mzidentml(csms, base_protein_seqs, mgf_spectra, default_metadata)
+    
+    # Check for MGF format accession
+    assert 'accession="MS:1001062"' in xml
+    # Check for MGF nativeID format accession
+    assert 'accession="MS:1000775"' in xml
