@@ -1219,11 +1219,11 @@ pub fn serialize_mzidentml(
 
 #[pyfunction]
 pub fn write_mzidentml(
+    path: String,
     csms: PyDataFrame,
     prot_seqs: PyDataFrame,
     spectra: PyDataFrame,
     metadata: Bound<'_, PyDict>,
-    path: String,
 ) -> PyResult<()> {
     let factory = prepare_factory(csms, prot_seqs, spectra, metadata)?;
     factory.serialize_to_file(&path).map_err(|e| PyErr::new::<pyo3::exceptions::PyRuntimeError, _>(e))

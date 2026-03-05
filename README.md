@@ -23,7 +23,7 @@ pip install .
 
 ## Usage
 
-The primary functions are `write_mzidentml` (for file output) and `serialize_mzidentml` (for string output). Both take three Polars DataFrames and a dictionary for metadata.
+The primary functions are `write_mzidentml` (for file output) and `serialize_mzidentml` (for string output). Both take Polars DataFrames and a dictionary for metadata. Note that `write_mzidentml` takes the output path as its first argument.
 
 ### Writing to a File (Recommended)
 
@@ -36,10 +36,10 @@ import mzidentml_polars
 # ... define DataFrames ...
 
 # Generate mzIdentML directly to a file
-mzidentml_polars.write_mzidentml(csms, prot_seqs, spectra, metadata, "output.mzid")
+mzidentml_polars.write_mzidentml("output.mzid", csms, prot_seqs, spectra, metadata)
 
 # Automatic Gzip compression
-mzidentml_polars.write_mzidentml(csms, prot_seqs, spectra, metadata, "output.mzid.gz")
+mzidentml_polars.write_mzidentml("output.mzid.gz", csms, prot_seqs, spectra, metadata)
 ```
 
 ### Serializing to a String

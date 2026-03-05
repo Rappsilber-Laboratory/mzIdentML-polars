@@ -152,7 +152,7 @@ def test_write_to_file(default_metadata, base_protein_seqs, base_spectra, xsd_pa
         tmp_path = tmp.name
         
     try:
-        mzidentml_polars.write_mzidentml(csms, base_protein_seqs, base_spectra, default_metadata, tmp_path)
+        mzidentml_polars.write_mzidentml(tmp_path, csms, base_protein_seqs, base_spectra, default_metadata)
         assert os.path.exists(tmp_path)
         assert os.path.getsize(tmp_path) > 0
         validate_mzid(tmp_path, xsd_path)
@@ -252,7 +252,7 @@ def test_write_gzip(default_metadata, base_protein_seqs, base_spectra, xsd_path)
         tmp_path = tmp.name
         
     try:
-        mzidentml_polars.write_mzidentml(csms, base_protein_seqs, base_spectra, default_metadata, tmp_path)
+        mzidentml_polars.write_mzidentml(tmp_path, csms, base_protein_seqs, base_spectra, default_metadata)
         assert os.path.exists(tmp_path)
         
         # Verify it's actually a gzip file
