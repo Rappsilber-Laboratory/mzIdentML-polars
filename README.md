@@ -43,7 +43,6 @@ mzidentml_polars.write_mzidentml("output.mzid.gz", csms, prot_seqs, spectra, met
 ```
 
 ### Serializing to a String
-
 ```python
 # Generate mzIdentML as a string (if needed for further processing)
 xml_string = mzidentml_polars.serialize_mzidentml(csms, prot_seqs, spectra, metadata)

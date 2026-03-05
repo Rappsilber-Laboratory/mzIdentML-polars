@@ -895,9 +895,7 @@ pub fn prepare_factory(
                 let xl_name = c_xl_name.as_ref().and_then(|c| c.get(i));
                 let xl_acc = c_xl_acc.as_ref().and_then(|c| c.get(i));
 
-                let mut xl_name_param = "unknown modification".to_string();
-                let mut xl_acc_param = "MS:1001460".to_string();
-                let mut xl_mass_val = c_xl_mass.as_ref().and_then(|c| c.get(i)).unwrap_or(0.0);
+
 
                 if let (Some(name), Some(acc)) = (xl_name, xl_acc) {
                     params.push(CvParamType {
