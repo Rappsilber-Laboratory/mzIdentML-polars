@@ -12,7 +12,15 @@ fn main() {
     
     // Parse Unimod
     let unimod_path = cv_dir.join("unimod.obo");
-    let mods = parse_unimod(&unimod_path);
+    let mut mods = parse_unimod(&unimod_path);
+
+    // Parse XLMOD
+    let xlmod_path = cv_dir.join("XLMOD.obo");
+    mods.extend(parse_xlmod(&xlmod_path));
+
+    // Parse PSI-MOD
+    let psimod_path = cv_dir.join("PSI-MOD.obo");
+    mods.extend(parse_psimod(&psimod_path));
 
     writeln!(f, "pub struct ModData {{").unwrap();
     writeln!(f, "    pub name: &'static str,").unwrap();
@@ -54,7 +62,100 @@ fn main() {
     writeln!(f, "}}").unwrap();
 
     println!("cargo:rerun-if-changed=cv/unimod.obo");
+    println!("cargo:rerun-if-changed=cv/XLMOD.obo");
+    println!("cargo:rerun-if-changed=cv/PSI-MOD.obo");
     println!("cargo:rerun-if-changed=build.rs");
+}
+
+fn parse_psimod(path: &Path) -> Vec<(String, String, f64)> {
+    let mut results = Vec::new();
+    if !path.exists() {
+        return results;
+    }
+
+    let file = File::open(path).expect("Could not open PSI-MOD.obo");
+    let reader = BufReader::new(file);
+
+    let mut current_id = None;
+    let mut current_name = None;
+    let mut current_mass = None;
+
+    for line in reader.lines() {
+        let line = line.unwrap();
+        let line = line.trim();
+
+        if line == "[Term]" {
+            if let (Some(id), Some(name), Some(mass)) = (current_id.take(), current_name.take(), current_mass.take()) {
+                results.push((id, name, mass));
+            }
+            current_mass = None;
+            continue;
+        }
+
+        if line.starts_with("id: ") {
+            current_id = Some(line[4..].to_string());
+        } else if line.starts_with("name: ") {
+            current_name = Some(line[6..].to_string());
+        } else if line.starts_with("xref: DiffMono: \"") {
+            let start = "xref: DiffMono: \"".len();
+            let end = line.rfind('"').unwrap();
+            if let Ok(m) = line[start..end].parse::<f64>() {
+                current_mass = Some(m);
+            }
+        }
+    }
+
+    if let (Some(id), Some(name), Some(mass)) = (current_id, current_name, current_mass) {
+        results.push((id, name, mass));
+    }
+
+    results
+}
+
+fn parse_xlmod(path: &Path) -> Vec<(String, String, f64)> {
+    let mut results = Vec::new();
+    if !path.exists() {
+        return results;
+    }
+
+    let file = File::open(path).expect("Could not open XLMOD.obo");
+    let reader = BufReader::new(file);
+
+    let mut current_id = None;
+    let mut current_name = None;
+    let mut current_mass = None;
+
+    for line in reader.lines() {
+        let line = line.unwrap();
+        let line = line.trim();
+
+        if line == "[Term]" {
+            if let (Some(id), Some(name), Some(mass)) = (current_id.take(), current_name.take(), current_mass.take()) {
+                results.push((id, name, mass));
+            }
+            current_mass = None; // Reset mass because some terms don't have it
+            continue;
+        }
+
+        if line.starts_with("id: ") {
+            current_id = Some(line[4..].to_string());
+        } else if line.starts_with("name: ") {
+            current_name = Some(line[6..].to_string());
+        } else if line.contains("monoIsotopicMass: \"") {
+            let parts: Vec<&str> = line.split('"').collect();
+            if parts.len() >= 2 {
+                if let Ok(m) = parts[1].parse::<f64>() {
+                    current_mass = Some(m);
+                }
+            }
+        }
+    }
+
+    if let (Some(id), Some(name), Some(mass)) = (current_id, current_name, current_mass) {
+        results.push((id, name, mass));
+    }
+
+    results
 }
 
 fn parse_unimod(path: &Path) -> Vec<(String, String, f64)> {

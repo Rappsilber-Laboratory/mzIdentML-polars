@@ -878,6 +878,8 @@ pub fn prepare_factory(
         let calc_mz_val = c_calc_mz.as_ref().and_then(|c| c.get(i));
 
         let mut sir_params = Vec::new();
+        let xl_name = c_xl_name.as_ref().and_then(|c| c.get(i));
+        let xl_acc = c_xl_acc.as_ref().and_then(|c| c.get(i));
         if spec_id.starts_with("index=") {
             let scan = &spec_id[6..];
             sir_params.push(CvParamType {
@@ -896,27 +898,36 @@ pub fn prepare_factory(
             let mut linkage1 = Vec::new();
             if let Some(pos1) = c_link_pos1.get(i) {
                 let mut params = Vec::new();
-                let xl_name = c_xl_name.as_ref().and_then(|c| c.get(i));
-                let xl_acc = c_xl_acc.as_ref().and_then(|c| c.get(i));
+                let mut xl_name_param = "unknown modification".to_string();
+                let mut xl_acc_param = "MS:1001460".to_string();
+                let mut xl_mass_val = c_xl_mass.as_ref().and_then(|c| c.get(i)).unwrap_or(0.0);
 
-
-
-                if let (Some(name), Some(acc)) = (xl_name, xl_acc) {
-                    params.push(CvParamType {
-                        name: name.to_string(),
-                        accession: acc.to_string(),
-                        cv_ref: get_cv_ref(acc),
-                        ..Default::default()
-                    });
-                } else {
-                    params.push(CvParamType {
-                        name: "unknown modification".to_string(),
-                        accession: "MS:1001460".to_string(),
-                        cv_ref: "PSI-MS".to_string(),
-                        ..Default::default()
-                    });
+                if let Some(acc) = xl_acc {
+                    xl_acc_param = acc.to_string();
+                    if let Some(data) = cv_data::lookup_mod(acc) {
+                        xl_name_param = data.name.to_string();
+                        if xl_mass_val == 0.0 {
+                            xl_mass_val = data.mono_mass;
+                        }
+                    } else if let Some(name) = xl_name {
+                        xl_name_param = name.to_string();
+                    }
+                } else if let Some(name) = xl_name {
+                    xl_name_param = name.to_string();
+                    if let Some((acc, mass)) = cv_data::lookup_mod_by_name(name) {
+                        xl_acc_param = acc.to_string();
+                        if xl_mass_val == 0.0 {
+                            xl_mass_val = mass;
+                        }
+                    }
                 }
 
+                params.push(CvParamType {
+                    name: xl_name_param,
+                    accession: xl_acc_param.clone(),
+                    cv_ref: get_cv_ref(&xl_acc_param),
+                    ..Default::default()
+                });
                 params.push(CvParamType {
                     name: "cross-link donor".to_string(),
                     accession: "MS:1002509".to_string(),
@@ -927,7 +938,7 @@ pub fn prepare_factory(
                 linkage1.push(ModificationType {
                     location: Some(pos1),
                     cv_param: params,
-                    monoisotopic_mass_delta: Some(c_xl_mass.as_ref().and_then(|c| c.get(i)).unwrap_or(0.0)),
+                    monoisotopic_mass_delta: Some(xl_mass_val),
                     ..Default::default()
                 });
             }
@@ -938,24 +949,30 @@ pub fn prepare_factory(
             let mut linkage2 = Vec::new();
             if let Some(pos2) = c_link_pos2.get(i) {
                 let mut params = Vec::new();
-                let xl_name = c_xl_name.as_ref().and_then(|c| c.get(i));
-                let xl_acc = c_xl_acc.as_ref().and_then(|c| c.get(i));
+                // For acceptor, we use the same identified name/acc but usually 0 mass
+                let mut xl_name_param = "unknown modification".to_string();
+                let mut xl_acc_param = "MS:1001460".to_string();
 
-                if let (Some(name), Some(acc)) = (xl_name, xl_acc) {
-                    params.push(CvParamType {
-                        name: name.to_string(),
-                        accession: acc.to_string(),
-                        cv_ref: get_cv_ref(acc),
-                        ..Default::default()
-                    });
-                } else {
-                    params.push(CvParamType {
-                        name: "unknown modification".to_string(),
-                        accession: "MS:1001460".to_string(),
-                        cv_ref: "PSI-MS".to_string(),
-                        ..Default::default()
-                    });
+                if let Some(acc) = xl_acc {
+                    xl_acc_param = acc.to_string();
+                    if let Some(data) = cv_data::lookup_mod(acc) {
+                        xl_name_param = data.name.to_string();
+                    } else if let Some(name) = xl_name {
+                        xl_name_param = name.to_string();
+                    }
+                } else if let Some(name) = xl_name {
+                    xl_name_param = name.to_string();
+                    if let Some((acc, _)) = cv_data::lookup_mod_by_name(name) {
+                        xl_acc_param = acc.to_string();
+                    }
                 }
+
+                params.push(CvParamType {
+                    name: xl_name_param,
+                    accession: xl_acc_param.clone(),
+                    cv_ref: get_cv_ref(&xl_acc_param),
+                    ..Default::default()
+                });
                 params.push(CvParamType {
                     name: "cross-link acceptor".to_string(),
                     accession: "MS:1002510".to_string(),
@@ -1081,21 +1098,36 @@ pub fn prepare_factory(
                     let xl_name = c_xl_name.as_ref().and_then(|c| c.get(i));
                     let xl_acc = c_xl_acc.as_ref().and_then(|c| c.get(i));
 
-                    if let (Some(name), Some(acc)) = (xl_name, xl_acc) {
-                        params.push(CvParamType {
-                            name: name.to_string(),
-                            accession: acc.to_string(),
-                            cv_ref: get_cv_ref(acc),
-                            ..Default::default()
-                        });
-                    } else {
-                        params.push(CvParamType {
-                            name: "unknown modification".to_string(),
-                            accession: "MS:1001460".to_string(),
-                            cv_ref: "PSI-MS".to_string(),
-                            ..Default::default()
-                        });
+                    let mut xl_name_param = "unknown modification".to_string();
+                    let mut xl_acc_param = "MS:1001460".to_string();
+                    let mut xl_mass_val = c_xl_mass.as_ref().and_then(|c| c.get(i)).unwrap_or(0.0);
+
+                    if let Some(acc) = xl_acc {
+                        xl_acc_param = acc.to_string();
+                        if let Some(data) = cv_data::lookup_mod(acc) {
+                            xl_name_param = data.name.to_string();
+                            if xl_mass_val == 0.0 {
+                                xl_mass_val = data.mono_mass;
+                            }
+                        } else if let Some(name) = xl_name {
+                            xl_name_param = name.to_string();
+                        }
+                    } else if let Some(name) = xl_name {
+                        xl_name_param = name.to_string();
+                        if let Some((acc, mass)) = cv_data::lookup_mod_by_name(name) {
+                            xl_acc_param = acc.to_string();
+                            if xl_mass_val == 0.0 {
+                                xl_mass_val = mass;
+                            }
+                        }
                     }
+
+                    params.push(CvParamType {
+                        name: xl_name_param.clone(),
+                        accession: xl_acc_param.clone(),
+                        cv_ref: get_cv_ref(&xl_acc_param),
+                        ..Default::default()
+                    });
                     params.push(CvParamType {
                         name: "cross-link donor".to_string(),
                         accession: "MS:1002509".to_string(),
@@ -1106,7 +1138,7 @@ pub fn prepare_factory(
                     linkage.push(ModificationType {
                         location: Some(pos1),
                         cv_param: params,
-                        monoisotopic_mass_delta: Some(c_xl_mass.as_ref().and_then(|c| c.get(i)).unwrap_or(0.0)),
+                        monoisotopic_mass_delta: Some(xl_mass_val),
                         ..Default::default()
                     });
                 }
@@ -1115,21 +1147,36 @@ pub fn prepare_factory(
                     let xl_name = c_xl_name.as_ref().and_then(|c| c.get(i));
                     let xl_acc = c_xl_acc.as_ref().and_then(|c| c.get(i));
 
-                    if let (Some(name), Some(acc)) = (xl_name, xl_acc) {
-                        params.push(CvParamType {
-                            name: name.to_string(),
-                            accession: acc.to_string(),
-                            cv_ref: get_cv_ref(acc),
-                            ..Default::default()
-                        });
-                    } else {
-                        params.push(CvParamType {
-                            name: "unknown modification".to_string(),
-                            accession: "MS:1001460".to_string(),
-                            cv_ref: "PSI-MS".to_string(),
-                            ..Default::default()
-                        });
+                    let mut xl_name_param = "unknown modification".to_string();
+                    let mut xl_acc_param = "MS:1001460".to_string();
+                    let mut xl_mass_val = c_xl_mass.as_ref().and_then(|c| c.get(i)).unwrap_or(0.0);
+
+                    if let Some(acc) = xl_acc {
+                        xl_acc_param = acc.to_string();
+                        if let Some(data) = cv_data::lookup_mod(acc) {
+                            xl_name_param = data.name.to_string();
+                            if xl_mass_val == 0.0 {
+                                xl_mass_val = data.mono_mass;
+                            }
+                        } else if let Some(name) = xl_name {
+                            xl_name_param = name.to_string();
+                        }
+                    } else if let Some(name) = xl_name {
+                        xl_name_param = name.to_string();
+                        if let Some((acc, mass)) = cv_data::lookup_mod_by_name(name) {
+                            xl_acc_param = acc.to_string();
+                            if xl_mass_val == 0.0 {
+                                xl_mass_val = mass;
+                            }
+                        }
                     }
+
+                    params.push(CvParamType {
+                        name: xl_name_param.clone(),
+                        accession: xl_acc_param.clone(),
+                        cv_ref: get_cv_ref(&xl_acc_param),
+                        ..Default::default()
+                    });
                     params.push(CvParamType {
                         name: "cross-link acceptor".to_string(),
                         accession: "MS:1002510".to_string(),
@@ -1311,7 +1358,12 @@ fn parse_proforma(proforma: &str) -> (String, Vec<ModificationType>) {
                 if mod_str.contains(':') {
                     let parts: Vec<&str> = mod_str.split(':').collect();
                     let cv_id = parts[0].to_uppercase();
-                    cv_param.cv_ref = if cv_id == "UNIMOD" { "UNIMOD" } else { "PSI-MS" }.to_string();
+                    cv_param.cv_ref = match cv_id.as_str() {
+                        "UNIMOD" => "UNIMOD",
+                        "XLMOD" => "XLMOD",
+                        "MOD" => "PSI-MOD",
+                        _ => "PSI-MS",
+                    }.to_string();
                     cv_param.accession = mod_str.to_uppercase();
                     if let Some(data) = cv_data::lookup_mod(&cv_param.accession) {
                         cv_param.name = data.name.to_string();
@@ -1323,7 +1375,15 @@ fn parse_proforma(proforma: &str) -> (String, Vec<ModificationType>) {
                     if let Some((acc, mass)) = cv_data::lookup_mod_by_name(mod_str) {
                         cv_param.name = mod_str.to_string();
                         cv_param.accession = acc.to_string();
-                        cv_param.cv_ref = if acc.starts_with("UNIMOD:") { "UNIMOD" } else { "PSI-MS" }.to_string();
+                        cv_param.cv_ref = if acc.starts_with("UNIMOD:") { 
+                            "UNIMOD" 
+                        } else if acc.starts_with("XLMOD:") {
+                            "XLMOD"
+                        } else if acc.starts_with("MOD:") {
+                            "PSI-MOD"
+                        } else { 
+                            "PSI-MS" 
+                        }.to_string();
                         mass_delta = mass;
                     } else {
                         cv_param.name = mod_str.to_string();
