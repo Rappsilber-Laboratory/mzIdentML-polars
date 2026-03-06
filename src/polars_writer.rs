@@ -668,7 +668,12 @@ impl MzIdentMLFactory {
                     cv_param: vec![CvParamType {
                         name: name.to_string(),
                         accession: accession.to_string(),
-                        cv_ref: if accession.starts_with("MS:") { "PSI-MS".to_string() } else { "UNIMOD".to_string() },
+                        cv_ref: if accession.starts_with("MS:") { "PSI-MS" }
+                                else if accession.starts_with("UNIMOD:") { "UNIMOD" }
+                                else if accession.starts_with("XLMOD:") { "XLMOD" }
+                                else if accession.starts_with("MOD:") { "PSI-MOD" }
+                                else if accession.starts_with("UO:") { "UO" }
+                                else { "PSI-MS" }.to_string(),
                         ..Default::default()
                     }],
                     ..Default::default()
@@ -943,7 +948,7 @@ pub fn prepare_factory(
                     ..Default::default()
                 });
                 params.push(CvParamType {
-                    name: "cross-link donor".to_string(),
+                    name: "crosslink donor".to_string(),
                     accession: "MS:1002509".to_string(),
                     cv_ref: "PSI-MS".to_string(),
                     value: Some(xl_group_id.clone()),
@@ -988,7 +993,7 @@ pub fn prepare_factory(
                     ..Default::default()
                 });
                 params.push(CvParamType {
-                    name: "cross-link acceptor".to_string(),
+                    name: "crosslink acceptor".to_string(),
                     accession: "MS:1002510".to_string(),
                     cv_ref: "PSI-MS".to_string(),
                     value: Some(xl_group_id.clone()),
@@ -1039,7 +1044,7 @@ pub fn prepare_factory(
                 }));
             }
             content1.push(SpectrumIdentificationItemTypeContent::CvParam(CvParamType {
-                name: "cross-link spectrum identification item".to_string(),
+                name: "crosslink spectrum identification item".to_string(),
                 accession: "MS:1002511".to_string(),
                 value: Some(xl_group_id.clone()),
                 cv_ref: "PSI-MS".to_string(),
@@ -1065,7 +1070,7 @@ pub fn prepare_factory(
                 }));
             }
             content2.push(SpectrumIdentificationItemTypeContent::CvParam(CvParamType {
-                name: "cross-link spectrum identification item".to_string(),
+                name: "crosslink spectrum identification item".to_string(),
                 accession: "MS:1002511".to_string(),
                 value: Some(xl_group_id.clone()),
                 cv_ref: "PSI-MS".to_string(),
@@ -1143,7 +1148,7 @@ pub fn prepare_factory(
                         ..Default::default()
                     });
                     params.push(CvParamType {
-                        name: "cross-link donor".to_string(),
+                        name: "crosslink donor".to_string(),
                         accession: "MS:1002509".to_string(),
                         cv_ref: "PSI-MS".to_string(),
                         value: Some(xl_group_id.clone()),
@@ -1185,7 +1190,7 @@ pub fn prepare_factory(
                         ..Default::default()
                     });
                     params.push(CvParamType {
-                        name: "cross-link acceptor".to_string(),
+                        name: "crosslink acceptor".to_string(),
                         accession: "MS:1002510".to_string(),
                         cv_ref: "PSI-MS".to_string(),
                         value: Some(xl_group_id.clone()),
@@ -1394,7 +1399,9 @@ fn parse_proforma(proforma: &str) -> (String, Vec<ModificationType>) {
                         mass_delta = mass;
                     } else {
                         cv_param.name = mod_str.to_string();
-                        cv_param.accession = format!("UNKNOWN:{}", mod_str).to_uppercase();
+                        cv_param.accession = "MS:1001460".to_string();
+                        cv_param.cv_ref = "PSI-MS".to_string();
+                        cv_param.value = Some(mod_str.to_string());
                     }
                 }
                 
