@@ -202,8 +202,8 @@ def test_filetype_derivation(default_metadata, base_protein_seqs, base_spectra, 
     xml = mzidentml_polars.serialize_mzidentml(csms, base_protein_seqs, mgf_spectra, default_metadata)
     
     assert 'accession="MS:1001062"' in xml
-    # Check for MGF nativeID format accession
-    assert 'accession="MS:1000775"' in xml
+    # Check for MGF spectrum title format accession
+    assert 'accession="MS:1000796"' in xml
 
     # Test .mzML.gz
     mzml_gz_spectra = pl.DataFrame({

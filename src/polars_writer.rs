@@ -61,8 +61,8 @@ fn derive_spectra_data_format(location: &str) -> (CvParamType, CvParamType) {
                 ..Default::default()
             },
             CvParamType {
-                name: "MGF nativeID format".to_string(),
-                accession: "MS:1000775".to_string(),
+                name: "spectrum title".to_string(),
+                accession: "MS:1000796".to_string(),
                 cv_ref: "PSI-MS".to_string(),
                 ..Default::default()
             },
@@ -880,7 +880,23 @@ pub fn prepare_factory(
         let mut sir_params = Vec::new();
         let xl_name = c_xl_name.as_ref().and_then(|c| c.get(i));
         let xl_acc = c_xl_acc.as_ref().and_then(|c| c.get(i));
-        if spec_id.starts_with("index=") {
+        
+        // Add viewer-specific spectrum identifiers
+        let path_lower = path.to_lowercase();
+        let is_mgf = path_lower.ends_with(".mgf") || path_lower.ends_with(".mgf.gz");
+        
+        if is_mgf {
+            // For MGF, xiVIEW and others often need the title as a param even if it's the spectrumID
+            let title = if spec_id.starts_with("index=") { &spec_id[6..] } else { spec_id };
+            sir_params.push(CvParamType {
+                name: "attribute 'title'".to_string(),
+                accession: "MS:1001030".to_string(),
+                cv_ref: "PSI-MS".to_string(),
+                value: Some(title.to_string()),
+                ..Default::default()
+            });
+        } else if spec_id.starts_with("index=") {
+            // For mzML/mzXML, 'index=' usually refers to a scan number or internal index
             let scan = &spec_id[6..];
             sir_params.push(CvParamType {
                 name: "peak list scans".to_string(),
