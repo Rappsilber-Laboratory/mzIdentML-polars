@@ -289,7 +289,7 @@ def test_metadata_protocol(base_protein_seqs, base_spectra, xsd_path):
             {"fixed": True, "mass": 57.021464, "residues": "C", "name": "Carbamidomethyl", "accession": "UNIMOD:4"}
         ],
         "search_params": [
-            {"name": "xi:score", "accession": "MS:1002545", "value": "0.5"}
+            {"name": "xi:min_peptide_length", "accession": "MS:1002543", "value": "6"}
         ]
     }
 
@@ -337,8 +337,8 @@ def test_metadata_protocol(base_protein_seqs, base_spectra, xsd_path):
     assert 'accession="UNIMOD:4"' in xml
     
     # Check for AdditionalSearchParams
-    assert 'name="xi:score"' in xml
-    assert 'value="0.5"' in xml
+    assert 'name="xi:min_peptide_length"' in xml
+    assert 'value="6"' in xml
     
     # Schema validation
     with tempfile.NamedTemporaryFile(suffix=".mzid", delete=False) as tmp:

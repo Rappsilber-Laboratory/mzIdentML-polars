@@ -129,7 +129,7 @@ pip install pyarrow
 | `frag_minus` | Float | Fragment tolerance lower bound |
 | `enzymes` | List[Dict] | Enzymes used: `[{"name": "Trypsin", "accession": "MS:1001251"}]` |
 | `modifications`| List[Dict] | Search mods: `[{"fixed": true, "mass": 57.02, "residues": "C", "name": "Carbamidomethyl", "accession": "UNIMOD:4"}]` |
-| `search_params`| List[Dict] | Additional parameters: `[{"name": "xi:score", "accession": "MS:1002545", "value": "0.5"}]` |
+| `search_params`| List[Dict] | Additional parameters: `[{"name": "xi:min_peptide_length", "accession": "MS:1002543", "value": "6"}]` |
 
 ## Protein Ambiguity
 
