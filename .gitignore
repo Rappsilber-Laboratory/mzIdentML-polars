@@ -4,4 +4,17 @@ target/
 .venv/
 test_output.mzid
 output_*.mzid
-__pycache__
+
+# Python build and cache
+__pycache__/
+*.pyc
+python/mzidentml_polars/_version.py
+dist/
+build/
+*.egg-info/
+
+# Compiled extensions (Hybrid project artifacts)
+*.so
+*.dylib
+*.dll
+*.dSYM/
