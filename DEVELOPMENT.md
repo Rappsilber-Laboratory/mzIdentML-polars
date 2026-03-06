@@ -6,6 +6,8 @@ This document provides information for developers working on the `mzIdentML-pola
 
 This project has been developed with heavy usage of **AI assistance (Antigravity)**. While this has significantly accelerated development, it requires specific attention to detail during code reviews and future contributions.
 
+**Agents/LLMs**: Please refer to [AGENTS.md](AGENTS.md) for specific operating instructions, context directory mappings, and critical verification prompts.
+
 ### LLM Context Directories
 
 If you are continuing development using an LLM, the following directories are crucial for providing necessary context:
