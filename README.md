@@ -129,6 +129,38 @@ csms = pl.DataFrame({
 })
 ```
 
+## Development & Releases
+
+### Version Management
+This project uses **Git tags** as the single source of truth for versioning.
+
+- **Python**: Managed by `setuptools_scm`. The version is automatically derived from the latest Git tag (e.g., `v0.1.0`). If no tag is present, it defaults to a `.dev` version.
+- **Rust**: The version is hardcoded in `Cargo.toml`. To ensure consistency, always use `cargo-release` to bump versions.
+
+### Bumping the Version
+To create a new release (e.g., moving from `0.1.0` to `0.2.0`):
+
+1. **Install cargo-release**:
+   ```bash
+   cargo install cargo-release
+   ```
+
+2. **Run the release command**:
+   ```bash
+   # Dry run to verify changes
+   cargo release minor --execute --no-publish
+   ```
+   This will:
+   - Update the version in `Cargo.toml` and `Cargo.lock`.
+   - Create a Git commit and a tag (e.g., `v0.2.0`).
+   - Push the commit and the tag to the remote repository.
+
+3. **CI/CD**:
+   The GitHub Action (`.github/workflows/pypi.yml`) will automatically trigger on the new tag and publish the updated wheels to PyPI.
+
+### Syncing Polars
+If you change the `polars` version in `Cargo.toml`, the build script (`build.rs`) will automatically run `sync_polars.py` to update the constraints in `pyproject.toml`.
+
 ## License
 
 This project is licensed under the AGPL-3.0 License.
