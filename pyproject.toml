@@ -19,7 +19,7 @@ Homepage = "https://github.com/Rappsilber-Laboratory/mzIdentML-polars"
 "Bug Tracker" = "https://github.com/Rappsilber-Laboratory/mzIdentML-polars/issues"
 
 [project.license]
-text = "AGPL-3.0"
+text = "Apache-2.0"
 
 [tool.maturin]
 features = [ "pyo3/extension-module",]

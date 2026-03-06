@@ -2,7 +2,8 @@
 name = "mzidentml"
 version = "0.1.0"
 edition = "2021"
-license = "AGPL-3.0"
+license = "Apache-2.0"
+authors = ["Falk B. Schimweg <f.schimweg@tu-berlin.de>"]
 
 [lib]
 name = "_mzidentml_polars"

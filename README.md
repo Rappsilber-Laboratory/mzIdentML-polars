@@ -163,7 +163,7 @@ If you change the `polars` version in `Cargo.toml`, the build script (`build.rs`
 
 ## License
 
-This project is licensed under the AGPL-3.0 License.
+This project is licensed under the Apache-2.0 License.
 
 ## TODO
 - Exposing Search Protocol settings (Enzymes, Search Mods) in the metadata dictionary.
