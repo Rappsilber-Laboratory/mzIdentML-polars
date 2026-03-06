@@ -5,7 +5,7 @@ edition = "2021"
 license = "AGPL-3.0"
 
 [lib]
-name = "mzidentml_polars"
+name = "_mzidentml_polars"
 crate-type = ["cdylib", "rlib"]
 
 [dependencies]
