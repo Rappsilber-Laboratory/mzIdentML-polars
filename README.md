@@ -116,6 +116,21 @@ pip install pyarrow
 | `crosslinker_accession`| String | **Recommended**. CV accession of the crosslinker (e.g., `MS:1003124`) |
 | `crosslinker_mass`| Float64| **Recommended**. Mass of the crosslinker |
 
+### `metadata` (Dictionary)
+| Key | Type | Description |
+| :--- | :--- | :--- |
+| `software_name`| String | Name of the analysis software (default: `mzidentml-polars`) |
+| `software_version`| String | Version of the software |
+| `author` | String | Name of the primary researcher/author |
+| `is_ppm` | Boolean | Whether tolerances are in PPM (default: `true`) |
+| `parent_plus` | Float | Precursor tolerance upper bound |
+| `parent_minus` | Float | Precursor tolerance lower bound |
+| `frag_plus` | Float | Fragment tolerance upper bound |
+| `frag_minus` | Float | Fragment tolerance lower bound |
+| `enzymes` | List[Dict] | Enzymes used: `[{"name": "Trypsin", "accession": "MS:1001251"}]` |
+| `modifications`| List[Dict] | Search mods: `[{"fixed": true, "mass": 57.02, "residues": "C", "name": "Carbamidomethyl", "accession": "UNIMOD:4"}]` |
+| `search_params`| List[Dict] | Additional parameters: `[{"name": "xi:score", "accession": "MS:1002545", "value": "0.5"}]` |
+
 ## Protein Ambiguity
 
 If a peptide sequence maps to multiple proteins, you can encode this using Polars **List** columns in the `csms` DataFrame. For each mapped protein, provide the corresponding ID, start, and end positions in the lists. The library will generate multiple `<PeptideEvidence>` entries for that match.
@@ -166,5 +181,4 @@ If you change the `polars` version in `Cargo.toml`, the build script (`build.rs`
 This project is licensed under the Apache-2.0 License.
 
 ## TODO
-- Exposing Search Protocol settings (Enzymes, Search Mods) in the metadata dictionary.
 - Implementing basic Protein Grouping (ProteinDetectionList) support, even as a simple 1-to-1 mapping if full inference isn't required.

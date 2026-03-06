@@ -169,6 +169,7 @@ pub struct MzIdentMLFactory {
     pep_evidence_map: HashMap<(String, String), String>, // (Peptide ID, Protein ID) -> Evidence ID
     cv_map: HashMap<String, String>,      // CV ID -> URI
     decoy_map: HashMap<String, bool>,     // Protein ID -> is_decoy
+    pub mod_name_overrides: HashMap<String, String>, // Accession -> Name
 }
 
 impl MzIdentMLFactory {
@@ -229,6 +230,7 @@ impl MzIdentMLFactory {
             pep_evidence_map: HashMap::new(),
             cv_map: HashMap::new(),
             decoy_map: HashMap::new(),
+            mod_name_overrides: HashMap::new(),
         };
 
         factory.add_cv("PSI-MS", "PSI-MS", "https://raw.githubusercontent.com/HUPO-PSI/psi-ms-CV/master/psi-ms.obo");
@@ -254,7 +256,7 @@ impl MzIdentMLFactory {
     }
 
     pub fn add_peptide(&mut self, proforma: &str, linkage_mods: Vec<ModificationType>) -> String {
-        let (clean_seq, mut mods) = parse_proforma(proforma);
+        let (clean_seq, mut mods) = self.parse_proforma(proforma);
         
         // Add linkage modifications
         mods.extend(linkage_mods);
@@ -781,6 +783,52 @@ pub fn prepare_factory(
     let is_ppm = metadata.get_item("is_ppm").ok().flatten().and_then(|v| v.extract::<bool>().ok()).unwrap_or(true);
     factory.set_tolerances(0, p_plus, p_minus, f_plus, f_minus, is_ppm);
     
+    // Add enzymes from metadata
+    if let Some(enzymes) = metadata.get_item("enzymes").ok().flatten() {
+        if let Ok(enz_list) = enzymes.extract::<Vec<Bound<'_, PyDict>>>() {
+            for (idx, enz_dict) in enz_list.iter().enumerate() {
+                let name = enz_dict.get_item("name").ok().flatten().and_then(|v| v.extract::<String>().ok()).unwrap_or_else(|| "unknown enzyme".to_string());
+                let acc = enz_dict.get_item("accession").ok().flatten().and_then(|v| v.extract::<String>().ok()).unwrap_or_else(|| "MS:1001045".to_string());
+                let enz_id = format!("ENZ_{}", idx + 1);
+                factory.add_enzyme(0, &enz_id, &name, &acc);
+            }
+        }
+    }
+
+    // Add modifications from metadata
+    if let Some(mods) = metadata.get_item("modifications").ok().flatten() {
+        if let Ok(mod_list) = mods.extract::<Vec<Bound<'_, PyDict>>>() {
+            for mod_dict in mod_list {
+                let fixed = mod_dict.get_item("fixed").ok().flatten().and_then(|v| v.extract::<bool>().ok()).unwrap_or(false);
+                let mass = mod_dict.get_item("mass").ok().flatten().and_then(|v| v.extract::<f32>().ok()).unwrap_or(0.0);
+                let residues = mod_dict.get_item("residues").ok().flatten().and_then(|v| v.extract::<String>().ok()).unwrap_or_else(|| "".to_string());
+                let name = mod_dict.get_item("name").ok().flatten().and_then(|v| v.extract::<String>().ok());
+                let acc = mod_dict.get_item("accession").ok().flatten().and_then(|v| v.extract::<String>().ok()).unwrap_or_else(|| "MS:1001460".to_string());
+                
+                let final_name = if let Some(n) = name {
+                    factory.mod_name_overrides.insert(acc.clone(), n.clone());
+                    n
+                } else {
+                    cv_data::lookup_mod(&acc).map(|d| d.name.to_string()).unwrap_or_else(|| "unknown modification".to_string())
+                };
+
+                factory.add_search_modification(0, fixed, mass, &residues, &final_name, &acc);
+            }
+        }
+    }
+
+    // Add search parameters from metadata
+    if let Some(params) = metadata.get_item("search_params").ok().flatten() {
+        if let Ok(param_list) = params.extract::<Vec<Bound<'_, PyDict>>>() {
+            for p_dict in param_list {
+                let name = p_dict.get_item("name").ok().flatten().and_then(|v| v.extract::<String>().ok()).unwrap_or_else(|| "unknown parameter".to_string());
+                let acc = p_dict.get_item("accession").ok().flatten().and_then(|v| v.extract::<String>().ok()).unwrap_or_else(|| "MS:1001460".to_string());
+                let value = p_dict.get_item("value").ok().flatten().and_then(|v| v.extract::<String>().ok());
+                factory.add_search_param(0, &name, &acc, value.as_deref());
+            }
+        }
+    }
+    
     // Process SpectraData
     let spec_df = spectra.as_ref();
     let _spec_ids_col = spec_df.column("spectrum_id").map_err(|e| PyErr::new::<pyo3::exceptions::PyValueError, _>(format!("{}", e)))?.str().map_err(|e| PyErr::new::<pyo3::exceptions::PyValueError, _>(format!("{}", e)))?;
@@ -923,7 +971,14 @@ pub fn prepare_factory(
 
                 if let Some(acc) = xl_acc {
                     xl_acc_param = acc.to_string();
-                    if let Some(data) = cv_data::lookup_mod(acc) {
+                    if let Some(override_name) = factory.mod_name_overrides.get(acc) {
+                        xl_name_param = override_name.clone();
+                        if let Some(data) = cv_data::lookup_mod(acc) {
+                            if xl_mass_val == 0.0 {
+                                xl_mass_val = data.mono_mass;
+                            }
+                        }
+                    } else if let Some(data) = cv_data::lookup_mod(acc) {
                         xl_name_param = data.name.to_string();
                         if xl_mass_val == 0.0 {
                             xl_mass_val = data.mono_mass;
@@ -935,6 +990,10 @@ pub fn prepare_factory(
                     xl_name_param = name.to_string();
                     if let Some((acc, mass)) = cv_data::lookup_mod_by_name(name) {
                         xl_acc_param = acc.to_string();
+                        // Check override for the accession found by name
+                        if let Some(override_name) = factory.mod_name_overrides.get(&xl_acc_param) {
+                            xl_name_param = override_name.clone();
+                        }
                         if xl_mass_val == 0.0 {
                             xl_mass_val = mass;
                         }
@@ -974,7 +1033,9 @@ pub fn prepare_factory(
 
                 if let Some(acc) = xl_acc {
                     xl_acc_param = acc.to_string();
-                    if let Some(data) = cv_data::lookup_mod(acc) {
+                    if let Some(override_name) = factory.mod_name_overrides.get(acc) {
+                        xl_name_param = override_name.clone();
+                    } else if let Some(data) = cv_data::lookup_mod(acc) {
                         xl_name_param = data.name.to_string();
                     } else if let Some(name) = xl_name {
                         xl_name_param = name.to_string();
@@ -983,6 +1044,9 @@ pub fn prepare_factory(
                     xl_name_param = name.to_string();
                     if let Some((acc, _)) = cv_data::lookup_mod_by_name(name) {
                         xl_acc_param = acc.to_string();
+                        if let Some(override_name) = factory.mod_name_overrides.get(&xl_acc_param) {
+                            xl_name_param = override_name.clone();
+                        }
                     }
                 }
 
@@ -1123,7 +1187,14 @@ pub fn prepare_factory(
 
                     if let Some(acc) = xl_acc {
                         xl_acc_param = acc.to_string();
-                        if let Some(data) = cv_data::lookup_mod(acc) {
+                        if let Some(override_name) = factory.mod_name_overrides.get(acc) {
+                            xl_name_param = override_name.clone();
+                            if let Some(data) = cv_data::lookup_mod(acc) {
+                                if xl_mass_val == 0.0 {
+                                    xl_mass_val = data.mono_mass;
+                                }
+                            }
+                        } else if let Some(data) = cv_data::lookup_mod(acc) {
                             xl_name_param = data.name.to_string();
                             if xl_mass_val == 0.0 {
                                 xl_mass_val = data.mono_mass;
@@ -1135,6 +1206,9 @@ pub fn prepare_factory(
                         xl_name_param = name.to_string();
                         if let Some((acc, mass)) = cv_data::lookup_mod_by_name(name) {
                             xl_acc_param = acc.to_string();
+                            if let Some(override_name) = factory.mod_name_overrides.get(&xl_acc_param) {
+                                xl_name_param = override_name.clone();
+                            }
                             if xl_mass_val == 0.0 {
                                 xl_mass_val = mass;
                             }
@@ -1171,7 +1245,9 @@ pub fn prepare_factory(
 
                     if let Some(acc) = xl_acc {
                         xl_acc_param = acc.to_string();
-                        if let Some(data) = cv_data::lookup_mod(acc) {
+                        if let Some(override_name) = factory.mod_name_overrides.get(acc) {
+                            xl_name_param = override_name.clone();
+                        } else if let Some(data) = cv_data::lookup_mod(acc) {
                             xl_name_param = data.name.to_string();
                         } else if let Some(name) = xl_name {
                             xl_name_param = name.to_string();
@@ -1180,6 +1256,9 @@ pub fn prepare_factory(
                         xl_name_param = name.to_string();
                         if let Some((acc, _)) = cv_data::lookup_mod_by_name(name) {
                             xl_acc_param = acc.to_string();
+                            if let Some(override_name) = factory.mod_name_overrides.get(&xl_acc_param) {
+                                xl_name_param = override_name.clone();
+                            }
                         }
                     }
 
@@ -1347,78 +1426,92 @@ mod tests {
         assert!(xml.contains("psi-pi:id=\"dbseq_P12\""));
     }
 }
-fn parse_proforma(proforma: &str) -> (String, Vec<ModificationType>) {
-    let mut clean_seq = String::new();
-    let mut mods = Vec::new();
-    let chars: Vec<char> = proforma.chars().collect();
-    let mut i = 0;
-    while i < chars.len() {
-        if chars[i] == '[' {
-            let start = i + 1;
-            let mut end = start;
-            while end < chars.len() && chars[end] != ']' {
-                end += 1;
-            }
-            if end < chars.len() {
-                let mod_str = &proforma[start..end];
-                let mut cv_param = CvParamType {
-                    cv_ref: "PSI-MS".to_string(),
-                    ..Default::default()
-                };
-                let mut mass_delta = 0.0;
-                
-                if mod_str.contains(':') {
-                    let parts: Vec<&str> = mod_str.split(':').collect();
-                    let cv_id = parts[0].to_uppercase();
-                    cv_param.cv_ref = match cv_id.as_str() {
-                        "UNIMOD" => "UNIMOD",
-                        "XLMOD" => "XLMOD",
-                        "MOD" => "PSI-MOD",
-                        _ => "PSI-MS",
-                    }.to_string();
-                    cv_param.accession = mod_str.to_uppercase();
-                    if let Some(data) = cv_data::lookup_mod(&cv_param.accession) {
-                        cv_param.name = data.name.to_string();
-                        mass_delta = data.mono_mass;
-                    } else {
-                        cv_param.name = parts[1].to_string();
-                    }
-                } else {
-                    if let Some((acc, mass)) = cv_data::lookup_mod_by_name(mod_str) {
-                        cv_param.name = mod_str.to_string();
-                        cv_param.accession = acc.to_string();
-                        cv_param.cv_ref = if acc.starts_with("UNIMOD:") { 
-                            "UNIMOD" 
-                        } else if acc.starts_with("XLMOD:") {
-                            "XLMOD"
-                        } else if acc.starts_with("MOD:") {
-                            "PSI-MOD"
-                        } else { 
-                            "PSI-MS" 
-                        }.to_string();
-                        mass_delta = mass;
-                    } else {
-                        cv_param.name = mod_str.to_string();
-                        cv_param.accession = "MS:1001460".to_string();
-                        cv_param.cv_ref = "PSI-MS".to_string();
-                        cv_param.value = Some(mod_str.to_string());
-                    }
+impl MzIdentMLFactory {
+    pub fn parse_proforma(&self, proforma: &str) -> (String, Vec<ModificationType>) {
+        let mut clean_seq = String::new();
+        let mut mods = Vec::new();
+        let chars: Vec<char> = proforma.chars().collect();
+        let mut i = 0;
+        while i < chars.len() {
+            if chars[i] == '[' {
+                let start = i + 1;
+                let mut end = start;
+                while end < chars.len() && chars[end] != ']' {
+                    end += 1;
                 }
-                
-                mods.push(ModificationType {
-                    location: Some(clean_seq.len() as i32),
-                    cv_param: vec![cv_param],
-                    monoisotopic_mass_delta: Some(mass_delta),
-                    ..Default::default()
-                });
-                i = end + 1;
+                if end < chars.len() {
+                    let mod_str = &proforma[start..end];
+                    let mut cv_param = CvParamType {
+                        cv_ref: "PSI-MS".to_string(),
+                        ..Default::default()
+                    };
+                    let mut mass_delta = 0.0;
+                    
+                    if mod_str.contains(':') {
+                        let parts: Vec<&str> = mod_str.split(':').collect();
+                        let cv_id = parts[0].to_uppercase();
+                        cv_param.cv_ref = match cv_id.as_str() {
+                            "UNIMOD" => "UNIMOD",
+                            "XLMOD" => "XLMOD",
+                            "MOD" => "PSI-MOD",
+                            _ => "PSI-MS",
+                        }.to_string();
+                        cv_param.accession = mod_str.to_uppercase();
+
+                        // Priority: 1. Metadata Overrides, 2. CV lookup, 3. fall back to ID part
+                        if let Some(override_name) = self.mod_name_overrides.get(&cv_param.accession) {
+                            cv_param.name = override_name.clone();
+                            if let Some(data) = cv_data::lookup_mod(&cv_param.accession) {
+                                mass_delta = data.mono_mass;
+                            }
+                        } else if let Some(data) = cv_data::lookup_mod(&cv_param.accession) {
+                            cv_param.name = data.name.to_string();
+                            mass_delta = data.mono_mass;
+                        } else {
+                            cv_param.name = parts[1].to_string();
+                        }
+                    } else {
+                        if let Some((acc, mass)) = cv_data::lookup_mod_by_name(mod_str) {
+                            cv_param.name = mod_str.to_string();
+                            cv_param.accession = acc.to_string();
+                            // If we have an override for this accession, use it
+                            if let Some(override_name) = self.mod_name_overrides.get(&cv_param.accession) {
+                                cv_param.name = override_name.clone();
+                            }
+                            
+                            cv_param.cv_ref = if acc.starts_with("UNIMOD:") { 
+                                "UNIMOD" 
+                            } else if acc.starts_with("XLMOD:") {
+                                "XLMOD"
+                            } else if acc.starts_with("MOD:") {
+                                "PSI-MOD"
+                            } else { 
+                                "PSI-MS" 
+                            }.to_string();
+                            mass_delta = mass;
+                        } else {
+                            cv_param.name = mod_str.to_string();
+                            cv_param.accession = "MS:1001460".to_string();
+                            cv_param.cv_ref = "PSI-MS".to_string();
+                            cv_param.value = Some(mod_str.to_string());
+                        }
+                    }
+                    
+                    mods.push(ModificationType {
+                        location: Some(clean_seq.len() as i32),
+                        cv_param: vec![cv_param],
+                        monoisotopic_mass_delta: Some(mass_delta),
+                        ..Default::default()
+                    });
+                    i = end + 1;
+                } else {
+                    i += 1;
+                }
             } else {
+                clean_seq.push(chars[i]);
                 i += 1;
             }
-        } else {
-            clean_seq.push(chars[i]);
-            i += 1;
         }
+        (clean_seq, mods)
     }
-    (clean_seq, mods)
 }

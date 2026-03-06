@@ -275,3 +275,140 @@ def test_write_gzip(default_metadata, base_protein_seqs, base_spectra, xsd_path)
     finally:
         if os.path.exists(tmp_path):
             os.remove(tmp_path)
+
+def test_metadata_protocol(base_protein_seqs, base_spectra, xsd_path):
+    """Test that protocol settings in metadata are correctly transferred to XML."""
+    full_metadata = {
+        "software_name": "xi",
+        "software_version": "2.0",
+        "author": "Falk Schimweg",
+        "enzymes": [
+            {"name": "Trypsin", "accession": "MS:1001251"}
+        ],
+        "modifications": [
+            {"fixed": True, "mass": 57.021464, "residues": "C", "name": "Carbamidomethyl", "accession": "UNIMOD:4"}
+        ],
+        "search_params": [
+            {"name": "xi:score", "accession": "MS:1002545", "value": "0.5"}
+        ]
+    }
+
+    csms = pl.DataFrame({
+        "spectrum_id": ["index=1"],
+        "peptide1_seq": ["PEPTIDEK"],
+        "protein1_id": ["PROT1"],
+        "peptide1_start": [1],
+        "peptide1_end": [8],
+        "charge": [2],
+        "rank": [1],
+        "is_crosslink": [False],
+        "is_looplink": [False],
+        "file_path": ["data1.mzML"],
+        "peptide2_seq": [None],
+        "protein2_id": [None],
+        "peptide2_start": [None],
+        "peptide2_end": [None],
+        "peptide1_link_pos": [None],
+        "peptide2_link_pos": [None],
+    }).with_columns([
+        pl.col("peptide1_start").cast(pl.UInt32),
+        pl.col("peptide1_end").cast(pl.UInt32),
+        pl.col("charge").cast(pl.Int32),
+        pl.col("rank").cast(pl.UInt32),
+        pl.col("is_crosslink").cast(pl.Boolean),
+        pl.col("is_looplink").cast(pl.Boolean),
+        pl.col("peptide1_link_pos").cast(pl.Int32),
+        pl.col("peptide2_link_pos").cast(pl.Int32),
+        pl.col("peptide2_seq").cast(pl.String),
+        pl.col("protein2_id").cast(pl.String),
+    ])
+
+    xml = mzidentml_polars.serialize_mzidentml(csms, base_protein_seqs, base_spectra, full_metadata)
+
+    # Check for Enzyme
+    assert 'name="Trypsin"' in xml
+    assert 'accession="MS:1001251"' in xml
+    
+    # Check for SearchModification
+    assert 'fixedMod="true"' in xml
+    # Note: Rust f32 might format slightly differently, but should contain the start
+    assert 'massDelta="57.021465"' in xml or 'massDelta="57.021464"' in xml
+    assert 'residues="C"' in xml
+    assert 'accession="UNIMOD:4"' in xml
+    
+    # Check for AdditionalSearchParams
+    assert 'name="xi:score"' in xml
+    assert 'value="0.5"' in xml
+    
+    # Schema validation
+    with tempfile.NamedTemporaryFile(suffix=".mzid", delete=False) as tmp:
+        tmp.write(xml.encode('utf-8'))
+        tmp_path = tmp.name
+    try:
+        validate_mzid(tmp_path, xsd_path)
+    finally:
+        os.remove(tmp_path)
+
+def test_mod_name_override(base_protein_seqs, base_spectra, xsd_path):
+    """Test that metadata name hides CV name for modifications."""
+    custom_metadata = {
+        "modifications": [
+            {
+                "fixed": True, 
+                "mass": 57.021464, 
+                "residues": "C", 
+                "name": "MY_CUSTOM_NAME", 
+                "accession": "UNIMOD:4" # Usually 'Carbamidomethyl'
+            }
+        ]
+    }
+
+    # Use UNIMOD:4 in a proforma sequence
+    csms = pl.DataFrame({
+        "spectrum_id": ["index=1"],
+        "peptide1_seq": ["PEPT[UNIMOD:4]IDEK"],
+        "protein1_id": ["PROT1"],
+        "peptide1_start": [1],
+        "peptide1_end": [8],
+        "charge": [2],
+        "rank": [1],
+        "is_crosslink": [False],
+        "is_looplink": [False],
+        "file_path": ["data1.mzML"],
+        "peptide2_seq": [None],
+        "protein2_id": [None],
+        "peptide2_start": [None],
+        "peptide2_end": [None],
+        "peptide1_link_pos": [None],
+        "peptide2_link_pos": [None],
+    }).with_columns([
+        pl.col("peptide1_start").cast(pl.UInt32),
+        pl.col("peptide1_end").cast(pl.UInt32),
+        pl.col("charge").cast(pl.Int32),
+        pl.col("rank").cast(pl.UInt32),
+        pl.col("is_crosslink").cast(pl.Boolean),
+        pl.col("is_looplink").cast(pl.Boolean),
+        pl.col("peptide2_seq").cast(pl.String),
+        pl.col("protein2_id").cast(pl.String),
+        pl.col("peptide2_start").cast(pl.UInt32),
+        pl.col("peptide2_end").cast(pl.UInt32),
+        pl.col("peptide1_link_pos").cast(pl.Int32),
+        pl.col("peptide2_link_pos").cast(pl.Int32),
+    ])
+
+    xml = mzidentml_polars.serialize_mzidentml(csms, base_protein_seqs, base_spectra, custom_metadata)
+
+    # The custom name should appear in the XML
+    assert 'name="MY_CUSTOM_NAME"' in xml
+    # The default name should NOT appear for that accession if it was overridden
+    assert 'name="Carbamidomethyl"' not in xml
+    assert 'accession="UNIMOD:4"' in xml
+
+    # Schema validation
+    with tempfile.NamedTemporaryFile(suffix=".mzid", delete=False) as tmp:
+        tmp.write(xml.encode('utf-8'))
+        tmp_path = tmp.name
+    try:
+        validate_mzid(tmp_path, xsd_path)
+    finally:
+        os.remove(tmp_path)
