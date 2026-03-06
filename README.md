@@ -16,9 +16,9 @@ You can install the Python bindings directly from the source using `maturin`:
 git clone https://github.com/Rappsilber-Laboratory/mzIdentML-polars.git
 cd mzIdentML-polars
 
-# Install via pip (requires a Rust toolchain and maturin)
-pip install maturin
-pip install .
+# Install via pipenv (requires a Rust toolchain and maturin)
+pipenv install
+pipenv run maturin develop
 ```
 
 ## Usage
@@ -59,16 +59,19 @@ pip install pytest lxml
 
 ### Running Tests
 ```bash
-pytest tests/
+pipenv run pytest tests/
 ```
 
 ## Troubleshooting
 
 ### `TypeError: ... compat_level has invalid type: 'int'`
-If you see this error, it indicates a version mismatch between your Python `polars` and the `pyo3-polars` used during compilation. As of now, ensure you are using a compatible version of Polars:
+If you see this error, it indicates a version mismatch between your Python `polars` and the `polars` Rust crate used during compilation. 
+
+The build process now **automatically synchronizes** these versions by updating `pyproject.toml` based on `Cargo.toml`. If you encounter this after manual dependency changes, simply rebuild the project:
 ```bash
-pip install polars==1.31.0
+pipenv run maturin develop
 ```
+This will ensure your Python environment matches the compiled extension's expected ABI.
 
 ### `No module named 'pyarrow'`
 `pyo3-polars` may require `pyarrow` for internal data conversions:
