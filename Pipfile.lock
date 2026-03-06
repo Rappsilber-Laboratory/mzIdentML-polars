@@ -1,7 +1,7 @@
 {
     "_meta": {
         "hash": {
-            "sha256": "815a78a339837572e23bd614fc0ae077b43d4755e28c458167b2e3cf3e6346b7"
+            "sha256": "62df1e59fdbc532820c0bb43b4498b26b6793cd74c165d250dbce7c34d522afd"
         },
         "pipfile-spec": 6,
         "requires": {
@@ -325,6 +325,14 @@
             "markers": "python_version >= '3.8'",
             "version": "==26.0"
         },
+        "semantic-version": {
+            "hashes": [
+                "sha256:bdabb6d336998cbb378d4b9db3a4b56a1e3235701dc05ea2690d9a997ed5041c",
+                "sha256:de78a3b8e0feda74cabc54aab2da702113e33ac9d9eb9d2389bcf1f58b7d9177"
+            ],
+            "markers": "python_version >= '2.7'",
+            "version": "==2.10.0"
+        },
         "setuptools": {
             "hashes": [
                 "sha256:22e0a2d69474c6ae4feb01951cb69d515ed23728cf96d05513d36e42b62b37cb",
@@ -332,6 +340,15 @@
             ],
             "markers": "python_version >= '3.9'",
             "version": "==82.0.0"
+        },
+        "setuptools-rust": {
+            "hashes": [
+                "sha256:7e7db90547f224a835b45f5ad90c983340828a345554a9a660bdb2de8605dcdd",
+                "sha256:d94a93f0c97751c17014565f07bdc324bee45d396cd1bba83d8e7af92b945f0c"
+            ],
+            "index": "pypi",
+            "markers": "python_version >= '3.9'",
+            "version": "==1.12.0"
         },
         "setuptools-scm": {
             "hashes": [

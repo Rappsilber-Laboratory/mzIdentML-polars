@@ -23,7 +23,8 @@ text = "AGPL-3.0"
 
 [tool.maturin]
 features = [ "pyo3/extension-module",]
-module-name = "mzidentml_polars"
+module-name = "mzidentml_polars._mzidentml_polars"
+python-source = "python"
 
 [tool.setuptools_scm]
-write_to = "mzidentml_polars/_version.py"
+write_to = "python/mzidentml_polars/_version.py"
