@@ -12,6 +12,7 @@ lxml = "*"
 pyarrow = "*"
 
 [dev-packages]
+setuptools-scm = "*"
 
 [requires]
 python_version = "3.11"
