@@ -670,12 +670,7 @@ impl MzIdentMLFactory {
                     cv_param: vec![CvParamType {
                         name: name.to_string(),
                         accession: accession.to_string(),
-                        cv_ref: if accession.starts_with("MS:") { "PSI-MS" }
-                                else if accession.starts_with("UNIMOD:") { "UNIMOD" }
-                                else if accession.starts_with("XLMOD:") { "XLMOD" }
-                                else if accession.starts_with("MOD:") { "PSI-MOD" }
-                                else if accession.starts_with("UO:") { "UO" }
-                                else { "PSI-MS" }.to_string(),
+                        cv_ref: get_cv_ref(accession),
                         ..Default::default()
                     }],
                     ..Default::default()
@@ -690,7 +685,7 @@ impl MzIdentMLFactory {
                 asp.content.push(ParamListTypeContent::CvParam(CvParamType {
                     name: name.to_string(),
                     accession: accession.to_string(),
-                    cv_ref: "PSI-MS".to_string(),
+                    cv_ref: get_cv_ref(accession),
                     value: value.map(|v| v.to_string()),
                     ..Default::default()
                 }));
@@ -709,8 +704,8 @@ impl MzIdentMLFactory {
                     enzyme_name: Some(ParamListType {
                         content: vec![ParamListTypeContent::CvParam(CvParamType {
                             name: name.to_string(),
-                            accession: accession.to_string(),
-                            cv_ref: "PSI-MS".to_string(),
+                        accession: accession.to_string(),
+                        cv_ref: get_cv_ref(accession),
                             ..Default::default()
                         })]
                     }),
@@ -822,7 +817,7 @@ pub fn prepare_factory(
         if let Ok(param_list) = params.extract::<Vec<Bound<'_, PyDict>>>() {
             for p_dict in param_list {
                 let name = p_dict.get_item("name").ok().flatten().and_then(|v| v.extract::<String>().ok()).unwrap_or_else(|| "unknown parameter".to_string());
-                let acc = p_dict.get_item("accession").ok().flatten().and_then(|v| v.extract::<String>().ok()).unwrap_or_else(|| "MS:1001460".to_string());
+                let acc = p_dict.get_item("accession").ok().flatten().and_then(|v| v.extract::<String>().ok()).unwrap_or_else(|| "MS:1001302".to_string());
                 let value = p_dict.get_item("value").ok().flatten().and_then(|v| v.extract::<String>().ok());
                 factory.add_search_param(0, &name, &acc, value.as_deref());
             }
@@ -901,13 +896,6 @@ pub fn prepare_factory(
     let c_xl_mass = csms_df.column("crosslinker_mass").ok().and_then(|c| c.f64().ok());
     let c_calc_mz = csms_df.column("calculated_mz").ok().and_then(|c| c.f64().ok());
 
-    let get_cv_ref = |acc: &str| -> String {
-        if acc.starts_with("MS:") { "PSI-MS".to_string() }
-        else if acc.starts_with("XLMOD:") { "XLMOD".to_string() }
-        else if acc.starts_with("UNIMOD:") { "UNIMOD".to_string() }
-        else if acc.starts_with("MOD:") { "PSI-MOD".to_string() }
-        else { "PSI-MS".to_string() }
-    };
 
     // Group results by (SpectraData Ref, Spectrum ID) to avoid duplicate SIR elements
     let mut grouped_results: HashMap<(String, String), (Vec<SpectrumIdentificationItemType>, Vec<CvParamType>)> = HashMap::new();
@@ -1479,20 +1467,12 @@ impl MzIdentMLFactory {
                                 cv_param.name = override_name.clone();
                             }
                             
-                            cv_param.cv_ref = if acc.starts_with("UNIMOD:") { 
-                                "UNIMOD" 
-                            } else if acc.starts_with("XLMOD:") {
-                                "XLMOD"
-                            } else if acc.starts_with("MOD:") {
-                                "PSI-MOD"
-                            } else { 
-                                "PSI-MS" 
-                            }.to_string();
+                            cv_param.cv_ref = get_cv_ref(&acc);
                             mass_delta = mass;
                         } else {
                             cv_param.name = mod_str.to_string();
                             cv_param.accession = "MS:1001460".to_string();
-                            cv_param.cv_ref = "PSI-MS".to_string();
+                            cv_param.cv_ref = get_cv_ref(&cv_param.accession);
                             cv_param.value = Some(mod_str.to_string());
                         }
                     }
@@ -1513,5 +1493,21 @@ impl MzIdentMLFactory {
             }
         }
         (clean_seq, mods)
+    }
+}
+
+pub fn get_cv_ref(accession: &str) -> String {
+    if accession.starts_with("MS:") { 
+        "PSI-MS".to_string() 
+    } else if accession.starts_with("UNIMOD:") { 
+        "UNIMOD".to_string() 
+    } else if accession.starts_with("XLMOD:") { 
+        "XLMOD".to_string() 
+    } else if accession.starts_with("MOD:") { 
+        "PSI-MOD".to_string() 
+    } else if accession.starts_with("UO:") { 
+        "UO".to_string() 
+    } else { 
+        "PSI-MS".to_string() 
     }
 }
