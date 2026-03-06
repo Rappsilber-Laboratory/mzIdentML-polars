@@ -85,13 +85,13 @@ fn derive_spectra_data_format(location: &str) -> (CvParamType, CvParamType) {
     } else if lower.ends_with(".mzxml") {
         (
             CvParamType {
-                name: "mzXML format".to_string(),
+                name: "ISB mzXML format".to_string(),
                 accession: "MS:1000566".to_string(),
                 cv_ref: "PSI-MS".to_string(),
                 ..Default::default()
             },
             CvParamType {
-                name: "mzXML nativeID format".to_string(),
+                name: "scan number only nativeID format".to_string(),
                 accession: "MS:1000776".to_string(),
                 cv_ref: "PSI-MS".to_string(),
                 ..Default::default()
@@ -100,14 +100,14 @@ fn derive_spectra_data_format(location: &str) -> (CvParamType, CvParamType) {
     } else if lower.ends_with(".d") {
         (
             CvParamType {
-                name: "Bruker format".to_string(),
-                accession: "MS:1000526".to_string(),
+                name: "Bruker BAF format".to_string(),
+                accession: "MS:1000815".to_string(),
                 cv_ref: "PSI-MS".to_string(),
                 ..Default::default()
             },
             CvParamType {
-                name: "Bruker nativeID format".to_string(),
-                accession: "MS:1000769".to_string(),
+                name: "Bruker BAF nativeID format".to_string(),
+                accession: "MS:1000772".to_string(),
                 cv_ref: "PSI-MS".to_string(),
                 ..Default::default()
             },
@@ -130,14 +130,14 @@ fn derive_spectra_data_format(location: &str) -> (CvParamType, CvParamType) {
     } else if lower.ends_with(".pkl") {
         (
             CvParamType {
-                name: "MassLynx format".to_string(),
-                accession: "MS:1000583".to_string(),
+                name: "Micromass PKL format".to_string(),
+                accession: "MS:1000565".to_string(),
                 cv_ref: "PSI-MS".to_string(),
                 ..Default::default()
             },
             CvParamType {
-                name: "MassLynx nativeID format".to_string(),
-                accession: "MS:1000771".to_string(),
+                name: "Waters nativeID format".to_string(),
+                accession: "MS:1000769".to_string(),
                 cv_ref: "PSI-MS".to_string(),
                 ..Default::default()
             },
@@ -425,16 +425,14 @@ impl MzIdentMLFactory {
                 }
             },
             database_name: ParamType::CvParam(CvParamType {
-                name: name.to_string(),
-                accession: "MS:1001349".to_string(),
+                name: "database name".to_string(),
+                accession: "MS:1001013".to_string(),
                 cv_ref: "PSI-MS".to_string(),
-                value: None,
-                unit_accession: None,
-                unit_name: None,
-                unit_cv_ref: None,
+                value: Some(name.to_string()),
+                ..Default::default()
             }),
             cv_param: vec![CvParamType {
-                name: "decoy DB type".to_string(),
+                name: "decoy DB type reverse".to_string(),
                 accession: "MS:1001195".to_string(),
                 cv_ref: "PSI-MS".to_string(),
                 value: Some("decoy database".to_string()),
@@ -554,7 +552,7 @@ impl MzIdentMLFactory {
                     }),
                     // Mandatory for crosslinking extension
                     ParamListTypeContent::CvParam(CvParamType {
-                        name: "cross-linking search".to_string(),
+                        name: "crosslinking search".to_string(),
                         accession: "MS:1002494".to_string(),
                         cv_ref: "PSI-MS".to_string(),
                         value: None,
@@ -889,8 +887,8 @@ pub fn prepare_factory(
             // For MGF, xiVIEW and others often need the title as a param even if it's the spectrumID
             let title = if spec_id.starts_with("index=") { &spec_id[6..] } else { spec_id };
             sir_params.push(CvParamType {
-                name: "attribute 'title'".to_string(),
-                accession: "MS:1001030".to_string(),
+                name: "spectrum title".to_string(),
+                accession: "MS:1000796".to_string(),
                 cv_ref: "PSI-MS".to_string(),
                 value: Some(title.to_string()),
                 ..Default::default()
@@ -1240,7 +1238,7 @@ pub fn prepare_factory(
             
             if is_loop_link.get(i).unwrap_or(false) {
                 sii.content.push(SpectrumIdentificationItemTypeContent::CvParam(CvParamType {
-                    name: "loop-link spectrum identification item".to_string(),
+                    name: "looplink spectrum identification item".to_string(),
                     accession: "MS:1003329".to_string(),
                     cv_ref: "PSI-MS".to_string(),
                     ..Default::default()
