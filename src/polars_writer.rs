@@ -1379,8 +1379,8 @@ mod tests {
     #[test]
     fn test_add_peptide_deduplication() {
         let mut factory = MzIdentMLFactory::new("test_doc".to_string());
-        let id1 = factory.add_peptide("PEPTIDE");
-        let id2 = factory.add_peptide("PEPTIDE");
+        let id1 = factory.add_peptide("PEPTIDE", Vec::new());
+        let id2 = factory.add_peptide("PEPTIDE", Vec::new());
         assert_eq!(id1, id2);
         assert_eq!(id1, "pep_0");
         
@@ -1402,7 +1402,7 @@ mod tests {
     #[test]
     fn test_serialization_basic() {
         let mut factory = MzIdentMLFactory::new("test_doc".to_string());
-        factory.add_peptide("PEPTIDE");
+        factory.add_peptide("PEPTIDE", Vec::new());
         factory.add_db_sequence("P12", "ACC", "M", "DB", false, None);
         
         let xml = factory.serialize().unwrap();
