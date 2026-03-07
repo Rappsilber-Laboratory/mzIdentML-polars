@@ -162,7 +162,7 @@ To create a new release (e.g., moving from `0.1.0` to `0.2.0`):
 
 2. **Verify changes (Dry Run)**:
    ```bash
-   cargo release minor
+   cargo release minor --no-publish
    ```
 
 3. **Perform the Release**:

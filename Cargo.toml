@@ -3,7 +3,9 @@ name = "mzidentml"
 version = "0.1.0"
 edition = "2021"
 license = "Apache-2.0"
-authors = ["Falk B. Schimweg <f.schimweg@tu-berlin.de>"]
+authors = ["Falk B. Schimweg <f.schimweg@tu-berlin.de>", "Rappsilber Lab"]
+description = "A fast Rust-based writer for mzIdentML 1.3 files using Polars"
+repository = "https://github.com/Rappsilber-Laboratory/mzIdentML-polars"
 
 [lib]
 name = "_mzidentml_polars"
