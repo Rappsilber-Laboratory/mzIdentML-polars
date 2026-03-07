@@ -160,15 +160,17 @@ To create a new release (e.g., moving from `0.1.0` to `0.2.0`):
    cargo install cargo-release
    ```
 
-2. **Run the release command**:
+2. **Verify changes (Dry Run)**:
    ```bash
-   # Dry run to verify changes
+   cargo release minor
+   ```
+
+3. **Perform the Release**:
+   ```bash
+   # Bumps version, commits, tags, and pushes
    cargo release minor --execute --no-publish
    ```
-   This will:
-   - Update the version in `Cargo.toml` and `Cargo.lock`.
-   - Create a Git commit and a tag (e.g., `v0.2.0`).
-   - Push the commit and the tag to the remote repository.
+   *Note: `--no-publish` skips publishing to crates.io; the GitHub Action handles PyPI publishing via tags.*
 
 3. **CI/CD**:
    The GitHub Action (`.github/workflows/pypi.yml`) will automatically trigger on the new tag and publish the updated wheels to PyPI.
