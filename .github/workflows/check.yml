@@ -4,11 +4,21 @@ on:
   push:
     branches:
       - development
-      - main
+    paths-ignore:
+      - '**.md'
+      - 'LICENSE'
+      - '.gitignore'
+      - '**.txt'
+      - 'Cargo.lock'
   pull_request:
     branches:
       - development
-      - main
+    paths-ignore:
+      - '**.md'
+      - 'LICENSE'
+      - '.gitignore'
+      - '**.txt'
+      - 'Cargo.lock'
   workflow_dispatch:
 
 permissions:
