@@ -16,7 +16,8 @@ num-bigint = "0.4"
 num-traits = "0.2"
 pyo3 = { version = "0.25", features = ["extension-module"] }
 pyo3-polars = { version = "0.24", features = ["serde"] }
-xsd-parser = { version = "1.2.0", features = ["reqwest", "async", "update-expectations", "web-resolver", "tokio"] }
+xsd-parser = { version = "1.2.0", features = ["async", "update-expectations", "tokio"] }
+reqwest = { version = "0.12", default-features = false, features = ["rustls-tls"] }
 polars = { version = "0.51", features = ["lazy", "ndarray", "strings", ] }
 rustyms = "0.7.0"
 flate2 = "1.0"
