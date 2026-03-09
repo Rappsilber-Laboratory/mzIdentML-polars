@@ -236,7 +236,7 @@ impl MzIdentMLFactory {
         factory.add_cv("PSI-MS", "PSI-MS", "https://raw.githubusercontent.com/HUPO-PSI/psi-ms-CV/master/psi-ms.obo");
         factory.add_cv("UNIMOD", "UNIMOD", "http://www.unimod.org/obo/unimod.obo");
         factory.add_cv("UO", "Unit Ontology", "http://purl.obolibrary.org/obo/uo.obo");
-        factory.add_cv("XLMOD", "PSI-XLMOD", "https://raw.githubusercontent.com/HUPO-PSI/mzIdentML/master/cv/XLMOD.obo");
+        factory.add_cv("XLMOD", "PSI-XLMOD", "https://raw.githubusercontent.com/HUPO-PSI/xlmod-CV/refs/heads/main/XLMOD.obo");
         factory.add_cv("PSI-MOD", "PSI-MOD", "https://raw.githubusercontent.com/HUPO-PSI/psi-mod-CV/master/PSI-MOD.obo");
 
         factory
