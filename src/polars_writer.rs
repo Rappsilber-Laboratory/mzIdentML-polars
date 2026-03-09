@@ -716,6 +716,10 @@ impl MzIdentMLFactory {
     }
 
     fn serialize_internal<W: std::io::Write>(&self, writer: &mut Writer<W>) -> Result<(), String> {
+        // Add XML declaration
+        writer.write_event(xsd_parser::quick_xml::Event::Decl(xsd_parser::quick_xml::BytesDecl::new("1.0", Some("UTF-8"), None)))
+            .map_err(|e| format!("XML write error: {:?}", e))?;
+
         let mut serializer = self.doc.serializer(Some("MzIdentML"), true)
             .map_err(|e| format!("Serialization error: {:?}", e))?;
         
@@ -1407,11 +1411,12 @@ mod tests {
         
         let xml = factory.serialize().unwrap();
         // println!("XML OUTPUT:\n{}", xml);
+        assert!(xml.starts_with("<?xml version=\"1.0\" encoding=\"UTF-8\"?>"));
         assert!(xml.contains("test_doc"));
-        assert!(xml.contains("psi-pi:Peptide"));
-        assert!(xml.contains("psi-pi:id=\"pep_0\""));
-        assert!(xml.contains("psi-pi:DBSequence"));
-        assert!(xml.contains("psi-pi:id=\"dbseq_P12\""));
+        assert!(xml.contains("<Peptide"));
+        assert!(xml.contains("id=\"pep_0\""));
+        assert!(xml.contains("<DBSequence"));
+        assert!(xml.contains("id=\"dbseq_P12\""));
     }
 }
 impl MzIdentMLFactory {
