@@ -35,4 +35,6 @@ Run this whenever you touch identification logic:
 ## Development Standards
 *   **Rust**: Use `quick-xml` for performance; avoid heavy DOM tree manipulations.
 *   **Polars**: Handle nulls and optional columns gracefully. Ensure types match between Python and Rust.
-*   **Testing**: All XML-generating logic MUST be verified with `pytest`, which runs the `lxml` schema validator against the XSD in `context/`.
+*   **Testing**: 
+    *   **Rust Tests**: Run `cargo test` to verify internal logic, factory methods, and XML serialization. Use `cargo check --tests` during development for faster feedback.
+    *   **Integration Tests**: All XML-generating logic MUST be verified with `pytest`, which runs the `lxml` schema validator against the XSD in `context/`.
