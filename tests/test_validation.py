@@ -58,15 +58,19 @@ def test_process_dataset_validation_mzml(default_metadata, base_protein_seqs):
         
         assert os.path.exists(mzid_path)
         
-        # Run process_dataset -v -n
-        # Environment variable PYTHONHTTPSVERIFY=0 to bypass SSL cert issues in some environments
+        # Run process_dataset -v -n -t $TMPDIR
+        # -n/--nopeaklist is used because we don't have actual peaklist files
+        # -t/--temp specifies the temp folder for sqlite and downloads
+        # Environment variable SSL_CERT_FILE to point to certifi's bundle to avoid macOS SSL issues
         env = os.environ.copy()
-        env["PYTHONHTTPSVERIFY"] = "0"
-        
-        # Also try to point to the local OBO if possible? No easy way.
+        try:
+            import certifi
+            env["SSL_CERT_FILE"] = certifi.where()
+        except ImportError:
+            pass
         
         result = subprocess.run(
-            ["pipenv", "run", "process_dataset", "-v", mzid_path, "-n"],
+            ["pipenv", "run", "process_dataset", "-v", mzid_path, "-n", "-t", tmpdir],
             capture_output=True,
             text=True,
             env=env
@@ -76,8 +80,6 @@ def test_process_dataset_validation_mzml(default_metadata, base_protein_seqs):
         print("STDERR:", result.stderr)
         
         # Verification: we expect it to be schema valid.
-        # Even if a subsequent step fails (due to certificate issues), 
-        # the schema validation happens early.
         assert "is schema valid" in result.stdout or "is schema valid" in result.stderr
         
         if result.returncode != 0:
