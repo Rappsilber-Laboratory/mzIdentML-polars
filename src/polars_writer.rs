@@ -182,7 +182,7 @@ impl MzIdentMLFactory {
             id,
             name: None,
             creation_date: Some(now),
-            version: "1.2.0".to_string(),
+            version: "1.3.0".to_string(),
             cv_list: CvListType { cv: Vec::new() },
             cv_param: vec![CvParamType {
                 name: "mzIdentML crosslinking extension document version".to_string(),
