@@ -946,8 +946,6 @@ pub fn prepare_factory(
         }
 
         let is_mgf = path_stripped.ends_with(".mgf");
-        let is_mzml = path_stripped.ends_with(".mzml");
-        let _is_mzxml = path_stripped.ends_with(".mzxml");
         
         let mut extracted_scan = None;
         if spec_id.starts_with("index=") {
@@ -985,7 +983,6 @@ pub fn prepare_factory(
             });
         }
 
-        let _safe_spec_id = spec_id.replace(' ', "_").replace('=', "_").replace(':', "_");
 
         if is_xl.get(i).unwrap_or(false) {
             // CROSS-LINK MATCH
