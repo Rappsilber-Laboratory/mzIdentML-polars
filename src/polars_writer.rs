@@ -177,11 +177,12 @@ pub struct MzIdentMLFactory {
 
 impl MzIdentMLFactory {
     pub fn new(id: String) -> Self {
+        let now = chrono::Utc::now().to_rfc3339_opts(chrono::SecondsFormat::Secs, true);
         let doc = MzIdentMlType {
             id,
             name: None,
-            creation_date: None, // TODO: Add current date
-            version: "1.3.0".to_string(),
+            creation_date: Some(now),
+            version: "1.2.0".to_string(),
             cv_list: CvListType { cv: Vec::new() },
             cv_param: vec![CvParamType {
                 name: "mzIdentML crosslinking extension document version".to_string(),
@@ -402,7 +403,7 @@ impl MzIdentMLFactory {
         let (file_format, id_format) = derive_spectra_data_format(location);
         self.doc.data_collection.inputs.spectra_data.push(SpectraDataType {
             id: id.to_string(),
-            name: None,
+            name: Some(id.to_string()),
             location: location.to_string(),
             external_format_documentation: None,
             file_format: FileFormatType { cv_param: file_format },
@@ -491,9 +492,9 @@ impl MzIdentMLFactory {
     pub fn add_software(&mut self, id: &str, name: &str, version: &str) {
         if let Some(list) = &mut self.doc.analysis_software_list {
             let software_name = match name.to_lowercase().as_str() {
-                "xi" => ParamType::CvParam(CvParamType {
-                    name: "xi".to_string(),
-                    accession: "MS:1002544".to_string(),
+                "xi" | "xisearch" | "mzidentml-polars" => ParamType::CvParam(CvParamType {
+                    name: "XI Search".to_string(),
+                    accession: "MS:1001405".to_string(),
                     cv_ref: "PSI-MS".to_string(),
                     ..Default::default()
                 }),
@@ -561,13 +562,10 @@ impl MzIdentMLFactory {
                     }),
                     // Mandatory for crosslinking extension
                     ParamListTypeContent::CvParam(CvParamType {
-                        name: "crosslinking search".to_string(),
+                        name: "cross-linking search".to_string(),
                         accession: "MS:1002494".to_string(),
                         cv_ref: "PSI-MS".to_string(),
-                        value: None,
-                        unit_accession: None,
-                        unit_name: None,
-                        unit_cv_ref: None,
+                        ..Default::default()
                     }),
                 ],
             }),
@@ -847,12 +845,11 @@ pub fn prepare_factory(
         if let Some(path) = spec_paths_col.get(i) {
             let path_key = path.to_lowercase();
             if !path_to_sd_id.contains_key(&path_key) {
-                let sd_id = format!("SD_{}", path_to_sd_id.len() + 1);
-                // Use just the filename for location to be consistent with xiFDR
                 let filename = std::path::Path::new(path)
                     .file_name()
                     .and_then(|s| s.to_str())
                     .unwrap_or(path);
+                let sd_id = format!("SD_{}", filename);
                 factory.add_spectra_data(&sd_id, filename);
                 path_to_sd_id.insert(path_key, sd_id.clone());
                 spectra_data_ids.push(sd_id);
@@ -1027,13 +1024,13 @@ pub fn prepare_factory(
                 }
 
                 params.push(CvParamType {
-                    name: xl_name_param,
-                    accession: xl_acc_param.clone(),
-                    cv_ref: get_cv_ref(&xl_acc_param),
+                    name: "unknown modification".to_string(),
+                    accession: "MS:1001460".to_string(),
+                    cv_ref: "PSI-MS".to_string(),
                     ..Default::default()
                 });
                 params.push(CvParamType {
-                    name: "crosslink donor".to_string(),
+                    name: "cross-link donor".to_string(),
                     accession: "MS:1002509".to_string(),
                     cv_ref: "PSI-MS".to_string(),
                     value: Some(xl_group_id.clone()),
@@ -1077,13 +1074,13 @@ pub fn prepare_factory(
                 }
 
                 params.push(CvParamType {
-                    name: xl_name_param,
-                    accession: xl_acc_param.clone(),
-                    cv_ref: get_cv_ref(&xl_acc_param),
+                    name: "unknown modification".to_string(),
+                    accession: "MS:1001460".to_string(),
+                    cv_ref: "PSI-MS".to_string(),
                     ..Default::default()
                 });
                 params.push(CvParamType {
-                    name: "crosslink acceptor".to_string(),
+                    name: "cross-link acceptor".to_string(),
                     accession: "MS:1002510".to_string(),
                     cv_ref: "PSI-MS".to_string(),
                     value: Some(xl_group_id.clone()),
