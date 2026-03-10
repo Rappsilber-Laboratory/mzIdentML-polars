@@ -20,3 +20,4 @@ xsd-parser = { version = "1.2.0" }
 polars = { version = "0.51", default-features = false, features = ["lazy", "ndarray", "strings", ] }
 rustyms = "0.7.0"
 flate2 = "1.0"
+chrono = "0.4"

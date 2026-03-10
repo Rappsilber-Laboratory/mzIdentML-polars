@@ -1024,9 +1024,9 @@ pub fn prepare_factory(
                 }
 
                 params.push(CvParamType {
-                    name: "unknown modification".to_string(),
-                    accession: "MS:1001460".to_string(),
-                    cv_ref: "PSI-MS".to_string(),
+                    name: xl_name_param,
+                    accession: xl_acc_param.clone(),
+                    cv_ref: get_cv_ref(&xl_acc_param),
                     ..Default::default()
                 });
                 params.push(CvParamType {
@@ -1074,9 +1074,9 @@ pub fn prepare_factory(
                 }
 
                 params.push(CvParamType {
-                    name: "unknown modification".to_string(),
-                    accession: "MS:1001460".to_string(),
-                    cv_ref: "PSI-MS".to_string(),
+                    name: xl_name_param,
+                    accession: xl_acc_param.clone(),
+                    cv_ref: get_cv_ref(&xl_acc_param),
                     ..Default::default()
                 });
                 params.push(CvParamType {
