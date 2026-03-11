@@ -395,7 +395,7 @@ impl MzIdentMLFactory {
         let (file_format, id_format) = derive_spectra_data_format(location);
         self.doc.data_collection.inputs.spectra_data.push(SpectraDataType {
             id: id.to_string(),
-            name: None,
+            name: Some(id.to_string()),
             location: location.to_string(),
             external_format_documentation: None,
             file_format: FileFormatType { cv_param: file_format },
@@ -485,8 +485,8 @@ impl MzIdentMLFactory {
         if let Some(list) = &mut self.doc.analysis_software_list {
             let software_name = match name.to_lowercase().as_str() {
                 "xi" | "xisearch" | "mzidentml-polars" => ParamType::CvParam(CvParamType {
-                    name: "xi".to_string(),
-                    accession: "MS:1002544".to_string(),
+                    name: "XI Search".to_string(),
+                    accession: "MS:1001405".to_string(),
                     cv_ref: "PSI-MS".to_string(),
                     ..Default::default()
                 }),
@@ -764,8 +764,6 @@ pub fn prepare_factory(
     let sw_name = metadata.get_item("software_name").ok().flatten().and_then(|v| v.extract::<String>().ok()).unwrap_or_else(|| "mzidentml-polars".to_string());
     let sw_version = metadata.get_item("software_version").ok().flatten().and_then(|v| v.extract::<String>().ok()).unwrap_or_else(|| "0.1.0".to_string());
     factory.add_software("AS_1", &sw_name, &sw_version);
-    // Add xiFDR as a secondary software for compatibility
-    factory.add_software("AS_2", "xiFDR", "2.1.5.2");
     
     if let Some(author) = metadata.get_item("author").ok().flatten().and_then(|v| v.extract::<String>().ok()) {
         factory.set_author(&author);
@@ -982,16 +980,35 @@ pub fn prepare_factory(
             let mut linkage1 = Vec::new();
             if let Some(pos1) = c_link_pos1.get(i) {
                 let mut params = Vec::new();
+                let mut xl_name_param = "unknown modification".to_string();
+                let mut xl_acc_param = "MS:1001460".to_string();
                 let mut xl_mass_val = c_xl_mass.as_ref().and_then(|c| c.get(i)).unwrap_or(0.0);
 
                 if let Some(acc) = xl_acc {
+                    xl_acc_param = acc.to_string();
+                    if let Some(override_name) = factory.mod_name_overrides.get(acc) {
+                        xl_name_param = override_name.clone();
                     if let Some(data) = cv_data::lookup_mod(acc) {
                         if xl_mass_val == 0.0 {
                             xl_mass_val = data.mono_mass;
                         }
                     } 
+                    } else if let Some(data) = cv_data::lookup_mod(acc) {
+                        xl_name_param = data.name.to_string();
+                        if xl_mass_val == 0.0 {
+                            xl_mass_val = data.mono_mass;
+                        }
                 } else if let Some(name) = xl_name {
-                    if let Some((_, mass)) = cv_data::lookup_mod_by_name(name) {
+                        xl_name_param = name.to_string();
+                    }
+                } else if let Some(name) = xl_name {
+                    xl_name_param = name.to_string();
+                    if let Some((acc, mass)) = cv_data::lookup_mod_by_name(name) {
+                        xl_acc_param = acc.to_string();
+                        // Check override for the accession found by name
+                        if let Some(override_name) = factory.mod_name_overrides.get(&xl_acc_param) {
+                            xl_name_param = override_name.clone();
+                        }
                         if xl_mass_val == 0.0 {
                             xl_mass_val = mass;
                         }
@@ -999,9 +1016,9 @@ pub fn prepare_factory(
                 }
 
                 params.push(CvParamType {
-                    name: "unknown modification".to_string(),
-                    accession: "MS:1001460".to_string(),
-                    cv_ref: "PSI-MS".to_string(),
+                    name: xl_name_param,
+                    accession: xl_acc_param.clone(),
+                    cv_ref: get_cv_ref(&xl_acc_param),
                     ..Default::default()
                 });
                 params.push(CvParamType {
@@ -1026,7 +1043,34 @@ pub fn prepare_factory(
             if let Some(pos2) = c_link_pos2.get(i) {
                 let mut params = Vec::new();
                 // For acceptor, we use the same identified name/acc but usually 0 mass
-                
+                let mut xl_name_param = "unknown modification".to_string();
+                let mut xl_acc_param = "MS:1001460".to_string();
+
+                if let Some(acc) = xl_acc {
+                    xl_acc_param = acc.to_string();
+                    if let Some(override_name) = factory.mod_name_overrides.get(acc) {
+                        xl_name_param = override_name.clone();
+                    } else if let Some(data) = cv_data::lookup_mod(acc) {
+                        xl_name_param = data.name.to_string();
+                    } else if let Some(name) = xl_name {
+                        xl_name_param = name.to_string();
+                    }
+                } else if let Some(name) = xl_name {
+                    xl_name_param = name.to_string();
+                    if let Some((acc, _)) = cv_data::lookup_mod_by_name(name) {
+                        xl_acc_param = acc.to_string();
+                        if let Some(override_name) = factory.mod_name_overrides.get(&xl_acc_param) {
+                            xl_name_param = override_name.clone();
+                        }
+                    }
+                }
+
+                params.push(CvParamType {
+                    name: xl_name_param,
+                    accession: xl_acc_param.clone(),
+                    cv_ref: get_cv_ref(&xl_acc_param),
+                    ..Default::default()
+                });
                 params.push(CvParamType {
                     name: "cross-link acceptor".to_string(),
                     accession: "MS:1002510".to_string(),
