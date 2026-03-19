@@ -359,13 +359,20 @@ pub fn parse_mzidentml_to_dfs(path: &str) -> std::result::Result<(DataFrame, Dat
     let mut prot_seqs = Vec::new();
     let mut prot_names = Vec::new();
     let mut prot_decoys = Vec::new();
+
+    let mut decoy_dbseqs = std::collections::HashSet::new();
+    for ev in peptide_evidences.values() {
+        if ev.is_decoy {
+            decoy_dbseqs.insert(ev.dbseq_ref.clone());
+        }
+    }
     
     for (id, db) in &db_sequences {
         prot_ids.push(id.clone());
         prot_accs.push(db.accession.clone());
         prot_seqs.push(String::new());
         prot_names.push(None::<String>);
-        prot_decoys.push(false); // will be inferred
+        prot_decoys.push(decoy_dbseqs.contains(id));
     }
 
     let prot_df = df!(
