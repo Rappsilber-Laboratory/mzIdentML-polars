@@ -36,7 +36,10 @@ fn derive_spectra_data_format(location: &str) -> (CvParamType, CvParamType) {
     let mut lower = location.to_lowercase();
     if lower.ends_with(".gz") {
         lower = lower[..lower.len() - 3].to_string();
+    } else if lower.ends_with(".gzip") {
+        lower = lower[..lower.len() - 5].to_string();
     }
+    
     if lower.ends_with(".mzml") {
         (
             CvParamType {
@@ -344,7 +347,7 @@ impl MzIdentMLFactory {
             return id.clone();
         }
 
-        let id = format!("ev_{}_{}", pep_ref, db_ref);
+        let id = format!("pepevid_{}_{}", pep_ref, db_ref);
         let evidence = PeptideEvidenceType {
             id: id.clone(),
             name: None,
@@ -368,27 +371,31 @@ impl MzIdentMLFactory {
     }
 
     pub fn add_spectrum_identification_result(&mut self, sd_ref: &str, spec_id: &str, items: Vec<SpectrumIdentificationItemType>, sir_params: Vec<CvParamType>) {
+        let sir_id = format!("SIR_{}_{}", sd_ref, spec_id).replace("=", "_").replace(":", "_").replace(" ", "_");
+        self.add_spectrum_identification_result_with_id(&sir_id, sd_ref, spec_id, items, sir_params);
+    }
+
+    pub fn add_spectrum_identification_result_with_id(&mut self, sir_id: &str, sd_ref: &str, spec_id: &str, items: Vec<SpectrumIdentificationItemType>, sir_params: Vec<CvParamType>) {
         let sil = match self.doc.data_collection.analysis_data.spectrum_identification_list.first_mut() {
             Some(s) => s,
-            None => return, // Or return error
+            None => return,
         };
-        let sir_id = format!("SIR_{}_{}", sd_ref, spec_id).replace("=", "_").replace(":", "_");
-                let mut content = Vec::new();
-                for item in items {
-                    content.push(SpectrumIdentificationResultTypeContent::SpectrumIdentificationItem(item));
-                }
-                for p in sir_params {
-                    content.push(SpectrumIdentificationResultTypeContent::CvParam(p));
-                }
-                
-                let sir = SpectrumIdentificationResultType {
-                    id: sir_id,
-                    spectrum_id: spec_id.to_string(),
-                    spectra_data_ref: sd_ref.to_string(),
-                    content,
-                    ..Default::default()
-                };
-                sil.content.push(SpectrumIdentificationListTypeContent::SpectrumIdentificationResult(sir));
+        let mut content = Vec::new();
+        for item in items {
+            content.push(SpectrumIdentificationResultTypeContent::SpectrumIdentificationItem(item));
+        }
+        for p in sir_params {
+            content.push(SpectrumIdentificationResultTypeContent::CvParam(p));
+        }
+        
+        let sir = SpectrumIdentificationResultType {
+            id: sir_id.to_string(),
+            spectrum_id: spec_id.to_string(),
+            spectra_data_ref: sd_ref.to_string(),
+            content,
+            ..Default::default()
+        };
+        sil.content.push(SpectrumIdentificationListTypeContent::SpectrumIdentificationResult(sir));
     }
 
     pub fn add_spectra_data(&mut self, id: &str, location: &str) {
@@ -838,10 +845,16 @@ pub fn prepare_factory(
 
     for i in 0..spec_df.height() {
         if let Some(path) = spec_paths_col.get(i) {
-            if !path_to_sd_id.contains_key(path) {
+            let path_key = path.to_lowercase();
+            if !path_to_sd_id.contains_key(&path_key) {
                 let sd_id = format!("SD_{}", path_to_sd_id.len() + 1);
-                factory.add_spectra_data(&sd_id, path);
-                path_to_sd_id.insert(path.to_string(), sd_id.clone());
+                // Use just the filename for location to be consistent with xiFDR
+                let filename = std::path::Path::new(path)
+                    .file_name()
+                    .and_then(|s| s.to_str())
+                    .unwrap_or(path);
+                factory.add_spectra_data(&sd_id, filename);
+                path_to_sd_id.insert(path_key, sd_id.clone());
                 spectra_data_ids.push(sd_id);
             }
         }
@@ -910,9 +923,9 @@ pub fn prepare_factory(
             PyErr::new::<pyo3::exceptions::PyValueError, _>(format!("Missing 'file_path' for CSM at row {}", i))
         })?;
 
-        let sd_ref = path_to_sd_id.get(path).ok_or_else(|| {
+        let sd_ref = path_to_sd_id.get(&path.to_lowercase()).ok_or_else(|| {
             PyErr::new::<pyo3::exceptions::PyValueError, _>(format!(
-                "The file path '{}' for spectrum '{}' was not found in the provided 'spectra' DataFrame. Please ensure all files used in identifications are registered.",
+                "The file path '{}' for spectrum '{}' was not found in the provided 'spectra' DataFrame. Please ensure all files used in identifications are registered (case-insensitive).",
                 path, spec_id
             ))
         })?;
@@ -925,12 +938,31 @@ pub fn prepare_factory(
         let xl_acc = c_xl_acc.as_ref().and_then(|c| c.get(i));
         
         // Add viewer-specific spectrum identifiers
-        let path_lower = path.to_lowercase();
-        let is_mgf = path_lower.ends_with(".mgf") || path_lower.ends_with(".mgf.gz");
+        let mut path_stripped = path.to_lowercase();
+        if path_stripped.ends_with(".gz") {
+            path_stripped = path_stripped[..path_stripped.len() - 3].to_string();
+        } else if path_stripped.ends_with(".gzip") {
+            path_stripped = path_stripped[..path_stripped.len() - 5].to_string();
+        }
+
+        let is_mgf = path_stripped.ends_with(".mgf");
         
+        let mut extracted_scan = None;
+        if spec_id.starts_with("index=") {
+            extracted_scan = Some(spec_id[6..].to_string());
+        } else if spec_id.starts_with("scan=") {
+            extracted_scan = Some(spec_id[5..].to_string());
+        } else if let Some(idx) = spec_id.find("scan=") {
+            let rest = &spec_id[idx+5..];
+            let scan = rest.split_whitespace().next().unwrap_or(rest);
+            extracted_scan = Some(scan.to_string());
+        } else if spec_id.chars().all(|c| c.is_ascii_digit()) {
+            extracted_scan = Some(spec_id.to_string());
+        }
+
         if is_mgf {
             // For MGF, xiVIEW and others often need the title as a param even if it's the spectrumID
-            let title = if spec_id.starts_with("index=") { &spec_id[6..] } else { spec_id };
+            let title = extracted_scan.as_deref().unwrap_or(spec_id);
             sir_params.push(CvParamType {
                 name: "spectrum title".to_string(),
                 accession: "MS:1000796".to_string(),
@@ -938,17 +970,19 @@ pub fn prepare_factory(
                 value: Some(title.to_string()),
                 ..Default::default()
             });
-        } else if spec_id.starts_with("index=") {
-            // For mzML/mzXML, 'index=' usually refers to a scan number or internal index
-            let scan = &spec_id[6..];
+        }
+        
+        if let Some(scan) = extracted_scan {
+            // peak list scans is highly recommended for all formats to help viewers link IDs
             sir_params.push(CvParamType {
                 name: "peak list scans".to_string(),
                 accession: "MS:1000797".to_string(),
                 cv_ref: "PSI-MS".to_string(),
-                value: Some(scan.to_string()),
+                value: Some(scan),
                 ..Default::default()
             });
         }
+
 
         if is_xl.get(i).unwrap_or(false) {
             // CROSS-LINK MATCH
@@ -999,7 +1033,7 @@ pub fn prepare_factory(
                     ..Default::default()
                 });
                 params.push(CvParamType {
-                    name: "crosslink donor".to_string(),
+                    name: "cross-link donor".to_string(),
                     accession: "MS:1002509".to_string(),
                     cv_ref: "PSI-MS".to_string(),
                     value: Some(xl_group_id.clone()),
@@ -1049,7 +1083,7 @@ pub fn prepare_factory(
                     ..Default::default()
                 });
                 params.push(CvParamType {
-                    name: "crosslink acceptor".to_string(),
+                    name: "cross-link acceptor".to_string(),
                     accession: "MS:1002510".to_string(),
                     cv_ref: "PSI-MS".to_string(),
                     value: Some(xl_group_id.clone()),
@@ -1100,15 +1134,15 @@ pub fn prepare_factory(
                 }));
             }
             content1.push(SpectrumIdentificationItemTypeContent::CvParam(CvParamType {
-                name: "crosslink spectrum identification item".to_string(),
+                name: "cross-link spectrum identification item".to_string(),
                 accession: "MS:1002511".to_string(),
                 value: Some(xl_group_id.clone()),
                 cv_ref: "PSI-MS".to_string(),
                 ..Default::default()
             }));
-
+            let sii1_id = format!("SII_{}_{}_p1", i + 1, 1);
             let sii1 = SpectrumIdentificationItemType {
-                id: format!("SII_{}_{}_p1", spec_id, i),
+                id: sii1_id,
                 charge_state: c_charge.get(i).unwrap(),
                 experimental_mass_to_charge: c_exp_mz.as_ref().and_then(|c| c.get(i)).unwrap_or(0.0),
                 calculated_mass_to_charge: calc_mz_val,
@@ -1126,15 +1160,16 @@ pub fn prepare_factory(
                 }));
             }
             content2.push(SpectrumIdentificationItemTypeContent::CvParam(CvParamType {
-                name: "crosslink spectrum identification item".to_string(),
+                name: "cross-link spectrum identification item".to_string(),
                 accession: "MS:1002511".to_string(),
                 value: Some(xl_group_id.clone()),
                 cv_ref: "PSI-MS".to_string(),
                 ..Default::default()
             }));
 
+            let sii2_id = format!("SII_{}_{}_p2", i + 1, 2);
             let sii2 = SpectrumIdentificationItemType {
-                id: format!("SII_{}_{}_p2", spec_id, i),
+                id: sii2_id,
                 charge_state: c_charge.get(i).unwrap(),
                 experimental_mass_to_charge: c_exp_mz.as_ref().and_then(|c| c.get(i)).unwrap_or(0.0),
                 calculated_mass_to_charge: calc_mz_val,
@@ -1214,7 +1249,7 @@ pub fn prepare_factory(
                         ..Default::default()
                     });
                     params.push(CvParamType {
-                        name: "crosslink donor".to_string(),
+                        name: "cross-link donor".to_string(),
                         accession: "MS:1002509".to_string(),
                         cv_ref: "PSI-MS".to_string(),
                         value: Some(xl_group_id.clone()),
@@ -1261,7 +1296,7 @@ pub fn prepare_factory(
                         ..Default::default()
                     });
                     params.push(CvParamType {
-                        name: "crosslink acceptor".to_string(),
+                        name: "cross-link acceptor".to_string(),
                         accession: "MS:1002510".to_string(),
                         cv_ref: "PSI-MS".to_string(),
                         value: Some(xl_group_id.clone()),
@@ -1301,7 +1336,7 @@ pub fn prepare_factory(
             }
 
             let mut sii = SpectrumIdentificationItemType {
-                id: format!("SII_{}_{}", spec_id, i),
+                id: format!("SII_{}_{}", i + 1, 1),
                 charge_state: c_charge.get(i).unwrap(),
                 experimental_mass_to_charge: c_exp_mz.as_ref().and_then(|c| c.get(i)).unwrap_or(0.0),
                 calculated_mass_to_charge: calc_mz_val,
@@ -1338,8 +1373,11 @@ pub fn prepare_factory(
     }
 
     // 4. Add grouped results to factory
+    let mut sir_idx = 1;
     for ((sd_ref, spec_id), (items, sir_params)) in grouped_results {
-        factory.add_spectrum_identification_result(&sd_ref, &spec_id, items, sir_params);
+        let sir_id = format!("SIR_{}", sir_idx);
+        sir_idx += 1;
+        factory.add_spectrum_identification_result_with_id(&sir_id, &sd_ref, &spec_id, items, sir_params);
     }
 
     Ok(factory)

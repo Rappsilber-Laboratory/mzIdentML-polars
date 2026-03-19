@@ -38,3 +38,5 @@ Run this whenever you touch identification logic:
 *   **Testing**: 
     *   **Rust Tests**: Run `cargo test` to verify internal logic, factory methods, and XML serialization. Use `cargo check --tests` during development for faster feedback.
     *   **Integration Tests**: All XML-generating logic MUST be verified with `pytest`, which runs the `lxml` schema validator against the XSD in `context/`.
+## Git Handling
+*   **Version Control**: The user handles all `git` operations (adds, commits, merges, pushes). AI agents should focus on code and logic, leaving repository state management to the user.
