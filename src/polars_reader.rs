@@ -113,10 +113,21 @@ struct SpectrumIdentificationItem {
     cross_link_ref: Option<String>,
 }
 
+use std::fs::File;
+use std::io::{BufRead, BufReader};
+use flate2::read::GzDecoder;
+
 pub fn parse_mzidentml_to_dfs(path: &str) -> std::result::Result<(DataFrame, DataFrame, DataFrame), String> {
-    let xml = std::fs::read_to_string(path)
-        .map_err(|e| format!("Failed to open file: {}", e))?;
-    let mut reader = Reader::from_str(&xml);
+    let file = File::open(path).map_err(|e| format!("Failed to open file: {}", e))?;
+    
+    // Abstract the exact bufreader interface traits to generic trait objects
+    let buf_reader: Box<dyn BufRead> = if path.ends_with(".gz") {
+        Box::new(BufReader::new(GzDecoder::new(file)))
+    } else {
+        Box::new(BufReader::new(file))
+    };
+
+    let mut reader = Reader::from_reader(buf_reader);
     reader.config_mut().trim_text(true);
 
     let mut buf = Vec::new();
@@ -150,7 +161,6 @@ pub fn parse_mzidentml_to_dfs(path: &str) -> std::result::Result<(DataFrame, Dat
             id: String::new(), rank: 0, charge_state: 0, calc_mz: None, exp_mz: None, peptide_ref: String::new(), peptide_evidence_refs: Vec::new(), score: None, pass_threshold: false, crosslinker_donor: false, crosslinker_acceptor: false, cross_link_ref: None
         };
     
-    let mut in_sir = false;
     let mut in_sii = false;
 
     loop {
@@ -256,7 +266,6 @@ pub fn parse_mzidentml_to_dfs(path: &str) -> std::result::Result<(DataFrame, Dat
                         spectra_data.insert(id, location);
                     },
                     "SpectrumIdentificationResult" => {
-                        in_sir = true;
                         current_sir = SirData {
                             spectrum_id: String::new(),
                             spectra_data_ref: String::new(),
@@ -342,7 +351,6 @@ pub fn parse_mzidentml_to_dfs(path: &str) -> std::result::Result<(DataFrame, Dat
                     },
                     "PeptideSequence" => in_peptide_seq = false,
                     "SpectrumIdentificationResult" => {
-                        in_sir = false;
                         let s = std::mem::replace(&mut current_sir, SirData { spectrum_id: String::new(), spectra_data_ref: String::new(), items: Vec::new() });
                         sir_list.push(s);
                     },
@@ -578,13 +586,13 @@ pub fn parse_mzidentml_to_dfs(path: &str) -> std::result::Result<(DataFrame, Dat
         }
     }
 
-    let mut prots_series = mapped_prots_builder.finish().into_series();
-    let mut starts_series = mapped_starts_builder.finish().into_series();
-    let mut ends_series = mapped_ends_builder.finish().into_series();
+    let prots_series = mapped_prots_builder.finish().into_series();
+    let starts_series = mapped_starts_builder.finish().into_series();
+    let ends_series = mapped_ends_builder.finish().into_series();
 
-    let mut prots2_series = mapped_prots2_builder.finish().into_series();
-    let mut starts2_series = mapped_starts2_builder.finish().into_series();
-    let mut ends2_series = mapped_ends2_builder.finish().into_series();
+    let prots2_series = mapped_prots2_builder.finish().into_series();
+    let starts2_series = mapped_starts2_builder.finish().into_series();
+    let ends2_series = mapped_ends2_builder.finish().into_series();
 
     let csms_df = df!(
         "spectrum_id" => csm_spectrum_id,

@@ -78,3 +78,21 @@ def test_reader_roundtrip(default_metadata, base_protein_seqs, base_spectra):
     finally:
         if os.path.exists(tmp_path):
             os.remove(tmp_path)
+            
+    # GZIP Roundtrip validation
+    with tempfile.NamedTemporaryFile(suffix='.mzid.gz', delete=False) as tmp:
+        tmp_gz_path = tmp.name
+
+    try:
+        mzidentml_polars.write_mzidentml(tmp_gz_path, csms_input, base_protein_seqs, base_spectra, default_metadata)
+        csms_gz_read, prot_gz_read, spectra_gz_read = mzidentml_polars.read_mzidentml(tmp_gz_path)
+        
+        # Verify it decompressed and parsed the exact right length
+        assert len(csms_gz_read) == 3
+        
+        crosslink_gz_row = csms_gz_read.filter(pl.col("is_crosslink")).row(0, named=True)
+        assert crosslink_gz_row["peptide2_seq"] == "KLS"
+        assert crosslink_gz_row["crosslinker_accession"] == "MS:1003124"
+    finally:
+        if os.path.exists(tmp_gz_path):
+            os.remove(tmp_gz_path)
