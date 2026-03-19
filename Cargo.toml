@@ -21,7 +21,3 @@ polars = { version = "0.51", default-features = false, features = ["lazy", "ndar
 rustyms = "0.7.0"
 flate2 = "1.0"
 quick-xml = "0.39.2"
-
-[[bin]]
-name = "read_test"
-path = "src/bin.rs"
