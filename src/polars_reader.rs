@@ -42,6 +42,9 @@ impl Peptide {
         // N-term mods (location 0)
         if let Some(n_mods) = mods_by_loc.get(&0) {
             for m in n_mods {
+                if m.is_crosslink_donor || m.is_crosslink_acceptor {
+                    continue;
+                }
                 if let Some(acc) = &m.accession {
                     proforma.push_str(&format!("[{}]-", acc));
                 } else if let Some(mass) = m.mass_delta {
@@ -55,6 +58,9 @@ impl Peptide {
             let loc = (i + 1) as i32;
             if let Some(aa_mods) = mods_by_loc.get(&loc) {
                 for m in aa_mods {
+                    if m.is_crosslink_donor || m.is_crosslink_acceptor {
+                        continue;
+                    }
                     if let Some(acc) = &m.accession {
                         proforma.push_str(&format!("[{}]", acc));
                     } else if let Some(mass) = m.mass_delta {
@@ -68,6 +74,9 @@ impl Peptide {
         let c_loc = self.sequence.len() as i32 + 1;
         if let Some(c_mods) = mods_by_loc.get(&c_loc) {
             for m in c_mods {
+                if m.is_crosslink_donor || m.is_crosslink_acceptor {
+                    continue;
+                }
                 if let Some(acc) = &m.accession {
                     proforma.push_str(&format!("-[{}]", acc));
                 } else if let Some(mass) = m.mass_delta {
@@ -414,6 +423,7 @@ pub fn parse_mzidentml_to_dfs(path: &str) -> std::result::Result<(DataFrame, Dat
     let mut csm_pass_threshold = Vec::new();
     let mut csm_peptide1_link_pos: Vec<Option<i32>> = Vec::new();
     let mut csm_peptide2_link_pos: Vec<Option<i32>> = Vec::new();
+    let mut csm_crosslinker_accession = Vec::new();
     
     // crosslink peptide 2 features
     let mut csm_pep2_seq = Vec::new();
@@ -447,12 +457,18 @@ pub fn parse_mzidentml_to_dfs(path: &str) -> std::result::Result<(DataFrame, Dat
             let mut current_proforma = String::new();
             let mut p1_link_pos = None;
             let mut looplink_p2_link_pos = None;
+            let mut cl_acc = None;
 
             if let Some(pep) = peptides.get(&sii.peptide_ref) {
                 current_proforma = pep.to_proforma();
                 
                 let mut donor_count = 0;
                 for m in &pep.mods {
+                    if m.is_crosslink_donor || m.is_crosslink_acceptor {
+                        if cl_acc.is_none() {
+                            cl_acc = m.accession.clone().or_else(|| m.name.clone());
+                        }
+                    }
                     if m.is_crosslink_donor {
                         is_donor = true;
                         donor_count += 1;
@@ -486,6 +502,7 @@ pub fn parse_mzidentml_to_dfs(path: &str) -> std::result::Result<(DataFrame, Dat
             csm_is_crosslink.push(is_donor && !is_looplink);
             csm_is_looplink.push(is_looplink);
             csm_peptide1_link_pos.push(p1_link_pos);
+            csm_crosslinker_accession.push(cl_acc);
 
             let mut builder_prots = Vec::new();
             let mut builder_starts = Vec::new();
@@ -586,6 +603,7 @@ pub fn parse_mzidentml_to_dfs(path: &str) -> std::result::Result<(DataFrame, Dat
         "pass_threshold" => csm_pass_threshold,
         "peptide1_link_pos" => csm_peptide1_link_pos,
         "peptide2_link_pos" => csm_peptide2_link_pos,
+        "crosslinker_accession" => csm_crosslinker_accession,
         "peptide2_seq" => csm_pep2_seq,
         "protein2_id" => prots2_series,
         "peptide2_start" => starts2_series,
