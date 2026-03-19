@@ -1033,7 +1033,7 @@ pub fn prepare_factory(
                     ..Default::default()
                 });
                 params.push(CvParamType {
-                    name: "crosslink donor".to_string(),
+                    name: "cross-link donor".to_string(),
                     accession: "MS:1002509".to_string(),
                     cv_ref: "PSI-MS".to_string(),
                     value: Some(xl_group_id.clone()),
@@ -1083,7 +1083,7 @@ pub fn prepare_factory(
                     ..Default::default()
                 });
                 params.push(CvParamType {
-                    name: "crosslink acceptor".to_string(),
+                    name: "cross-link acceptor".to_string(),
                     accession: "MS:1002510".to_string(),
                     cv_ref: "PSI-MS".to_string(),
                     value: Some(xl_group_id.clone()),
@@ -1249,7 +1249,7 @@ pub fn prepare_factory(
                         ..Default::default()
                     });
                     params.push(CvParamType {
-                        name: "crosslink donor".to_string(),
+                        name: "cross-link donor".to_string(),
                         accession: "MS:1002509".to_string(),
                         cv_ref: "PSI-MS".to_string(),
                         value: Some(xl_group_id.clone()),
@@ -1296,7 +1296,7 @@ pub fn prepare_factory(
                         ..Default::default()
                     });
                     params.push(CvParamType {
-                        name: "crosslink acceptor".to_string(),
+                        name: "cross-link acceptor".to_string(),
                         accession: "MS:1002510".to_string(),
                         cv_ref: "PSI-MS".to_string(),
                         value: Some(xl_group_id.clone()),
