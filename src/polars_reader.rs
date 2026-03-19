@@ -286,14 +286,17 @@ pub fn parse_mzidentml_to_dfs(path: &str) -> std::result::Result<(DataFrame, Dat
                                 _ => ()
                             }
                         }
-                        if name.contains("score") {
+                        
+                        let lower_name = name.to_lowercase();
+                        if lower_name.contains("score") {
                             if current_sii.score.is_none() {
                                 current_sii.score = val.parse::<f64>().ok();
                             }
                         }
-                        if name == "cross-link donor" { current_sii.crosslinker_donor = true; }
-                        if name == "cross-link acceptor" { current_sii.crosslinker_acceptor = true; }
-                        if name == "cross-link spectrum identification item" { current_sii.cross_link_ref = Some(val); }
+                        
+                        if lower_name == "cross-link donor" { current_sii.crosslinker_donor = true; }
+                        if lower_name == "cross-link acceptor" { current_sii.crosslinker_acceptor = true; }
+                        if name == "cross-link spectrum identification item" || acc == "MS:1002511" { current_sii.cross_link_ref = Some(val); }
                     },
                     _ => ()
                 }
@@ -409,11 +412,45 @@ pub fn parse_mzidentml_to_dfs(path: &str) -> std::result::Result<(DataFrame, Dat
     for sir in &sir_list {
         let file_path = spectra_data.get(&sir.spectra_data_ref).cloned().unwrap_or_default();
         for sii in &sir.items {
-            // Check crosslink acceptor - skip them since donor handles the pair
-            if sii.crosslinker_acceptor {
+            let mut is_donor = false;
+            let mut is_acceptor = false;
+            let mut is_looplink = false;
+            let mut current_proforma = String::new();
+
+            if let Some(pep) = peptides.get(&sii.peptide_ref) {
+                current_proforma = pep.to_proforma();
+                
+                let mut donor_count = 0;
+                for m in &pep.mods {
+                    if let Some(acc) = &m.accession {
+                        if acc == "MS:1002509" { // cross-link donor
+                            is_donor = true;
+                            donor_count += 1;
+                        }
+                        if acc == "MS:1002510" { // cross-link acceptor
+                            is_acceptor = true;
+                        }
+                    } else if let Some(name) = &m.name {
+                        let ln = name.to_lowercase();
+                        if ln == "cross-link donor" {
+                            is_donor = true;
+                            donor_count += 1;
+                        }
+                        if ln == "cross-link acceptor" {
+                            is_acceptor = true;
+                        }
+                    }
+                }
+                if is_donor && is_acceptor {
+                    is_looplink = true;
+                }
+            }
+
+            if is_acceptor && !is_donor {
                 continue;
             }
 
+            csm_pep1_seq.push(current_proforma);
             csm_spectrum_id.push(sir.spectrum_id.clone());
             csm_file_path.push(file_path.clone());
             csm_charge.push(sii.charge_state);
@@ -421,8 +458,8 @@ pub fn parse_mzidentml_to_dfs(path: &str) -> std::result::Result<(DataFrame, Dat
             csm_exp_mz.push(sii.exp_mz);
             csm_calc_mz.push(sii.calc_mz);
             csm_score.push(sii.score);
-            csm_is_crosslink.push(sii.crosslinker_donor);
-            csm_is_looplink.push(false); // Can be implemented further
+            csm_is_crosslink.push(is_donor && !is_looplink);
+            csm_is_looplink.push(is_looplink);
 
             let mut builder_prots = Vec::new();
             let mut builder_starts = Vec::new();
@@ -439,13 +476,7 @@ pub fn parse_mzidentml_to_dfs(path: &str) -> std::result::Result<(DataFrame, Dat
             mapped_starts_builder.append_series(&Series::new("".into(), &builder_starts)).unwrap_or_default();
             mapped_ends_builder.append_series(&Series::new("".into(), &builder_ends)).unwrap_or_default();
 
-            if let Some(pep) = peptides.get(&sii.peptide_ref) {
-                csm_pep1_seq.push(pep.to_proforma());
-            } else {
-                csm_pep1_seq.push(String::new());
-            }
-
-            if sii.crosslinker_donor {
+            if is_donor && !is_looplink {
                 let mut p2_seq = String::new();
                 let mut builder_prots2 = Vec::new();
                 let mut builder_starts2 = Vec::new();
