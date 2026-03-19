@@ -98,6 +98,7 @@ struct SpectrumIdentificationItem {
     peptide_ref: String,
     peptide_evidence_refs: Vec<String>,
     score: Option<f64>,
+    pass_threshold: bool,
     crosslinker_donor: bool,
     crosslinker_acceptor: bool,
     cross_link_ref: Option<String>,
@@ -136,9 +137,9 @@ pub fn parse_mzidentml_to_dfs(path: &str) -> std::result::Result<(DataFrame, Dat
         spectra_data_ref: String::new(),
         items: Vec::new(),
     };
-    let mut current_sii = SpectrumIdentificationItem {
-        id: String::new(), rank: 0, charge_state: 0, calc_mz: None, exp_mz: None, peptide_ref: String::new(), peptide_evidence_refs: Vec::new(), score: None, crosslinker_donor: false, crosslinker_acceptor: false, cross_link_ref: None
-    };
+        let mut current_sii = SpectrumIdentificationItem {
+            id: String::new(), rank: 0, charge_state: 0, calc_mz: None, exp_mz: None, peptide_ref: String::new(), peptide_evidence_refs: Vec::new(), score: None, pass_threshold: false, crosslinker_donor: false, crosslinker_acceptor: false, cross_link_ref: None
+        };
     
     let mut in_sir = false;
     let mut in_sii = false;
@@ -263,7 +264,7 @@ pub fn parse_mzidentml_to_dfs(path: &str) -> std::result::Result<(DataFrame, Dat
                     "SpectrumIdentificationItem" => {
                         in_sii = true;
                         current_sii = SpectrumIdentificationItem {
-                            id: String::new(), rank: 0, charge_state: 0, calc_mz: None, exp_mz: None, peptide_ref: String::new(), peptide_evidence_refs: Vec::new(), score: None, crosslinker_donor: false, crosslinker_acceptor: false, cross_link_ref: None
+                            id: String::new(), rank: 0, charge_state: 0, calc_mz: None, exp_mz: None, peptide_ref: String::new(), peptide_evidence_refs: Vec::new(), score: None, pass_threshold: false, crosslinker_donor: false, crosslinker_acceptor: false, cross_link_ref: None
                         };
                         for attr in e.attributes().filter_map(|a| a.ok()) {
                             match attr.key.as_ref() {
@@ -273,6 +274,10 @@ pub fn parse_mzidentml_to_dfs(path: &str) -> std::result::Result<(DataFrame, Dat
                                 b"calculatedMassToCharge" => current_sii.calc_mz = String::from_utf8_lossy(&attr.value).parse().ok(),
                                 b"experimentalMassToCharge" => current_sii.exp_mz = String::from_utf8_lossy(&attr.value).parse().ok(),
                                 b"peptide_ref" => current_sii.peptide_ref = String::from_utf8_lossy(&attr.value).into_owned(),
+                                b"passThreshold" => current_sii.pass_threshold = match String::from_utf8_lossy(&attr.value).as_ref() {
+                                    "true" | "1" => true,
+                                    _ => false,
+                                },
                                 _ => ()
                             }
                         }
@@ -298,7 +303,7 @@ pub fn parse_mzidentml_to_dfs(path: &str) -> std::result::Result<(DataFrame, Dat
                         }
                         
                         let lower_name = name.to_lowercase();
-                        if lower_name.contains("score") {
+                        if lower_name.contains("score") || lower_name.contains("evalue") || lower_name.contains("probability") || lower_name.contains("expectation") || lower_name.contains("xcorr") || lower_name.contains("p-value") || lower_name.contains("fdr") {
                             if current_sii.score.is_none() {
                                 current_sii.score = val.parse::<f64>().ok();
                             }
@@ -334,7 +339,7 @@ pub fn parse_mzidentml_to_dfs(path: &str) -> std::result::Result<(DataFrame, Dat
                     },
                     "SpectrumIdentificationItem" => {
                         in_sii = false;
-                        let s = std::mem::replace(&mut current_sii, SpectrumIdentificationItem { id: String::new(), rank: 0, charge_state: 0, calc_mz: None, exp_mz: None, peptide_ref: String::new(), peptide_evidence_refs: Vec::new(), score: None, crosslinker_donor: false, crosslinker_acceptor: false, cross_link_ref: None });
+                        let s = std::mem::replace(&mut current_sii, SpectrumIdentificationItem { id: String::new(), rank: 0, charge_state: 0, calc_mz: None, exp_mz: None, peptide_ref: String::new(), peptide_evidence_refs: Vec::new(), score: None, pass_threshold: false, crosslinker_donor: false, crosslinker_acceptor: false, cross_link_ref: None });
                         current_sir.items.push(s);
                     },
                     _ => ()
@@ -406,6 +411,7 @@ pub fn parse_mzidentml_to_dfs(path: &str) -> std::result::Result<(DataFrame, Dat
     let mut csm_exp_mz = Vec::new();
     let mut csm_calc_mz = Vec::new();
     let mut csm_score = Vec::new();
+    let mut csm_pass_threshold = Vec::new();
     let mut csm_peptide1_link_pos: Vec<Option<i32>> = Vec::new();
     let mut csm_peptide2_link_pos: Vec<Option<i32>> = Vec::new();
     
@@ -476,6 +482,7 @@ pub fn parse_mzidentml_to_dfs(path: &str) -> std::result::Result<(DataFrame, Dat
             csm_exp_mz.push(sii.exp_mz);
             csm_calc_mz.push(sii.calc_mz);
             csm_score.push(sii.score);
+            csm_pass_threshold.push(sii.pass_threshold);
             csm_is_crosslink.push(is_donor && !is_looplink);
             csm_is_looplink.push(is_looplink);
             csm_peptide1_link_pos.push(p1_link_pos);
@@ -576,6 +583,7 @@ pub fn parse_mzidentml_to_dfs(path: &str) -> std::result::Result<(DataFrame, Dat
         "experimental_mz" => csm_exp_mz,
         "calculated_mz" => csm_calc_mz,
         "score" => csm_score,
+        "pass_threshold" => csm_pass_threshold,
         "peptide1_link_pos" => csm_peptide1_link_pos,
         "peptide2_link_pos" => csm_peptide2_link_pos,
         "peptide2_seq" => csm_pep2_seq,
