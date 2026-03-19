@@ -184,3 +184,4 @@ This project is licensed under the Apache-2.0 License.
 
 ## TODO
 - Implementing basic Protein Grouping (ProteinDetectionList) support, even as a simple 1-to-1 mapping if full inference isn't required.
+- Read/write passThreshold column

@@ -399,6 +399,8 @@ pub fn parse_mzidentml_to_dfs(path: &str) -> std::result::Result<(DataFrame, Dat
     let mut csm_exp_mz = Vec::new();
     let mut csm_calc_mz = Vec::new();
     let mut csm_score = Vec::new();
+    let mut csm_peptide1_link_pos: Vec<Option<i32>> = Vec::new();
+    let mut csm_peptide2_link_pos: Vec<Option<i32>> = Vec::new();
     
     // crosslink peptide 2 features
     let mut csm_pep2_seq = Vec::new();
@@ -430,6 +432,8 @@ pub fn parse_mzidentml_to_dfs(path: &str) -> std::result::Result<(DataFrame, Dat
             let mut is_acceptor = false;
             let mut is_looplink = false;
             let mut current_proforma = String::new();
+            let mut p1_link_pos = None;
+            let mut looplink_p2_link_pos = None;
 
             if let Some(pep) = peptides.get(&sii.peptide_ref) {
                 current_proforma = pep.to_proforma();
@@ -439,9 +443,13 @@ pub fn parse_mzidentml_to_dfs(path: &str) -> std::result::Result<(DataFrame, Dat
                     if m.is_crosslink_donor {
                         is_donor = true;
                         donor_count += 1;
+                        if p1_link_pos.is_none() {
+                            p1_link_pos = Some(m.location);
+                        }
                     }
                     if m.is_crosslink_acceptor {
                         is_acceptor = true;
+                        looplink_p2_link_pos = Some(m.location);
                     }
                 }
                 if donor_count == 2 || (is_donor && is_acceptor) {
@@ -463,6 +471,7 @@ pub fn parse_mzidentml_to_dfs(path: &str) -> std::result::Result<(DataFrame, Dat
             csm_score.push(sii.score);
             csm_is_crosslink.push(is_donor && !is_looplink);
             csm_is_looplink.push(is_looplink);
+            csm_peptide1_link_pos.push(p1_link_pos);
 
             let mut builder_prots = Vec::new();
             let mut builder_starts = Vec::new();
@@ -479,6 +488,7 @@ pub fn parse_mzidentml_to_dfs(path: &str) -> std::result::Result<(DataFrame, Dat
             mapped_starts_builder.append_series(&Series::new("".into(), &builder_starts)).unwrap_or_default();
             mapped_ends_builder.append_series(&Series::new("".into(), &builder_ends)).unwrap_or_default();
 
+            let mut p2_link_pos = None;
             if is_donor && !is_looplink {
                 let mut p2_seq = String::new();
                 let mut builder_prots2 = Vec::new();
@@ -501,6 +511,11 @@ pub fn parse_mzidentml_to_dfs(path: &str) -> std::result::Result<(DataFrame, Dat
                     if let Some(sii_acceptor) = acceptor {
                         if let Some(pep2) = peptides.get(&sii_acceptor.peptide_ref) {
                             p2_seq = pep2.to_proforma();
+                            for m in &pep2.mods {
+                                if m.is_crosslink_acceptor {
+                                    p2_link_pos = Some(m.location);
+                                }
+                            }
                         }
                         
                         for ev_ref in &sii_acceptor.peptide_evidence_refs {
@@ -516,12 +531,19 @@ pub fn parse_mzidentml_to_dfs(path: &str) -> std::result::Result<(DataFrame, Dat
                 mapped_prots2_builder.append_series(&Series::new("".into(), &builder_prots2)).unwrap_or_default();
                 mapped_starts2_builder.append_series(&Series::new("".into(), &builder_starts2)).unwrap_or_default();
                 mapped_ends2_builder.append_series(&Series::new("".into(), &builder_ends2)).unwrap_or_default();
+            } else if is_looplink {
+                p2_link_pos = looplink_p2_link_pos;
+                csm_pep2_seq.push(None);
+                mapped_prots2_builder.append_null();
+                mapped_starts2_builder.append_null();
+                mapped_ends2_builder.append_null();
             } else {
                 csm_pep2_seq.push(None);
                 mapped_prots2_builder.append_null();
                 mapped_starts2_builder.append_null();
                 mapped_ends2_builder.append_null();
             }
+            csm_peptide2_link_pos.push(p2_link_pos);
         }
     }
 
@@ -547,6 +569,8 @@ pub fn parse_mzidentml_to_dfs(path: &str) -> std::result::Result<(DataFrame, Dat
         "experimental_mz" => csm_exp_mz,
         "calculated_mz" => csm_calc_mz,
         "score" => csm_score,
+        "peptide1_link_pos" => csm_peptide1_link_pos,
+        "peptide2_link_pos" => csm_peptide2_link_pos,
         "peptide2_seq" => csm_pep2_seq,
         "protein2_id" => prots2_series,
         "peptide2_start" => starts2_series,

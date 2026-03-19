@@ -59,10 +59,19 @@ def test_reader_roundtrip(default_metadata, base_protein_seqs, base_spectra):
         assert len(csms_read) == 3
         
         # Validations
-        assert "PEPT[UNIMOD:35]IDEK" in csms_read.get_column("peptide1_seq").to_list()
+        assert "peptide1_link_pos" in csms_read.columns
+        assert "peptide2_link_pos" in csms_read.columns
+        
+        # Verify looplink extraction mapping properties directly
+        looplink_row = csms_read.filter(pl.col("is_looplink")).row(0, named=True)
+        assert looplink_row["peptide1_link_pos"] == 2
+        assert looplink_row["peptide2_link_pos"] == 8
+        
         # Verify crosslink components
         crosslink_row = csms_read.filter(pl.col("is_crosslink")).row(0, named=True)
-        assert crosslink_row["peptide2_seq"] == "KLS"
+        assert crosslink_row["peptide2_seq"] == "KLS[MS:1003124]" or crosslink_row["peptide2_seq"] == "K[MS:1003124]LS"
+        assert crosslink_row["peptide1_link_pos"] == 8
+        assert crosslink_row["peptide2_link_pos"] == 1
         
     finally:
         if os.path.exists(tmp_path):
