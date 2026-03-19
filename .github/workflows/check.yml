@@ -48,12 +48,15 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: '3.11'
+      - name: Rust Cache
+        uses: Swatinem/rust-cache@v2
+        with:
+          key: ${{ matrix.target }}
       - name: Build wheels (Check Only)
         uses: PyO3/maturin-action@v1
         with:
           target: ${{ matrix.target }}
           args: --out /tmp/dist --find-interpreter
-          sccache: 'true'
           manylinux: auto
 
   build-macos:
@@ -67,12 +70,15 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: '3.11'
+      - name: Rust Cache
+        uses: Swatinem/rust-cache@v2
+        with:
+          key: ${{ matrix.target }}
       - name: Build wheels (Check Only)
         uses: PyO3/maturin-action@v1
         with:
           target: ${{ matrix.target }}
           args: --out /tmp/dist --find-interpreter
-          sccache: 'true'
 
   build-windows:
     name: Build Windows
@@ -82,9 +88,12 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: '3.11'
+      - name: Rust Cache
+        uses: Swatinem/rust-cache@v2
+        with:
+          key: x64
       - name: Build wheels (Check Only)
         uses: PyO3/maturin-action@v1
         with:
           target: x64
           args: --out /tmp/dist --find-interpreter
-          sccache: 'true'
