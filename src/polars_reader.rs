@@ -17,6 +17,8 @@ struct PeptideMod {
     mass_delta: Option<f64>,
     accession: Option<String>,
     name: Option<String>,
+    is_crosslink_donor: bool,
+    is_crosslink_acceptor: bool,
 }
 
 #[derive(Debug)]
@@ -126,7 +128,7 @@ pub fn parse_mzidentml_to_dfs(path: &str) -> std::result::Result<(DataFrame, Dat
     let mut in_peptide_seq = false;
     
     let mut current_peptide_id = String::new();
-    let mut current_mod = PeptideMod { location: 0, mass_delta: None, accession: None, name: None };
+    let mut current_mod = PeptideMod { location: 0, mass_delta: None, accession: None, name: None, is_crosslink_donor: false, is_crosslink_acceptor: false };
     let mut in_mod = false;
 
     let mut current_sir = SirData {
@@ -174,7 +176,7 @@ pub fn parse_mzidentml_to_dfs(path: &str) -> std::result::Result<(DataFrame, Dat
                     },
                     "Modification" => {
                         in_mod = true;
-                        current_mod = PeptideMod { location: 0, mass_delta: None, accession: None, name: None };
+                        current_mod = PeptideMod { location: 0, mass_delta: None, accession: None, name: None, is_crosslink_donor: false, is_crosslink_acceptor: false };
                         for attr in e.attributes().filter_map(|a| a.ok()) {
                             match attr.key.as_ref() {
                                 b"location" => current_mod.location = String::from_utf8_lossy(&attr.value).parse().unwrap_or(0),
@@ -184,19 +186,27 @@ pub fn parse_mzidentml_to_dfs(path: &str) -> std::result::Result<(DataFrame, Dat
                         }
                     },
                     "cvParam" if in_mod => {
+                        let mut name_val = String::new();
+                        let mut acc_val = String::new();
                         for attr in e.attributes().filter_map(|a| a.ok()) {
                             match attr.key.as_ref() {
-                                b"accession" => {
-                                    let acc = String::from_utf8_lossy(&attr.value).into_owned();
-                                    // if it's UNIMOD or XLMOD etc
-                                    if acc.starts_with("UNIMOD:") || acc.starts_with("MOD:") || acc.starts_with("XLMOD:") {
-                                        current_mod.accession = Some(acc);
-                                    }
-                                },
-                                b"name" => {
-                                    current_mod.name = Some(String::from_utf8_lossy(&attr.value).into_owned());
-                                }
+                                b"accession" => acc_val = String::from_utf8_lossy(&attr.value).into_owned(),
+                                b"name" => name_val = String::from_utf8_lossy(&attr.value).into_owned(),
                                 _ => ()
+                            }
+                        }
+                        
+                        let lower_name = name_val.to_lowercase();
+                        if acc_val == "MS:1002509" || lower_name == "cross-link donor" {
+                            current_mod.is_crosslink_donor = true;
+                        } else if acc_val == "MS:1002510" || lower_name == "cross-link acceptor" {
+                            current_mod.is_crosslink_acceptor = true;
+                        } else {
+                            if current_mod.accession.is_none() {
+                                current_mod.accession = Some(acc_val);
+                            }
+                            if current_mod.name.is_none() {
+                                current_mod.name = Some(name_val);
                             }
                         }
                     },
@@ -307,7 +317,7 @@ pub fn parse_mzidentml_to_dfs(path: &str) -> std::result::Result<(DataFrame, Dat
                 match name {
                     "Modification" => {
                         in_mod = false;
-                        let m = std::mem::replace(&mut current_mod, PeptideMod { location: 0, mass_delta: None, accession: None, name: None });
+                        let m = std::mem::replace(&mut current_mod, PeptideMod { location: 0, mass_delta: None, accession: None, name: None, is_crosslink_donor: false, is_crosslink_acceptor: false });
                         current_peptide_mods.push(m);
                     },
                     "Peptide" => {
@@ -403,9 +413,13 @@ pub fn parse_mzidentml_to_dfs(path: &str) -> std::result::Result<(DataFrame, Dat
 
     // Mapping items for crosslinks
     let mut sii_map: HashMap<String, SpectrumIdentificationItem> = HashMap::new();
+    let mut cross_link_ref_map: HashMap<String, Vec<SpectrumIdentificationItem>> = HashMap::new();
     for sir in &sir_list {
         for sii in &sir.items {
             sii_map.insert(sii.id.clone(), sii.clone());
+            if let Some(ref_id) = &sii.cross_link_ref {
+                cross_link_ref_map.entry(ref_id.clone()).or_default().push(sii.clone());
+            }
         }
     }
 
@@ -422,26 +436,15 @@ pub fn parse_mzidentml_to_dfs(path: &str) -> std::result::Result<(DataFrame, Dat
                 
                 let mut donor_count = 0;
                 for m in &pep.mods {
-                    if let Some(acc) = &m.accession {
-                        if acc == "MS:1002509" { // cross-link donor
-                            is_donor = true;
-                            donor_count += 1;
-                        }
-                        if acc == "MS:1002510" { // cross-link acceptor
-                            is_acceptor = true;
-                        }
-                    } else if let Some(name) = &m.name {
-                        let ln = name.to_lowercase();
-                        if ln == "cross-link donor" {
-                            is_donor = true;
-                            donor_count += 1;
-                        }
-                        if ln == "cross-link acceptor" {
-                            is_acceptor = true;
-                        }
+                    if m.is_crosslink_donor {
+                        is_donor = true;
+                        donor_count += 1;
+                    }
+                    if m.is_crosslink_acceptor {
+                        is_acceptor = true;
                     }
                 }
-                if is_donor && is_acceptor {
+                if donor_count == 2 || (is_donor && is_acceptor) {
                     is_looplink = true;
                 }
             }
@@ -483,7 +486,19 @@ pub fn parse_mzidentml_to_dfs(path: &str) -> std::result::Result<(DataFrame, Dat
                 let mut builder_ends2 = Vec::new();
 
                 if let Some(cross_ref) = &sii.cross_link_ref {
+                    let mut acceptor = None;
                     if let Some(sii_acceptor) = sii_map.get(cross_ref) {
+                        acceptor = Some(sii_acceptor.clone());
+                    } else if let Some(items) = cross_link_ref_map.get(cross_ref) {
+                        for item in items {
+                            if item.id != sii.id {
+                                acceptor = Some(item.clone());
+                                break;
+                            }
+                        }
+                    }
+
+                    if let Some(sii_acceptor) = acceptor {
                         if let Some(pep2) = peptides.get(&sii_acceptor.peptide_ref) {
                             p2_seq = pep2.to_proforma();
                         }
