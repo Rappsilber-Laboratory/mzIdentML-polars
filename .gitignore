@@ -4,6 +4,7 @@ target/
 .venv/
 test_output.mzid
 output_*.mzid
+debug*.py
 
 # Python build and cache
 __pycache__/
