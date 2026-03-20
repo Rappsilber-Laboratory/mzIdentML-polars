@@ -23,6 +23,7 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: '3.11'
+          cache: 'pipenv'
       - name: Rust Cache
         uses: Swatinem/rust-cache@v2
         with:
@@ -49,6 +50,7 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: '3.11'
+          cache: 'pipenv'
       - name: Rust Cache
         uses: Swatinem/rust-cache@v2
         with:
@@ -74,6 +76,7 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: '3.11'
+          cache: 'pipenv'
       - name: Rust Cache
         uses: Swatinem/rust-cache@v2
         with:
