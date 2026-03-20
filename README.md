@@ -1,6 +1,6 @@
 # mzIdentML-polars
 
-A fast Rust-based writer for mzIdentML 1.3 files using Polars DataFrames as input. This project simplifies the generation of standard-compliant proteomics identification files, with built-in support for:
+A fast Rust-based writer and parser for mzIdentML 1.3 files using Polars DataFrames. This project simplifies the generation and processing of standard-compliant proteomics identification files, with built-in support for:
 
 - **Polars Integration**: Directly write mzIdentML from high-performance DataFrames.
 - **ProForma v2**: Support for standard peptide sequence notation (e.g., `PEPT[Unimod:35]IDEK`).
@@ -23,7 +23,7 @@ pipenv run maturin develop
 
 ## Usage
 
-The primary functions are `write_mzidentml` (for file output) and `serialize_mzidentml` (for string output). Both take Polars DataFrames and a dictionary for metadata. Note that `write_mzidentml` takes the output path as its first argument.
+The primary functions are `write_mzidentml` (for file output), `serialize_mzidentml` (for string output), and `read_mzidentml` (for reading files back into memory). Both writing functions take Polars DataFrames and a dictionary for metadata. Note that `write_mzidentml` takes the output path as its first argument.
 
 ### Writing to a File (Recommended)
 
@@ -46,6 +46,19 @@ mzidentml_polars.write_mzidentml("output.mzid.gz", csms, prot_seqs, spectra, met
 ```python
 # Generate mzIdentML as a string (if needed for further processing)
 xml_string = mzidentml_polars.serialize_mzidentml(csms, prot_seqs, spectra, metadata)
+```
+
+### Reading from a File
+The package also includes a high-performance reader that parses `mzIdentML` or `mzIdentML.gz` files back into their respective Polars DataFrames:
+
+```python
+import mzidentml_polars
+
+# Parse an mzIdentML file directly into 3 DataFrames
+csms_df, prot_seqs_df, spectra_df = mzidentml_polars.read_mzidentml("output.mzid")
+
+# Gzip decompression is fully supported automatically
+csms_df, prot_seqs_df, spectra_df = mzidentml_polars.read_mzidentml("output.mzid.gz")
 ```
 
 ## Testing
