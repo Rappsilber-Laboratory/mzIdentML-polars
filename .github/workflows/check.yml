@@ -109,8 +109,7 @@ jobs:
       - uses: actions-rust-lang/setup-rust-toolchain@v1
       - name: Build and Test
         run: |
-          python -m venv .venv
-          source .venv/bin/activate
-          pip install pytest polars lxml pyarrow maturin
-          maturin develop
-          pytest tests/
+          pip install pipenv
+          pipenv install
+          pipenv run maturin develop
+          pipenv run pytest tests/
