@@ -15,8 +15,14 @@ def run_validator(mzid_path, tmpdir):
     except ImportError:
         pass
     
+    import shutil
+    if shutil.which("pipenv"):
+        cmd = ["pipenv", "run", "process_dataset", "-v", mzid_path, "-n", "-t", tmpdir]
+    else:
+        cmd = ["process_dataset", "-v", mzid_path, "-n", "-t", tmpdir]
+    
     result = subprocess.run(
-        ["pipenv", "run", "process_dataset", "-v", mzid_path, "-n", "-t", tmpdir],
+        cmd,
         capture_output=True,
         text=True,
         env=env
