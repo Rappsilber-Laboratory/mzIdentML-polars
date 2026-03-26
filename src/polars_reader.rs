@@ -111,6 +111,16 @@ struct SpectrumIdentificationItem {
     crosslinker_donor: bool,
     crosslinker_acceptor: bool,
     cross_link_ref: Option<String>,
+    residue_pair_refs: Vec<String>,
+}
+
+#[derive(Debug, Clone)]
+struct InteractionScore {
+    residue_pair_id: String, // e.g. "100.a"
+    site: Option<i32>,
+    score: f64,
+    pass: bool,
+    acc: String,
 }
 
 use std::fs::File;
@@ -158,10 +168,14 @@ pub fn parse_mzidentml_to_dfs(path: &str) -> std::result::Result<(DataFrame, Dat
         items: Vec::new(),
     };
         let mut current_sii = SpectrumIdentificationItem {
-            id: String::new(), rank: 0, charge_state: 0, calc_mz: None, exp_mz: None, peptide_ref: String::new(), peptide_evidence_refs: Vec::new(), score: None, pass_threshold: false, crosslinker_donor: false, crosslinker_acceptor: false, cross_link_ref: None
+            id: String::new(), rank: 0, charge_state: 0, calc_mz: None, exp_mz: None, peptide_ref: String::new(), peptide_evidence_refs: Vec::new(), score: None, pass_threshold: false, crosslinker_donor: false, crosslinker_acceptor: false, cross_link_ref: None, residue_pair_refs: Vec::new()
         };
     
     let mut in_sii = false;
+    let mut in_pdh = false;
+    let mut current_pdh_score_val = String::new();
+    let mut interaction_scores: Vec<InteractionScore> = Vec::new();
+    let mut current_pdh_id = String::new();
 
     loop {
         match reader.read_event_into(&mut buf) {
@@ -265,6 +279,14 @@ pub fn parse_mzidentml_to_dfs(path: &str) -> std::result::Result<(DataFrame, Dat
                         }
                         spectra_data.insert(id, location);
                     },
+                    "ProteinDetectionHypothesis" => {
+                        in_pdh = true;
+                        for attr in e.attributes().filter_map(|a| a.ok()) {
+                            if attr.key.as_ref() == b"id" {
+                                current_pdh_id = String::from_utf8_lossy(&attr.value).into_owned();
+                            }
+                        }
+                    },
                     "SpectrumIdentificationResult" => {
                         current_sir = SirData {
                             spectrum_id: String::new(),
@@ -282,7 +304,7 @@ pub fn parse_mzidentml_to_dfs(path: &str) -> std::result::Result<(DataFrame, Dat
                     "SpectrumIdentificationItem" => {
                         in_sii = true;
                         current_sii = SpectrumIdentificationItem {
-                            id: String::new(), rank: 0, charge_state: 0, calc_mz: None, exp_mz: None, peptide_ref: String::new(), peptide_evidence_refs: Vec::new(), score: None, pass_threshold: false, crosslinker_donor: false, crosslinker_acceptor: false, cross_link_ref: None
+                            id: String::new(), rank: 0, charge_state: 0, calc_mz: None, exp_mz: None, peptide_ref: String::new(), peptide_evidence_refs: Vec::new(), score: None, pass_threshold: false, crosslinker_donor: false, crosslinker_acceptor: false, cross_link_ref: None, residue_pair_refs: Vec::new()
                         };
                         for attr in e.attributes().filter_map(|a| a.ok()) {
                             match attr.key.as_ref() {
@@ -329,7 +351,39 @@ pub fn parse_mzidentml_to_dfs(path: &str) -> std::result::Result<(DataFrame, Dat
                         
                         if lower_name == "cross-link donor" { current_sii.crosslinker_donor = true; }
                         if lower_name == "cross-link acceptor" { current_sii.crosslinker_acceptor = true; }
-                        if name == "cross-link spectrum identification item" || acc == "MS:1002511" { current_sii.cross_link_ref = Some(val); }
+                        if name == "cross-link spectrum identification item" || acc == "MS:1002511" { current_sii.cross_link_ref = Some(val.clone()); }
+                        if name == "residue pair ref" || acc == "MS:1003344" { current_sii.residue_pair_refs.push(val); }
+                    },
+                    "cvParam" if in_pdh => {
+                        let mut acc = String::new();
+                        let mut val = String::new();
+                        for attr in e.attributes().filter_map(|a| a.ok()) {
+                            match attr.key.as_ref() {
+                                b"accession" => acc = String::from_utf8_lossy(&attr.value).into_owned(),
+                                b"value" => val = String::from_utf8_lossy(&attr.value).into_owned(),
+                                _ => ()
+                            }
+                        }
+                        
+                        // Parse Interaction Score (MS:1002676, MS:1002677, etc)
+                        // Value format: int_ID.a|b:POS|null:SCORE:PASS
+                        if acc == "MS:1002676" || acc == "MS:1002677" {
+                            let parts: Vec<&str> = val.split(':').collect();
+                            if parts.len() >= 3 {
+                                let id = parts[0].to_string();
+                                let site = if parts[1] == "null" { None } else { parts[1].parse::<i32>().ok() };
+                                let score = parts[2].parse::<f64>().unwrap_or(0.0);
+                                let pass = parts.get(3).map(|&p| p == "true").unwrap_or(true);
+                                
+                                interaction_scores.push(InteractionScore {
+                                    residue_pair_id: id,
+                                    site,
+                                    score,
+                                    pass,
+                                    acc,
+                                });
+                            }
+                        }
                     },
                     _ => ()
                 }
@@ -356,9 +410,10 @@ pub fn parse_mzidentml_to_dfs(path: &str) -> std::result::Result<(DataFrame, Dat
                     },
                     "SpectrumIdentificationItem" => {
                         in_sii = false;
-                        let s = std::mem::replace(&mut current_sii, SpectrumIdentificationItem { id: String::new(), rank: 0, charge_state: 0, calc_mz: None, exp_mz: None, peptide_ref: String::new(), peptide_evidence_refs: Vec::new(), score: None, pass_threshold: false, crosslinker_donor: false, crosslinker_acceptor: false, cross_link_ref: None });
+                        let s = std::mem::replace(&mut current_sii, SpectrumIdentificationItem { id: String::new(), rank: 0, charge_state: 0, calc_mz: None, exp_mz: None, peptide_ref: String::new(), peptide_evidence_refs: Vec::new(), score: None, pass_threshold: false, crosslinker_donor: false, crosslinker_acceptor: false, cross_link_ref: None, residue_pair_refs: Vec::new() });
                         current_sir.items.push(s);
                     },
+                    "ProteinDetectionHypothesis" => in_pdh = false,
                     _ => ()
                 }
             },
@@ -432,6 +487,21 @@ pub fn parse_mzidentml_to_dfs(path: &str) -> std::result::Result<(DataFrame, Dat
     let mut csm_peptide1_link_pos: Vec<Option<i32>> = Vec::new();
     let mut csm_peptide2_link_pos: Vec<Option<i32>> = Vec::new();
     let mut csm_crosslinker_accession = Vec::new();
+    
+    // interaction scores columns
+    let mut csm_residue_pair_fdr = Vec::new(); // will store the first residue-pair score if present
+    let mut csm_protein_pair_fdr = Vec::new(); // will store the first protein-pair score if present
+    
+    // Mapping for interaction scores: ID.a|b -> score
+    let mut score_map_residue: HashMap<String, f64> = HashMap::new();
+    let mut score_map_protein: HashMap<String, f64> = HashMap::new();
+    for sc in &interaction_scores {
+        if sc.acc == "MS:1002677" {
+            score_map_residue.insert(sc.residue_pair_id.clone(), sc.score);
+        } else if sc.acc == "MS:1002676" {
+            score_map_protein.insert(sc.residue_pair_id.clone(), sc.score);
+        }
+    }
     
     // crosslink peptide 2 features
     let mut csm_pep2_seq = Vec::new();
@@ -583,6 +653,20 @@ pub fn parse_mzidentml_to_dfs(path: &str) -> std::result::Result<(DataFrame, Dat
                 mapped_ends2_builder.append_null();
             }
             csm_peptide2_link_pos.push(p2_link_pos);
+            
+            // Extract interaction scores for this SII
+            let mut res_fdr = None;
+            let mut prot_fdr = None;
+            for r_ref in &sii.residue_pair_refs {
+                if res_fdr.is_none() {
+                    res_fdr = score_map_residue.get(r_ref).cloned();
+                }
+                if prot_fdr.is_none() {
+                    prot_fdr = score_map_protein.get(r_ref).cloned();
+                }
+            }
+            csm_residue_pair_fdr.push(res_fdr);
+            csm_protein_pair_fdr.push(prot_fdr);
         }
     }
 
@@ -615,7 +699,9 @@ pub fn parse_mzidentml_to_dfs(path: &str) -> std::result::Result<(DataFrame, Dat
         "peptide2_seq" => csm_pep2_seq,
         "protein2_id" => prots2_series,
         "peptide2_start" => starts2_series,
-        "peptide2_end" => ends2_series
+        "peptide2_end" => ends2_series,
+        "residue_pair_fdr" => csm_residue_pair_fdr,
+        "protein_pair_fdr" => csm_protein_pair_fdr
     ).map_err(|e| format!("{}", e))?;
 
     Ok((csms_df, prot_df, spectra_df))

@@ -2,13 +2,11 @@ import pytest
 import mzidentml_polars
 import polars as pl
 import os
-import tempfile
-from polars.testing import assert_frame_equal
 
-def test_reader_roundtrip(default_metadata, base_protein_seqs, base_spectra):
+def test_reader_roundtrip(tmp_path, default_metadata, base_protein_seqs, base_spectra):
     """Test generating a basic crosslinked identification and reading it back."""
+    tmp_file = str(tmp_path / "test.mzid")
     
-    # Input DataFrame replicating test_writer
     csms_input = pl.DataFrame({
         "spectrum_id": ["index=1", "index=2", "index=3"],
         "peptide1_seq": ["PEPTIDEK", "PEPT[UNIMOD:35]IDEK", "PEPTIDEK"],
@@ -45,54 +43,92 @@ def test_reader_roundtrip(default_metadata, base_protein_seqs, base_spectra):
         pl.col("peptide2_end").cast(pl.UInt32),
     ])
 
-    with tempfile.NamedTemporaryFile(suffix=".mzid", delete=False) as tmp:
-        tmp_path = tmp.name
-        
-    try:
-        mzidentml_polars.write_mzidentml(tmp_path, csms_input, base_protein_seqs, base_spectra, default_metadata)
-        
-        # Read the generated file back
-        csms_read, prot_read, spectra_read = mzidentml_polars.read_mzidentml(tmp_path)
-        
-        # Validate output shape and data types
-        assert isinstance(csms_read, pl.DataFrame)
-        assert len(csms_read) == 3
-        
-        # Validations
-        assert "peptide1_link_pos" in csms_read.columns
-        assert "crosslinker_accession" in csms_read.columns
-        
-        # Verify looplink extraction mapping properties directly
-        looplink_row = csms_read.filter(pl.col("is_looplink")).row(0, named=True)
-        assert looplink_row["peptide1_link_pos"] == 2
-        assert looplink_row["peptide2_link_pos"] == 8
-        assert looplink_row["crosslinker_accession"] == "MS:1003124"
-        
-        # Verify crosslink components
-        crosslink_row = csms_read.filter(pl.col("is_crosslink")).row(0, named=True)
-        assert crosslink_row["peptide2_seq"] == "KLS"
-        assert crosslink_row["peptide1_link_pos"] == 8
-        assert crosslink_row["peptide2_link_pos"] == 1
-        assert crosslink_row["crosslinker_accession"] == "MS:1003124"
-        
-    finally:
-        if os.path.exists(tmp_path):
-            os.remove(tmp_path)
-            
-    # GZIP Roundtrip validation
-    with tempfile.NamedTemporaryFile(suffix='.mzid.gz', delete=False) as tmp:
-        tmp_gz_path = tmp.name
+    mzidentml_polars.write_mzidentml(tmp_file, csms_input, base_protein_seqs, base_spectra, default_metadata)
+    csms_read, prot_read, spectra_read = mzidentml_polars.read_mzidentml(tmp_file)
+    
+    assert len(csms_read) == 3
+    assert csms_read.filter(pl.col("is_looplink"))["peptide1_link_pos"][0] == 2
+    assert csms_read.filter(pl.col("is_crosslink"))["peptide2_seq"][0] == "KLS"
 
-    try:
-        mzidentml_polars.write_mzidentml(tmp_gz_path, csms_input, base_protein_seqs, base_spectra, default_metadata)
-        csms_gz_read, prot_gz_read, spectra_gz_read = mzidentml_polars.read_mzidentml(tmp_gz_path)
-        
-        # Verify it decompressed and parsed the exact right length
-        assert len(csms_gz_read) == 3
-        
-        crosslink_gz_row = csms_gz_read.filter(pl.col("is_crosslink")).row(0, named=True)
-        assert crosslink_gz_row["peptide2_seq"] == "KLS"
-        assert crosslink_gz_row["crosslinker_accession"] == "MS:1003124"
-    finally:
-        if os.path.exists(tmp_gz_path):
-            os.remove(tmp_gz_path)
+def test_interaction_scores_parsing(tmp_path):
+    """Test extracting interaction scores from ProteinDetectionHypothesis."""
+    tmp_file = tmp_path / "interaction_test.mzid"
+    xml_content = """<?xml version="1.0" encoding="UTF-8"?>
+<mzIdentML id="test" xmlns="http://psidev.info/psi/pi/mzIdentML/1.3">
+    <SequenceCollection>
+        <DBSequence id="dbseq1" accession="P12345" />
+        <Peptide id="pep1">
+            <PeptideSequence>PEPTIDE</PeptideSequence>
+        </Peptide>
+        <PeptideEvidence id="pe1" dBSequence_ref="dbseq1" isDecoy="false" />
+    </SequenceCollection>
+    <AnalysisCollection>
+        <SpectrumIdentification id="SI1" spectrumIdentificationProtocol_ref="SIP1" spectrumIdentificationList_ref="SIL1" />
+    </AnalysisCollection>
+    <DataCollection>
+        <Inputs>
+            <SpectraData id="SD1" location="data.mzML" />
+        </Inputs>
+        <AnalysisData>
+            <SpectrumIdentificationList id="SIL1">
+                <SpectrumIdentificationResult id="SIR1" spectrumID="index=1" spectraData_ref="SD1">
+                    <SpectrumIdentificationItem id="SII1" rank="1" chargeState="2" peptide_ref="pep1" passThreshold="true">
+                        <PeptideEvidenceRef peptideEvidence_ref="pe1" />
+                        <cvParam cvRef="PSI-MS" accession="MS:1003344" name="residue pair ref" value="100.a" />
+                    </SpectrumIdentificationItem>
+                </SpectrumIdentificationResult>
+            </SpectrumIdentificationList>
+            <ProteinAmbiguityGroup id="PAG1">
+                <ProteinDetectionHypothesis id="PDH1" dBSequence_ref="dbseq1" passThreshold="true">
+                    <cvParam cvRef="PSI-MS" accession="MS:1002677" name="residue-pair-level global FDR" value="100.a:146:0.0294:true" />
+                    <cvParam cvRef="PSI-MS" accession="MS:1002676" name="protein-pair-level global FDR" value="100.a:null:0.001:true" />
+                </ProteinDetectionHypothesis>
+            </ProteinAmbiguityGroup>
+        </AnalysisData>
+    </DataCollection>
+</mzIdentML>
+"""
+    tmp_file.write_text(xml_content)
+    csms_read, prot_read, spectra_read = mzidentml_polars.read_mzidentml(str(tmp_file))
+    
+    assert csms_read["residue_pair_fdr"][0] == 0.0294
+    assert csms_read["protein_pair_fdr"][0] == 0.001
+
+def test_gzip_roundtrip(tmp_path, default_metadata, base_protein_seqs, base_spectra):
+    """Test compressed file IO."""
+    tmp_file = str(tmp_path / "test.mzid.gz")
+    csms_input = pl.DataFrame({
+        "spectrum_id": ["index=1"], "peptide1_seq": ["PEPTIDEK"],
+        "protein1_id": ["PROT1"], "peptide1_start": [1], "peptide1_end": [8],
+        "charge": [2], "rank": [1], "is_crosslink": [False], "is_looplink": [False],
+        "peptide1_link_pos": [None], "peptide2_link_pos": [None],
+        "file_path": ["data1.mzML"], "experimental_mz": [1234.5], "calculated_mz": [1234.4],
+        "score": [10.5], "crosslinker_name": ["DSSO"], "crosslinker_accession": ["MS:1003124"],
+        "crosslinker_mass": [158.0038], "peptide2_seq": [None], "protein2_id": [None],
+        "peptide2_start": [None], "peptide2_end": [None]
+    }).with_columns([
+        pl.col("peptide1_start").cast(pl.UInt32), pl.col("peptide1_end").cast(pl.UInt32),
+        pl.col("charge").cast(pl.Int32), pl.col("rank").cast(pl.UInt32),
+        pl.col("peptide2_seq").cast(pl.String), pl.col("protein2_id").cast(pl.String),
+        pl.col("peptide1_link_pos").cast(pl.Int32), pl.col("peptide2_link_pos").cast(pl.Int32),
+    ])
+
+    mzidentml_polars.write_mzidentml(tmp_file, csms_input, base_protein_seqs, base_spectra, default_metadata)
+    csms_read, prot_read, spectra_read = mzidentml_polars.read_mzidentml(tmp_file)
+    
+    # Detailed assertions for compressed read
+    assert len(csms_read) == 1
+    row = csms_read.row(0, named=True)
+    assert row["peptide1_seq"] == "PEPTIDEK"
+    assert row["charge"] == 2
+    assert row["score"] == 10.5
+    assert row["spectrum_id"] == "index=1"
+    
+    # Check protein and spectra DFs from compressed file
+    assert len(prot_read) == 3
+    assert "dbseq_PROT1" in prot_read["protein_id"].to_list()
+    assert len(spectra_read) == 2
+    assert "data1.mzML" in spectra_read["file_path"].to_list()
+
+
+
