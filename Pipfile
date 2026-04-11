@@ -15,6 +15,3 @@ mzidentml-reader = {ref = "pride", git = "git+https://github.com/Rappsilber-Labo
 [dev-packages]
 setuptools-scm = "*"
 setuptools-rust = "*"
-
-[requires]
-python_version = "3.11"
