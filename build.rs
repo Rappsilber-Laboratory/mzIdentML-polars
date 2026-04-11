@@ -4,26 +4,6 @@ use std::io::{BufRead, BufReader, Write};
 use std::path::Path;
 
 fn main() {
-    // Synchronize Polars versions between Cargo.toml and pyproject.toml
-    // Try to use pipenv if available, otherwise fallback to python3
-    let status = std::process::Command::new("pipenv")
-        .args(["run", "python", "sync_polars.py"])
-        .status();
-    
-    if let Ok(s) = status {
-        if !s.success() {
-            // Fallback to python3 if pipenv run failed
-            let _ = std::process::Command::new("python3")
-                .arg("sync_polars.py")
-                .status();
-        }
-    } else {
-        // Fallback to python3 if pipenv command itself is not found
-        let _ = std::process::Command::new("python3")
-            .arg("sync_polars.py")
-            .status();
-    }
-
     let out_dir = env::var("OUT_DIR").unwrap();
     let dest_path = Path::new(&out_dir).join("cv_data.rs");
     let mut f = File::create(&dest_path).unwrap();
@@ -86,7 +66,6 @@ fn main() {
     println!("cargo:rerun-if-changed=cv/PSI-MOD.obo");
     println!("cargo:rerun-if-changed=Cargo.toml");
     println!("cargo:rerun-if-changed=pyproject.toml");
-    println!("cargo:rerun-if-changed=sync_polars.py");
     println!("cargo:rerun-if-changed=build.rs");
 }
 
