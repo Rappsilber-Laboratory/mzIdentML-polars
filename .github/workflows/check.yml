@@ -99,20 +99,37 @@ jobs:
           args: --out /tmp/dist --find-interpreter
 
   test-python:
-    name: Test Python
+    name: Test Python ${{ matrix.python-version }} (Polars ${{ matrix.polars-version }})
     runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        polars-version: [
+          "1.28.0",
+          "1.30.0",
+          "latest"
+        ]
+        python-version: [
+          "3.10",
+          "3.14",
+        ]
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
         with:
-          python-version: '3.11'
-          cache: 'pipenv'
+          python-version: ${{ matrix.python-version }}
       - uses: actions-rust-lang/setup-rust-toolchain@v1
       - name: Install system dependencies
         run: sudo apt-get update && sudo apt-get install -y libxml2-utils
       - name: Build and Test
         run: |
           pip install pipenv
-          pipenv install
+          pipenv install -d
+          # Override polars version for testing cross-version compatibility
+          if [ "${{ matrix.polars-version }}" != "latest" ]; then
+            pipenv run pip install "polars==${{ matrix.polars-version }}"
+          else
+            pipenv run pip install -U polars
+          fi
           pipenv run maturin develop
           pipenv run pytest tests/

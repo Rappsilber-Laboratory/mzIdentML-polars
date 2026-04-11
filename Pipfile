@@ -10,11 +10,8 @@ toml = "*"
 pytest = "*"
 lxml = "*"
 pyarrow = "*"
-mzidentml-reader = {ref = "pride", git = "git+https://github.com/Rappsilber-Laboratory/mzidentml-reader.git"}
+mzidentml-reader = {ref = "main", git = "git+https://github.com/Rappsilber-Laboratory/mzidentml-reader.git"}
 
 [dev-packages]
 setuptools-scm = "*"
 setuptools-rust = "*"
-
-[requires]
-python_version = "3.11"
