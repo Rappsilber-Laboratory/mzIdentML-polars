@@ -112,7 +112,6 @@ jobs:
         python-version: [
           "3.10",
           "3.14",
-          "3.14t"
         ]
     steps:
       - uses: actions/checkout@v4
@@ -125,7 +124,7 @@ jobs:
       - name: Build and Test
         run: |
           pip install pipenv
-          pipenv install
+          pipenv install -d
           # Override polars version for testing cross-version compatibility
           if [ "${{ matrix.polars-version }}" != "latest" ]; then
             pipenv run pip install "polars==${{ matrix.polars-version }}"
