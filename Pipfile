@@ -10,6 +10,7 @@ toml = "*"
 pytest = "*"
 lxml = "*"
 pyarrow = "*"
+mzidentml-reader = {ref = "main", git = "git+https://github.com/Rappsilber-Laboratory/mzidentml-reader.git"}
 
 [dev-packages]
 setuptools-scm = "*"
