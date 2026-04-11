@@ -99,8 +99,11 @@ jobs:
           args: --out /tmp/dist --find-interpreter
 
   test-python:
-    name: Test Python
+    name: Test Python (Polars ${{ matrix.polars-version }})
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        polars-version: ["1.25.0", "1.30.0", "latest"]
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
@@ -114,5 +117,11 @@ jobs:
         run: |
           pip install pipenv
           pipenv install
+          # Override polars version for testing cross-version compatibility
+          if [ "${{ matrix.polars-version }}" != "latest" ]; then
+            pipenv run pip install "polars==${{ matrix.polars-version }}"
+          else
+            pipenv run pip install -U polars
+          fi
           pipenv run maturin develop
           pipenv run pytest tests/

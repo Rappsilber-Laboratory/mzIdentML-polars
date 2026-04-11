@@ -14,9 +14,9 @@ crate-type = ["cdylib", "rlib"]
 [dependencies]
 num-bigint = "0.4"
 num-traits = "0.2"
-pyo3 = { version = "0.25", features = ["extension-module"] }
-pyo3-polars = { version = "0.24", features = ["serde", "arrow"] }
+pyo3 = { version = "0.26", features = ["extension-module"] }
+pyo3-polars = { version = "0.25", features = ["serde"] }
 xsd-parser = { version = "1.2.0" }
-polars = { version = "0.51", default-features = false, features = ["lazy", "ndarray", "strings", ] }
+polars = { version = "0.52", default-features = false, features = ["lazy", "ndarray", "strings", "dtype-full"] }
 rustyms = "0.7.0"
 flate2 = "1.0"
