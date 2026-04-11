@@ -104,7 +104,14 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        polars-version: ["1.25.0", "1.30.0", "latest"]
+        polars-version: [
+          "1.26.0",
+          "1.27.0",
+          "1.28.0",
+          "1.29.0",
+          "1.30.0",
+          "latest"
+        ]
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
